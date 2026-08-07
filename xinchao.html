@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>XinChào — Vietnamese Street Survival</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E211D;
+    --bg-elev:#132A24;
+    --surface:#1C3B34;
+    --surface-2:#21453C;
+    --rice:#F2E9D8;
+    --rice-dim:#D9CDB4;
+    --ink:#12241F;
+    --vermillion:#D6553D;
+    --vermillion-dim:#8C3A2B;
+    --gold:#D4A93A;
+    --herb:#7DA383;
+    --sky:#5FC2D6;
+    --pink:#E77FB3;
+    --stool-red:#C1392B;
+    --stool-blue:#2E6E8E;
+    --stool-yellow:#D9A62E;
+    --muted:#9CB4AC;
+    --radius:18px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    font-family:'Be Vietnam Pro', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--rice);}
+  body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:16px 12px;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(214,85,61,0.18), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(212,169,58,0.12), transparent 45%),
+      var(--bg);
+  }
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+
+  /* ---------- phone shell ---------- */
+  .phone{
+    width:100%;
+    max-width:430px;
+    background:var(--bg-elev);
+    border-radius:34px;
+    border:1px solid rgba(242,233,216,0.08);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+    height:calc(100vh - 32px);
+    height:calc(100dvh - 32px);
+    max-height:900px;
+    min-height:560px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  header.appbar{
+    padding:22px 22px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid rgba(242,233,216,0.08);
+  }
+  header.appbar .brand{display:flex;align-items:center;gap:10px;}
+  header.appbar .brand .flag{
+    width:26px;height:26px;border-radius:6px;
+    background:var(--vermillion);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;
+    box-shadow: inset 0 0 0 2px rgba(212,169,58,0.5);
+  }
+  header.appbar h1{font-size:19px; margin:0; font-weight:800; letter-spacing:-0.02em;}
+  header.appbar .streak{
+    display:flex;align-items:center;gap:6px;
+    background:var(--surface);
+    border-radius:999px;
+    padding:6px 12px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--gold);
+    border:1px solid rgba(212,169,58,0.25);
+  }
+
+  main{flex:1;overflow-y:auto;padding:18px 18px 100px;}
+  main::-webkit-scrollbar{width:0;}
+
+  .view{display:none;animation:fade .25s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- nav bar ---------- */
+  nav.tabbar{
+    position:absolute;bottom:0;left:0;right:0;
+    background:var(--bg-elev);
+    border-top:1px solid rgba(242,233,216,0.08);
+    display:flex;
+    padding:10px 6px calc(10px + env(safe-area-inset-bottom,0));
+  }
+  nav.tabbar button{
+    flex:1;background:none;border:none;color:var(--muted);
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-size:10.5px;font-weight:600;letter-spacing:.03em;
+    padding:6px 2px;border-radius:12px;
+    transition:color .15s ease;
+  }
+  nav.tabbar button svg{width:20px;height:20px;}
+  nav.tabbar button.active{color:var(--gold);}
+  nav.tabbar button.active svg{filter:drop-shadow(0 0 6px rgba(212,169,58,.5));}
+
+  /* ---------- reusable bits ---------- */
+  .eyebrow{text-transform:uppercase;font-size:11.5px;letter-spacing:.12em;color:var(--muted);font-weight:700;margin:0 0 8px;}
+  .eyebrow-inv{text-transform:uppercase;font-size:11px;letter-spacing:.1em;color:rgba(18,36,31,0.6);font-weight:800;margin:0 0 8px;}
+  .section-title{font-size:16px;font-weight:800;margin:26px 0 4px;}
+  .section-sub{color:var(--muted);font-size:13px;margin:0 0 14px;}
+
+  .banner{
+    background:linear-gradient(135deg, var(--herb), #567a63);
+    border-radius:var(--radius);padding:20px;color:var(--ink);margin-bottom:22px;position:relative;overflow:hidden;
+  }
+  .banner h2{margin:0 0 6px;font-size:19px;font-weight:800;}
+  .banner p{margin:0 0 14px;font-size:13.5px;line-height:1.4;opacity:.85;}
+  .banner button{background:var(--ink);color:var(--rice);border:none;padding:11px 16px;border-radius:12px;font-weight:700;font-size:13px;width:100%;}
+
+  .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .core-banner{
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:linear-gradient(135deg,#3a2a12,#1c150a);border:1px solid rgba(212,169,58,0.35);
+    border-radius:16px;padding:16px;margin-bottom:22px;text-align:left;
+  }
+  .cb-eyebrow{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;}
+  .cb-title{color:var(--rice);font-size:14.5px;font-weight:800;margin:0 0 3px;line-height:1.3;}
+  .cb-sub{color:var(--muted);font-size:11.5px;margin:0;line-height:1.4;}
+  .cb-arrow{color:var(--gold);font-size:20px;flex-shrink:0;}
+  .tool-card{background:var(--surface);border-radius:14px;padding:14px;border:1px solid rgba(242,233,216,0.06);}
+  .tool-card h3{font-size:12.5px;margin:8px 0 0;text-transform:uppercase;letter-spacing:.05em;}
+  .tool-card .tool-icon{font-size:22px;}
+
+  .chip-row{display:flex;gap:8px;margin:14px 0 16px;flex-wrap:wrap;}
+  .chip{background:var(--surface);border:1px solid rgba(242,233,216,0.08);color:var(--muted);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;}
+  .chip.active{background:var(--herb);color:var(--ink);border-color:transparent;}
+
+  .pack-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .pack-card{background:var(--surface);border-radius:16px;overflow:hidden;border:1px solid rgba(242,233,216,0.07);position:relative;text-align:left;padding:0;}
+  .pack-card .stool-bar{height:5px;width:100%;}
+  .pack-card .pack-body{padding:12px;}
+  .pack-card .pack-icon{font-size:26px;margin-bottom:8px;display:block;}
+  .pack-card h4{font-size:13.5px;margin:0 0 4px;font-weight:700;line-height:1.25;color:var(--rice);}
+  .pack-card .pack-tag{font-size:11px;color:var(--muted);}
+  .pack-card .status{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;padding:4px 8px;border-radius:999px;}
+  .pack-img-wrap{position:relative;width:100%;aspect-ratio:4/3;background:var(--surface-2);overflow:hidden;}
+  .pack-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .pack-img-fallback{display:none;align-items:center;justify-content:center;height:100%;width:100%;font-size:34px;position:absolute;inset:0;background:var(--surface-2);}
+  .status.done{background:var(--herb);color:var(--ink);}
+  .status.active{background:var(--gold);color:var(--ink);}
+
+  /* ---------- foundations ---------- */
+  .level-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+  .level-card{background:var(--surface);border-radius:14px;padding:14px 10px;border:2px solid transparent;text-align:left;}
+  .level-card.selected{border-color:var(--gold);background:var(--surface-2);}
+  .level-card .lv{font-size:17px;font-weight:800;}
+  .level-card .lv-name{font-size:11px;color:var(--muted);margin:2px 0 8px;}
+  .level-card .lv-progress{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);}
+
+  .route{position:relative;padding-left:26px;}
+  .route::before{
+    content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;
+    background-repeat:repeat-y;background-image:linear-gradient(var(--muted) 60%, transparent 0%);
+    background-size:2px 10px;opacity:.35;
+  }
+  .lesson-node{position:relative;margin-bottom:14px;}
+  .lesson-node .dot{
+    position:absolute;left:-26px;top:14px;width:24px;height:24px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;
+    background:var(--surface-2);color:var(--muted);border:2px solid var(--bg-elev);
+  }
+  .lesson-node.done .dot{background:var(--herb);color:var(--ink);}
+  .lesson-node.current .dot{background:var(--gold);color:var(--ink);}
+  .lesson-card{background:var(--surface);border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid rgba(242,233,216,0.06);opacity:1;}
+  .lesson-card.locked{opacity:.45;}
+  .lesson-card .lname{font-weight:700;font-size:14px;margin:0 0 2px;}
+  .lesson-card .lviet{font-weight:600;font-size:13px;color:var(--gold);margin:0 0 3px;}
+  .lesson-card .ldesc{font-size:11.5px;color:var(--muted);margin:0;}
+  .lesson-card .go{background:var(--gold);color:var(--ink);border:none;width:34px;height:34px;border-radius:50%;font-size:15px;font-weight:800;flex-shrink:0;}
+  .lesson-card.locked .go{background:var(--surface-2);color:var(--muted);}
+
+  /* ---------- pocket ---------- */
+  .phrase-item{background:var(--surface);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;align-items:center;}
+  .phrase-item .pv{font-weight:700;font-size:14.5px;color:var(--gold);margin:0 0 2px;}
+  .phrase-item .pp{font-size:11.5px;color:var(--muted);margin:0 0 2px;font-family:'IBM Plex Mono',monospace;}
+  .phrase-item .pe{font-size:12.5px;color:var(--rice-dim);margin:0;}
+  .icon-btn{background:var(--surface-2);border:none;color:var(--rice);width:32px;height:32px;border-radius:50%;font-size:14px;flex-shrink:0;}
+  .empty{text-align:center;padding:50px 10px;color:var(--muted);}
+  .empty .big{font-size:38px;margin-bottom:10px;}
+
+  /* ---------- stats ---------- */
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+  .stat-box{background:var(--surface);border-radius:14px;padding:16px;}
+  .stat-box .num{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--gold);}
+  .stat-box .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .week-chart{display:flex;justify-content:space-between;align-items:flex-end;height:110px;background:var(--surface);border-radius:14px;padding:16px;}
+  .week-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .week-bar .bar{width:14px;border-radius:6px 6px 3px 3px;background:var(--surface-2);}
+  .week-bar .bar.on{background:var(--herb);}
+  .week-bar .lbl{font-size:10px;color:var(--muted);}
+
+  /* ---------- profile ---------- */
+  .profile-field{margin-bottom:16px;}
+  .profile-field label{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .profile-field input{width:100%;background:var(--surface);border:1px solid rgba(242,233,216,0.1);color:var(--rice);padding:12px 14px;border-radius:12px;font-size:14px;font-family:inherit;}
+  .danger-btn{width:100%;background:var(--vermillion-dim);color:var(--rice);border:none;padding:13px;border-radius:12px;font-weight:700;font-size:13.5px;margin-top:10px;}
+
+  /* ---------- modal ---------- */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(10,20,17,0.75);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:20px;overflow-y:auto;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--bg-elev);border-radius:24px;max-width:400px;width:100%;padding:20px;margin:10px 0 40px;border:1px solid rgba(242,233,216,0.08);}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .modal-head h3{margin:0;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;}
+  .close-x{background:var(--surface);border:none;color:var(--rice);font-size:16px;width:32px;height:32px;border-radius:50%;}
+
+  .hero-card{
+    background:linear-gradient(135deg, var(--gold), #b98423);
+    border-radius:18px;padding:18px;color:var(--ink);margin-bottom:18px;
+  }
+  .hero-card h2{margin:0 0 4px;font-size:21px;font-weight:800;line-height:1.25;}
+  .hero-card p.eng{margin:0 0 14px;font-size:14px;opacity:.85;font-weight:600;}
+  .hear-btn{background:var(--ink);color:var(--rice);border:none;padding:10px 16px;border-radius:12px;font-weight:700;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;}
+  .save-btn-sm{background:rgba(18,36,31,0.12);color:var(--ink);border:none;padding:10px 14px;border-radius:12px;font-weight:700;font-size:12.5px;margin-left:8px;}
+
+  .step-block{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid rgba(242,233,216,0.06);}
+  .step-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;}
+  .step-num{
+    flex-shrink:0;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:13px;color:var(--ink);
+  }
+  .step-num.n1{background:var(--gold);}
+  .step-num.n2{background:var(--pink);}
+  .step-num.n3{background:var(--sky);}
+  .step-title{margin:0;font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+  .step-desc{margin:2px 0 0;font-size:12px;color:var(--muted);}
+
+  .accent-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border-radius:12px;padding:10px 12px;font-size:12.5px;}
+  .accent-toggle{display:flex;background:var(--bg-elev);border-radius:8px;overflow:hidden;}
+  .accent-toggle button{border:none;background:none;color:var(--muted);font-size:11.5px;font-weight:800;padding:6px 12px;}
+  .accent-toggle button.active{background:var(--gold);color:var(--ink);}
+
+  .mic-btn{
+    display:flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:50%;
+    background:var(--pink);border:none;color:var(--ink);font-size:26px;margin:6px auto 10px;
+  }
+  .mic-wrap{text-align:center;}
+  .mic-hint{font-size:12px;color:var(--muted);margin:0 0 10px;min-height:16px;}
+  .skip-link{display:block;margin:0 auto;background:none;border:none;color:var(--gold);font-size:12.5px;font-weight:700;text-decoration:underline;}
+
+  .compare-row{display:flex;align-items:stretch;gap:8px;margin-bottom:10px;}
+  .compare-cell{
+    flex:1;background:var(--sky);color:var(--ink);border-radius:12px;padding:12px;text-align:left;border:none;
+  }
+  .compare-cell .cv{font-weight:800;font-size:14.5px;margin:0 0 2px;display:flex;justify-content:space-between;align-items:center;gap:6px;}
+  .compare-cell .ce{font-size:11.5px;opacity:.8;margin:0;}
+  .vs-lbl{align-self:center;font-size:11px;font-weight:800;color:var(--muted);}
+
+  .vocab-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .vocab-card{background:var(--bg-elev);border:1px solid rgba(242,233,216,0.08);border-radius:12px;padding:12px;text-align:left;}
+  .vocab-card .vv{font-weight:800;font-size:13.5px;margin:0 0 2px;display:flex;justify-content:space-between;align-items:center;gap:4px;}
+  .vocab-card .ve{font-size:11px;color:var(--muted);margin:0;}
+  .mini-speak{background:none;border:none;color:var(--gold);font-size:14px;flex-shrink:0;}
+  .mini-save{background:none;border:none;color:var(--herb);font-size:13px;flex-shrink:0;}
+
+  .mark-complete-btn{
+    width:100%;background:var(--vermillion);color:var(--rice);border:none;padding:16px;border-radius:14px;
+    font-weight:800;font-size:14px;letter-spacing:.04em;margin-top:6px;
+  }
+  .mark-complete-btn:disabled{opacity:.6;}
+
+  /* ---------- full-screen step overlay ---------- */
+  .step-overlay{position:absolute;inset:0;background:var(--bg-elev);z-index:60;display:none;flex-direction:column;border-radius:34px;overflow:hidden;}
+  .step-overlay.open{display:flex;}
+  .step-topbar{display:flex;align-items:center;gap:12px;padding:20px 18px 14px;flex-shrink:0;}
+  .step-close{background:var(--surface);border:none;color:var(--rice);width:36px;height:36px;border-radius:11px;font-size:16px;flex-shrink:0;}
+  .step-progress{flex:1;display:flex;gap:4px;}
+  .step-progress .seg{flex:1;height:7px;border-radius:4px;background:var(--surface-2);}
+  .step-progress .seg.filled{background:var(--vermillion);}
+  .step-accent-toggle{display:flex;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid rgba(242,233,216,.08);flex-shrink:0;}
+  .step-accent-toggle button{border:none;background:none;color:var(--muted);font-weight:800;font-size:11.5px;padding:8px 12px;}
+  .step-accent-toggle button.active{background:var(--gold);color:var(--ink);}
+  .step-body{flex:1;overflow-y:auto;padding:8px 20px 10px;display:flex;flex-direction:column;}
+  .step-footer{padding:12px 20px calc(14px + env(safe-area-inset-bottom,0));flex-shrink:0;}
+
+  .mission-box{background:var(--gold);color:var(--ink);border-radius:16px;padding:18px;margin-top:auto;}
+  .mission-box .lab{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.65;margin:0 0 8px;}
+  .mission-box p.big{font-size:17px;font-weight:800;line-height:1.35;margin:0;}
+  .mission-title{display:flex;align-items:center;gap:10px;margin:20px 0 auto;}
+  .mission-img{width:100%;aspect-ratio:4/3;border-radius:16px;overflow:hidden;margin-bottom:16px;}
+  .mission-img img{width:100%;height:100%;object-fit:cover;display:block;}
+  .mission-title h2{font-size:22px;font-weight:800;margin:0;}
+  .speak-icon-btn{background:var(--gold);color:var(--ink);border:none;width:38px;height:38px;border-radius:10px;font-size:15px;flex-shrink:0;}
+
+  .culture-card{background:var(--surface);border-radius:18px;padding:16px;border:1px solid rgba(242,233,216,0.07);}
+  .culture-card .img-ph{width:100%;height:150px;border-radius:12px;background:linear-gradient(135deg, var(--surface-2), var(--bg-elev));display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:14px;object-fit:cover;}
+  .culture-card h2{font-size:19px;font-weight:800;margin:0 0 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .culture-card p{font-size:14px;line-height:1.55;color:var(--rice-dim);margin:0;}
+
+  .vocab-list-item{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border:1px solid rgba(242,233,216,0.06);}
+  .vocab-list-item .vv{font-size:17px;font-weight:800;color:var(--vermillion);margin:0 0 4px;line-height:1.3;}
+  .vocab-list-item .ve{font-size:12.5px;color:var(--muted);font-style:italic;margin:0;}
+  .vocab-list-btns{display:flex;gap:6px;flex-shrink:0;}
+
+  .say-it-wrap{margin:auto 0;text-align:center;}
+  .say-it-wrap .save-icon{background:var(--surface);border:none;color:var(--rice);width:40px;height:40px;border-radius:10px;font-size:16px;margin-bottom:14px;}
+  .say-it-wrap .speak-icon{display:block;margin:0 auto 18px;background:var(--gold);color:var(--ink);border:none;width:44px;height:44px;border-radius:12px;font-size:17px;}
+  .say-it-wrap h2{font-size:26px;font-weight:800;color:var(--vermillion);margin:0 0 10px;line-height:1.3;}
+  .say-it-wrap .eng{font-size:15px;color:var(--muted);font-style:italic;margin:0 0 30px;}
+  .big-mic{width:110px;height:110px;border-radius:50%;background:var(--pink);border:none;color:var(--ink);font-size:38px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;}
+  .say-it-wrap .hint{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--muted);margin:0 0 22px;}
+
+  .quiz-label{display:flex;align-items:center;gap:8px;color:var(--vermillion);font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;margin:6px 0 14px;}
+  .quiz-q{font-size:20px;font-weight:800;line-height:1.35;margin:0 0 20px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .quiz-option{width:100%;text-align:left;background:var(--surface);border:2px solid rgba(242,233,216,0.08);border-radius:14px;padding:15px 16px;font-size:14.5px;font-weight:600;margin-bottom:12px;color:var(--rice);}
+  .quiz-option.correct{background:var(--herb);border-color:var(--herb);color:var(--ink);}
+  .quiz-option.wrong{background:var(--vermillion-dim);border-color:var(--vermillion-dim);}
+  .quiz-option:disabled{opacity:.75;}
+
+  .footer-btn{width:100%;background:var(--vermillion);color:var(--rice);border:none;padding:16px;border-radius:14px;font-weight:800;font-size:14px;letter-spacing:.04em;}
+  .footer-skip{display:block;margin:0 auto;background:none;border:none;color:var(--gold);font-size:12.5px;font-weight:700;text-decoration:underline;}
+
+  @media (max-width:380px){ .pack-grid{grid-template-columns:1fr 1fr;} }
+
+  /* ---------- worlds tab ---------- */
+  .world-chip-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;}
+  .world-chip{flex-shrink:0;background:var(--surface);border:2px solid transparent;border-radius:14px;padding:12px 14px;text-align:left;min-width:108px;}
+  .world-chip.active{border-color:var(--gold);background:var(--surface-2);}
+  .world-chip .wc-icon{font-size:20px;display:block;margin-bottom:4px;}
+  .world-chip .wc-title{font-size:11.5px;font-weight:800;line-height:1.25;}
+  .world-tagline{color:var(--muted);font-size:13px;margin:0 0 18px;}
+
+  .world-section{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid rgba(242,233,216,0.06);}
+  .world-section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;}
+  .ws-title{font-size:14px;font-weight:800;margin:0 0 2px;}
+  .ws-sub{font-size:11.5px;color:var(--muted);margin:0;}
+  .ws-go{background:var(--gold);color:var(--ink);border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:12.5px;flex-shrink:0;}
+
+  .persona-card{width:100%;text-align:left;background:var(--bg-elev);border:1px solid rgba(242,233,216,0.08);border-radius:12px;padding:12px;margin-top:10px;display:flex;gap:10px;align-items:center;}
+  .persona-card .p-icon{font-size:22px;flex-shrink:0;}
+  .persona-card .p-name{font-size:13px;font-weight:800;margin:0 0 2px;display:flex;align-items:center;gap:6px;}
+  .persona-card .p-line{font-size:11.5px;color:var(--muted);margin:0;}
+  .persona-card .p-done{background:var(--herb);color:var(--ink);font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;}
+
+  .sos-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(242,233,216,0.06);}
+  .sos-item:last-child{border-bottom:none;}
+  .sos-item .sv{font-size:13.5px;font-weight:700;color:var(--gold);margin:0 0 2px;}
+  .sos-item .se{font-size:11.5px;color:var(--muted);margin:0;}
+
+  /* ---------- chat boss overlay ---------- */
+  .chat-msg{max-width:84%;padding:11px 14px;border-radius:14px;margin-bottom:10px;font-size:13.5px;line-height:1.4;}
+  .chat-msg.them{background:var(--surface);align-self:flex-start;border-bottom-left-radius:4px;}
+  .chat-msg.you{background:var(--gold);color:var(--ink);align-self:flex-end;border-bottom-right-radius:4px;text-align:right;}
+  .chat-msg .cm-row{display:flex;align-items:center;gap:8px;}
+  .chat-msg.you .cm-row{flex-direction:row-reverse;}
+  .chat-msg .cm-speak{background:none;border:none;font-size:14px;flex-shrink:0;opacity:.75;color:inherit;}
+  .chat-msg .cm-e{font-size:11px;opacity:.7;margin:3px 0 0;font-style:italic;}
+  .chat-msg .cm-feedback{font-size:10.5px;font-weight:800;margin-top:4px;}
+  .chat-tip{align-self:center;max-width:92%;text-align:center;margin:2px 0 12px;font-size:12px;color:var(--gold);}
+  .chat-tip-x{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--vermillion);color:var(--rice);font-size:10px;margin-right:4px;}
+  .chat-tip p{margin:4px 0 0;line-height:1.5;color:var(--gold);opacity:.9;}
+  .chat-body-flex{display:flex;flex-direction:column;flex:1;}
+  .chat-reply-btn{width:100%;text-align:left;background:var(--surface);border:2px solid rgba(242,233,216,0.08);border-radius:12px;padding:13px 14px;font-size:13.5px;font-weight:600;margin-bottom:10px;}
+  .chat-reply-e{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;}
+  .chat-done-box{text-align:center;padding:30px 10px;margin-top:auto;}
+  .chat-done-box .emoji{font-size:38px;margin-bottom:10px;}
+
+  /* ---------- swipe overlay ---------- */
+  .swipe-counts{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);}
+  .srs-badge{font-size:10px;font-weight:800;letter-spacing:.05em;padding:3px 8px;border-radius:6px;}
+  .srs-badge.new{background:var(--sky);color:var(--ink);}
+  .srs-badge.due{background:var(--gold);color:var(--ink);}
+  .swipe-card{background:var(--surface);border-radius:20px;padding:32px 22px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:16px;cursor:pointer;border:1px solid rgba(242,233,216,0.07);overflow-y:auto;}
+  .swipe-card .sc-eng{font-size:19px;font-weight:800;line-height:1.35;}
+  .swipe-card .sc-viet{font-size:20px;font-weight:800;color:var(--gold);display:none;line-height:1.3;}
+  .swipe-card .sc-pron{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;display:none;}
+  .swipe-card.flipped .sc-eng{display:none;}
+  .swipe-card.flipped .sc-viet, .swipe-card.flipped .sc-pron{display:block;}
+  .swipe-card .sc-hint{font-size:11px;color:var(--muted);margin-top:6px;}
+  .sc-notes{display:none;width:100%;text-align:left;border-top:1px solid rgba(242,233,216,0.1);margin-top:14px;padding-top:14px;}
+  .swipe-card.flipped .sc-notes{display:block;}
+  .sc-note{margin-bottom:14px;}
+  .sc-note:last-child{margin-bottom:0;}
+  .sc-note.italic .sn-v{font-style:italic;}
+  .sc-note .sn-v{font-size:13.5px;font-weight:700;color:var(--rice);margin:0 0 3px;line-height:1.4;}
+  .sc-note .sn-e{font-size:11.5px;color:var(--muted);margin:0;line-height:1.45;}
+  .srs-actions{display:flex;gap:8px;}
+  .srs-actions.disabled{opacity:.35;pointer-events:none;}
+  .srs-btn{flex:1;padding:12px 4px;border-radius:14px;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .srs-btn .sb-label{font-weight:800;font-size:12px;}
+  .srs-btn .sb-time{font-size:10px;font-family:'IBM Plex Mono',monospace;opacity:.85;}
+  .srs-btn.again{background:var(--vermillion-dim);color:var(--rice);}
+  .srs-btn.hard{background:#8a5a1f;color:var(--rice);}
+  .srs-btn.good{background:var(--herb);color:var(--ink);}
+  .srs-btn.easy{background:var(--sky);color:var(--ink);}
+  .swipe-summary{text-align:center;margin:auto 0;}
+  .swipe-summary .emoji{font-size:40px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <header class="appbar">
+    <div class="brand">
+      <div class="flag">🇻🇳</div>
+      <h1>XinChào</h1>
+    </div>
+    <div class="streak" id="streakPill">🌀 0</div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="view active" id="view-home">
+      <div class="banner" id="homeBanner">
+        <h2>Welcome back</h2>
+        <p>Pick up where you left off, or dive into a Survival pack.</p>
+        <button onclick="goToNextLesson()">CONTINUE LEARNING</button>
+      </div>
+
+      <button class="core-banner" onclick="startCoreSwipe()">
+        <div class="core-banner-text">
+          <p class="cb-eyebrow">🔥 Start here</p>
+          <p class="cb-title">The 40 most common spoken phrases</p>
+          <p class="cb-sub" id="coreDueSub">Learn these first — they cover most of what you'll actually say.</p>
+        </div>
+        <span class="cb-arrow">→</span>
+      </button>
+
+      <p class="eyebrow">Quick tools</p>
+      <div class="tools-grid">
+        <button class="tool-card" onclick="openTool('currency')" style="text-align:left;color:inherit;border:1px solid rgba(242,233,216,0.06);">
+          <div class="tool-icon">💵</div><h3>Currency</h3>
+        </button>
+        <button class="tool-card" onclick="openTool('culture')" style="text-align:left;color:inherit;border:1px solid rgba(242,233,216,0.06);">
+          <div class="tool-icon">🏮</div><h3>Culture tip</h3>
+        </button>
+      </div>
+
+      <p class="section-title">Survival packs</p>
+      <p class="section-sub">Real scenarios — food, taxis, markets.</p>
+      <div class="chip-row" id="packFilters">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="active">Active</button>
+        <button class="chip" data-filter="done">Done</button>
+      </div>
+      <div class="pack-grid" id="packGrid"></div>
+    </section>
+
+    <!-- FOUNDATIONS -->
+    <section class="view" id="view-foundations">
+      <div class="banner" id="foundBanner" style="background:linear-gradient(135deg, var(--gold), #b98423);">
+        <h2 id="foundBannerTitle">Keep going</h2>
+        <p id="foundBannerSub">Work through each level in order to build a real foundation.</p>
+      </div>
+      <div class="level-row" id="levelRow"></div>
+      <p class="section-title" id="levelTitle"></p>
+      <p class="section-sub" id="levelDesc"></p>
+      <div class="route" id="lessonRoute"></div>
+    </section>
+
+    <!-- POCKET -->
+    <section class="view" id="view-pocket">
+      <p class="eyebrow">Your pocket</p>
+      <p class="section-title" style="margin-top:0;">Saved phrases</p>
+      <p class="section-sub">Everything you've bookmarked while studying.</p>
+      <div id="pocketList"></div>
+    </section>
+
+    <!-- STATS -->
+    <section class="view" id="view-stats">
+      <p class="eyebrow">Progress</p>
+      <p class="section-title" style="margin-top:0;">Your stats</p>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="statStreak">0</div><div class="lab">Day streak</div></div>
+        <div class="stat-box"><div class="num" id="statXp">0</div><div class="lab">Total XP</div></div>
+        <div class="stat-box"><div class="num" id="statLessons">0</div><div class="lab">Lessons done</div></div>
+        <div class="stat-box"><div class="num" id="statPhrases">0</div><div class="lab">Phrases saved</div></div>
+      </div>
+      <p class="section-title">This week</p>
+      <div class="week-chart" id="weekChart"></div>
+    </section>
+
+    <!-- WORLDS -->
+    <section class="view" id="view-worlds">
+      <p class="eyebrow">Find your Vietnamese</p>
+      <p class="section-title" style="margin-top:0;">Pick your world</p>
+      <p class="section-sub">Learn the Vietnamese for your world, not a textbook's.</p>
+      <div class="world-chip-row" id="worldChipRow"></div>
+      <p class="world-tagline" id="worldTagline"></p>
+
+      <div class="world-section">
+        <div class="world-section-head">
+          <div><p class="ws-title">🔀 Swipe Learn</p><p class="ws-sub">Quick-fire flashcards for this world.</p></div>
+          <button class="ws-go" id="swipeGoBtn" onclick="startSwipe()">Start</button>
+        </div>
+      </div>
+
+      <div class="world-section">
+        <div class="world-section-head">
+          <div><p class="ws-title">💬 Chat Boss</p><p class="ws-sub">Roleplay real conversations, pick your reply.</p></div>
+        </div>
+        <div id="chatPersonaList"></div>
+      </div>
+
+      <div class="world-section">
+        <div class="world-section-head">
+          <div><p class="ws-title">🆘 SOS Phrasebook</p><p class="ws-sub">The essentials for this world, always one tap away.</p></div>
+        </div>
+        <div id="sosList"></div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="view" id="view-profile">
+      <p class="eyebrow">Profile</p>
+      <p class="section-title" style="margin-top:0;">Your setup</p>
+      <div class="profile-field">
+        <label>Name</label>
+        <input type="text" id="profileName" placeholder="What should we call you?" oninput="updateName(this.value)" />
+      </div>
+      <div class="profile-field">
+        <label>Daily goal (phrases)</label>
+        <input type="number" id="profileGoal" min="1" max="50" oninput="updateGoal(this.value)" />
+      </div>
+      <p class="section-title">Data</p>
+      <p class="section-sub">Your progress is saved right in this browser.</p>
+      <button class="danger-btn" onclick="resetProgress()">Reset all progress</button>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-view="home" onclick="switchView('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      HOME
+    </button>
+    <button class="tab-btn" data-view="foundations" onclick="switchView('foundations')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V6a2 2 0 012-2h5v16"/><path d="M20 19V6a2 2 0 00-2-2h-5v16"/></svg>
+      FOUNDATIONS
+    </button>
+    <button class="tab-btn" data-view="worlds" onclick="switchView('worlds')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z"/></svg>
+      WORLDS
+    </button>
+    <button class="tab-btn" data-view="pocket" onclick="switchView('pocket')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M9 4v8l3-2 3 2V4"/></svg>
+      POCKET
+    </button>
+    <button class="tab-btn" data-view="stats" onclick="switchView('stats')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg>
+      STATS
+    </button>
+    <button class="tab-btn" data-view="profile" onclick="switchView('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      PROFILE
+    </button>
+  </nav>
+</div>
+
+<!-- LESSON STEPPER (full screen) -->
+<div class="step-overlay" id="stepOverlay">
+  <div class="step-topbar">
+    <button class="step-close" onclick="closeModal()">✕</button>
+    <div class="step-progress" id="stepProgress"></div>
+    <div class="step-accent-toggle">
+      <button id="accHN" onclick="setAccent('HN')">HN</button>
+      <button id="accSG" onclick="setAccent('SG')">SG</button>
+    </div>
+  </div>
+  <div class="step-body" id="stepBody"></div>
+  <div class="step-footer" id="stepFooter"></div>
+</div>
+
+<!-- CHAT BOSS OVERLAY -->
+<div class="step-overlay" id="chatOverlay">
+  <div class="step-topbar">
+    <button class="step-close" onclick="closeChat()">✕</button>
+    <div style="flex:1;text-align:center;font-weight:800;font-size:13px;" id="chatHeaderTitle"></div>
+    <div style="width:36px;"></div>
+  </div>
+  <div class="step-body chat-body-flex" id="chatBody"></div>
+  <div class="step-footer" id="chatFooter"></div>
+</div>
+
+<!-- SWIPE LEARN OVERLAY -->
+<div class="step-overlay" id="swipeOverlay">
+  <div class="step-topbar">
+    <button class="step-close" onclick="closeSwipe()">✕</button>
+    <div style="flex:1;text-align:center;font-weight:800;font-size:13px;">Swipe Learn</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div class="step-body" id="swipeBody" style="display:flex;flex-direction:column;"></div>
+</div>
+
+<!-- TOOL MODAL -->
+<div class="modal-backdrop" id="toolBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="toolTitle">Tool</h3>
+      <button class="close-x" onclick="closeTool()">✕</button>
+    </div>
+    <div id="toolBody"></div>
+  </div>
+</div>
+
+<script>
+/* ========================= DATA ========================= */
+const LEVELS = [
+  { id:'A0', name:'Sound Base', desc:'Hear and produce core Vietnamese sounds, tones, and greetings.' },
+  { id:'A1', name:'Survival Core', desc:'Order food, name prices, and get where you\'re going.' },
+  { id:'A2', name:'Everyday Flow', desc:'Small talk, plans, and handling the unexpected.' },
+];
+
+const LESSONS = [
+  { id:'l1', level:'A0', title:'My Name Is', vietTitle:'Tên tôi là...', tag:'Greetings & introductions',
+    cards:[
+      {v:'Tên tôi là Peter.', p:'ten toy laa Peter', e:'My name is Peter.'},
+      {v:'Xin chào', p:'sin chow', e:'Hello'},
+      {v:'Bạn tên là gì?', p:'ban ten laa zee', e:'What is your name?'},
+      {v:'Rất vui được gặp bạn', p:'zuht voo-ee duh-uhk gap ban', e:'Nice to meet you'},
+      {v:'Tạm biệt', p:'tam bee-et', e:'Goodbye'},
+    ]},
+  { id:'l2', level:'A0', title:'Numbers 1 to 10', vietTitle:'Một đến mười', tag:'Counting basics',
+    cards:[
+      {v:'Một', p:'moht', e:'One'},{v:'Hai', p:'high', e:'Two'},{v:'Ba', p:'baa', e:'Three'},
+      {v:'Bốn', p:'bohn', e:'Four'},{v:'Năm', p:'nam', e:'Five'},{v:'Sáu', p:'sow', e:'Six'},
+      {v:'Bảy', p:'buy', e:'Seven'},{v:'Tám', p:'tam', e:'Eight'},{v:'Chín', p:'chin', e:'Nine'},{v:'Mười', p:'muh-uh-ee', e:'Ten'},
+    ]},
+  { id:'l3', level:'A0', title:'Yes, No & Polite Words', vietTitle:'Có, không, cảm ơn', tag:'Everyday manners',
+    cards:[
+      {v:'Dạ / Vâng', p:'yaa / vung', e:'Yes (polite)'},{v:'Không', p:'khom', e:'No'},
+      {v:'Cảm ơn', p:'gam uhn', e:'Thank you'},{v:'Xin lỗi', p:'sin loy', e:'Sorry / excuse me'},{v:'Làm ơn', p:'laam uhn', e:'Please'},
+    ]},
+  { id:'l4', level:'A0', title:'The Six Tones', vietTitle:'Sáu thanh điệu', tag:'Tone primer',
+    cards:[
+      {v:'ma', p:'level tone', e:'ghost'},{v:'má', p:'rising tone', e:'mother / cheek'},{v:'mà', p:'falling tone', e:'but'},
+      {v:'mả', p:'dipping-rising tone', e:'grave'},{v:'mã', p:'creaky-rising tone', e:'horse / code'},{v:'mạ', p:'heavy dropping tone', e:'rice seedling'},
+    ]},
+  { id:'l5', level:'A1', title:'Ordering Food Basics', vietTitle:'Gọi món ăn', tag:'At the table',
+    cards:[
+      {v:'Cho tôi một bát phở', p:'cho toy moht bat fuh', e:"I'd like a bowl of phở"},{v:'Không cay', p:'khom kai', e:'Not spicy'},
+      {v:'Thêm rau', p:'them zow', e:'More herbs / veggies'},{v:'Tính tiền', p:'ting tee-en', e:'The bill, please'},{v:'Ngon quá!', p:'ngon gwaa', e:'So delicious!'},
+    ]},
+  { id:'l6', level:'A1', title:'Asking Prices & Bargaining', vietTitle:'Hỏi giá và mặc cả', tag:'At the market',
+    cards:[
+      {v:'Cái này bao nhiêu tiền?', p:'kai nay bow nyew tee-en', e:'How much is this?'},{v:'Đắt quá', p:'dat gwaa', e:'Too expensive'},
+      {v:'Bớt chút được không?', p:'buht choot duh-uhk khom', e:'Can you lower it a bit?'},{v:'Rẻ hơn được không?', p:'zeh huhn duh-uhk khom', e:'Any cheaper?'},{v:'Được rồi', p:'duh-uhk zoy', e:'Deal / okay'},
+    ]},
+  { id:'l7', level:'A1', title:'Getting Around', vietTitle:'Di chuyển', tag:'Taxis & directions',
+    cards:[
+      {v:'Cho tôi đến...', p:'cho toy den', e:'Take me to...'},{v:'Bao xa?', p:'bow saa', e:'How far?'},
+      {v:'Dừng ở đây', p:'zung uh day', e:'Stop here'},{v:'Rẽ trái / Rẽ phải', p:'zeh chai / zeh fai', e:'Turn left / right'},{v:'Đi thẳng', p:'dee thang', e:'Go straight'},
+    ]},
+  { id:'l8', level:'A2', title:'Small Talk', vietTitle:'Nói chuyện phiếm', tag:'Breaking the ice',
+    cards:[
+      {v:'Bạn có khỏe không?', p:'ban co khweh khom', e:'How are you?'},{v:'Bạn đến từ đâu?', p:'ban den tuh dow', e:'Where are you from?'},
+      {v:'Tôi đến từ...', p:'toy den tuh', e:"I'm from..."},{v:'Ở đây đẹp quá', p:'uh day dep gwaa', e:"It's beautiful here"},{v:'Lần đầu tôi đến Việt Nam', p:'lun dow toy den viet nam', e:'First time in Vietnam'},
+    ]},
+  { id:'l9', level:'A2', title:'Making Plans', vietTitle:'Hẹn gặp', tag:'Meeting up',
+    cards:[
+      {v:'Mấy giờ gặp nhau?', p:'may zuh gap nyow', e:'What time shall we meet?'},{v:'Hẹn gặp lúc 7 giờ', p:'hen gap loop bay zuh', e:"Let's meet at 7"},
+      {v:'Mình đi đâu?', p:'meeng dee dow', e:'Where shall we go?'},{v:'Tôi rảnh tối nay', p:'toy zaang toy nay', e:"I'm free tonight"},{v:'Hẹn gặp lần sau', p:'hen gap lun sow', e:'See you next time'},
+    ]},
+  { id:'l10', level:'A2', title:'Emergencies & Help', vietTitle:'Trường hợp khẩn cấp', tag:'Staying safe',
+    cards:[
+      {v:'Giúp tôi với!', p:'zoop toy vuh-ee', e:'Help me!'},{v:'Gọi bác sĩ', p:'goy bak see', e:'Call a doctor'},
+      {v:'Tôi bị lạc', p:'toy bee lak', e:"I'm lost"},{v:'Đồn công an ở đâu?', p:'don kong an uh dow', e:'Where is the police station?'},{v:'Tôi cần giúp đỡ', p:'toy kun zoop duh', e:'I need help'},
+    ]},
+];
+
+const PACKS = [
+  { id:'p1', icon:'🛬', img:'images/p1.jpg', title:'Airport Taxi Scams', tag:'Safety', color:'stool-red', cards:[
+    {v:'Tôi chỉ đi taxi có đồng hồ', p:'toy chee dee tak-see co dong ho', e:'I only take metered taxis'},
+    {v:'Bao nhiêu km đến trung tâm?', p:'bow nyew km den choong tum', e:'How many km to downtown?'},
+    {v:'Tôi đã đặt xe rồi', p:'toy da dat seh zoy', e:'I already booked a ride'}]},
+  { id:'p2', icon:'🛵', img:'images/p2.jpg', title:'Mastering Grab Rides', tag:'Transport', color:'stool-blue', cards:[
+    {v:'Tài xế đang ở đâu?', p:'tai seh dang uh dow', e:'Where is the driver?'},
+    {v:'Tôi huỷ chuyến này', p:'toy hwee chwee-en nay', e:"I'm cancelling this trip"},
+    {v:'Đánh giá 5 sao', p:'dayng zaa nam sow', e:'Five star rating'}]},
+  { id:'p3', icon:'📶', title:'Airport SIM Card Safety', tag:'Safety', color:'stool-red', cards:[
+    {v:'Tôi muốn mua sim chính hãng', p:'toy moo-uhn moo-a sim cheeng hang', e:'I want an official SIM'},
+    {v:'Có hoá đơn không?', p:'co hwaa duhn khom', e:'Is there a receipt?'},
+    {v:'Giá này đã bao gồm data chưa?', p:'zaa nay da bow gom data chuh-a', e:'Does this include data?'}]},
+  { id:'p4', icon:'🚏', title:'Finding Transport Hubs', tag:'Transport', color:'stool-blue', cards:[
+    {v:'Bến xe buýt ở đâu?', p:'ben seh bweet uh dow', e:"Where's the bus station?"},
+    {v:'Ga tàu gần nhất', p:'gaa tow gun nyut', e:'Nearest train station'},
+    {v:'Lối ra là ở đâu?', p:'loy zaa laa uh dow', e:"Where's the exit?"}]},
+  { id:'p5', icon:'🏨', title:'Avoiding Hotel and Taxi Scams', tag:'Safety', color:'stool-red', cards:[
+    {v:'Giá này đã gồm thuế chưa?', p:'zaa nay da gom tweh chuh-a', e:'Does this price include tax?'},
+    {v:'Tôi có đặt phòng trước rồi', p:'toy co dat fong chuh-uhk zoy', e:'I already have a reservation'},
+    {v:'Cho tôi xem giá trên đồng hồ', p:'cho toy sem zaa chen dong ho', e:'Show me the meter price'}]},
+  { id:'p6', icon:'🚇', title:'HCM Metro', tag:'Transport', color:'stool-blue', cards:[
+    {v:'Vé một lượt bao nhiêu?', p:'veh moht luh-uht bow nyew', e:'How much is a single ticket?'},
+    {v:'Ga tiếp theo là ga nào?', p:'gaa tee-ep teh-o laa gaa now', e:"What's the next station?"},
+    {v:'Cửa soát vé ở đâu?', p:'kuh-a swat veh uh dow', e:'Where are the ticket gates?'}]},
+  { id:'p7', icon:'🛺', title:'Calling a Grab', tag:'Transport', color:'stool-blue', cards:[
+    {v:'Xe tôi đặt đâu rồi?', p:'seh toy dat dow zoy', e:"Where's my ride?"},
+    {v:'Tôi đứng ở cổng chính', p:'toy dung uh gong cheeng', e:"I'm standing at the main gate"},
+    {v:'Cho tôi 2 phút', p:'cho toy hai foot', e:'Give me 2 minutes'}]},
+  { id:'p8', icon:'🗣️', title:'Handling Language Barriers', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Bạn nói tiếng Anh được không?', p:'ban noy tee-eng ayng duh-uhk khom', e:'Can you speak English?'},
+    {v:'Tôi không hiểu', p:'toy khom hee-eu', e:"I don't understand"},
+    {v:'Viết giúp tôi được không?', p:'vee-et zoop toy duh-uhk khom', e:'Could you write it down?'}]},
+  { id:'p9', icon:'🍜', title:'Ordering Local Favorites', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Quán này có món gì ngon?', p:'gwan nay co mon zee ngon', e:"What's good here?"},
+    {v:'Cho tôi món đặc biệt', p:'cho toy mon dak bee-et', e:'The specialty please'},
+    {v:'Cay vừa thôi', p:'kai vuh-a toy', e:'Medium spicy'}]},
+  { id:'p10', icon:'📱', title:'The Language App Illusion', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Đợi tôi kiểm tra trên điện thoại', p:'duh-ee toy kee-em chaa chen dee-en twai', e:'Let me check on my phone'},
+    {v:'Ý tôi là...', p:'ee toy laa', e:'I mean...'},
+    {v:'Cái này dịch đúng không?', p:'kai nay zeek doong khom', e:'Is this translated correctly?'}]},
+  { id:'p11', icon:'🙏', title:'Polite Street Greetings', tag:'Culture', color:'stool-blue', cards:[
+    {v:'Chào cô / chú', p:'chow co / choo', e:'Hello auntie / uncle'},
+    {v:'Cảm ơn nhiều ạ', p:'gam uhn nyew a', e:'Thank you very much'},
+    {v:'Dạ vâng ạ', p:'ya vung a', e:'Polite yes'}]},
+  { id:'p12', icon:'🔢', title:'Survival Counting: 1 to 10', tag:'Basics', color:'stool-blue', cards:[
+    {v:'Một, hai, ba', p:'moht high baa', e:'One, two, three'},
+    {v:'Mười nghìn đồng', p:'muh-uh-ee ngeen dong', e:'Ten thousand đồng'},
+    {v:'Bao nhiêu cái?', p:'bow nyew kai', e:'How many?'}]},
+  { id:'p13', icon:'🔧', title:'Helpers & Maintenance', tag:'Home', color:'stool-red', cards:[
+    {v:'Máy lạnh bị hỏng', p:'my laang bee hong', e:'The AC is broken'},
+    {v:'Anh sửa được không?', p:'ayng suh-a duh-uhk khom', e:'Can you fix it?'},
+    {v:'Bao giờ xong?', p:'bow zuh song', e:'When will it be done?'}]},
+  { id:'p14', icon:'🚦', title:'Crossing the Street', tag:'Safety', color:'stool-red', cards:[
+    {v:'Đi chậm thôi', p:'dee cham toy', e:'Walk slowly'},
+    {v:'Nhìn xe máy', p:'nyeen seh my', e:'Watch for motorbikes'},
+    {v:'Qua đường cùng nhau', p:'gwaa duh-uhng coong nyow', e:'Cross together'}]},
+  { id:'p15', icon:'📇', title:'SIM Card Registration', tag:'Admin', color:'stool-blue', cards:[
+    {v:'Cho tôi xem hộ chiếu', p:'cho toy sem ho chee-eu', e:'Show my passport'},
+    {v:'Đăng ký sim ở đâu?', p:'dang kee sim uh dow', e:'Where do I register the SIM?'},
+    {v:'Số điện thoại của tôi là...', p:'soh dee-en twai coo-a toy laa', e:'My phone number is...'}]},
+  { id:'p16', icon:'🏦', title:'Opening a Local Account', tag:'Admin', color:'stool-blue', cards:[
+    {v:'Tôi muốn mở tài khoản', p:'toy moo-uhn muh tai kwan', e:'I want to open an account'},
+    {v:'Cần giấy tờ gì?', p:'kun zay tuh zee', e:'What documents are needed?'},
+    {v:'Phí hàng tháng là bao nhiêu?', p:'fee hang thang laa bow nyew', e:"What's the monthly fee?"}]},
+  { id:'p17', icon:'🍢', title:'Street Food Hacks', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Ngồi đâu cũng được', p:'ngoy dow coong duh-uhk', e:'Any seat is fine'},
+    {v:'Cho thêm chanh', p:'cho them chaang', e:'Add more lime'},
+    {v:'Ăn tại chỗ', p:'an tai cho', e:'Eat here'}]},
+  { id:'p18', icon:'💳', title:'Ordering & Paying', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Tính tiền giúp em', p:'ting tee-en zoop em', e:'Check please'},
+    {v:'Có thể trả bằng thẻ không?', p:'co the chaa bang teh khom', e:'Can I pay by card?'},
+    {v:'Có wifi không?', p:'co wifi khom', e:'Is there wifi?'}]},
+  { id:'p19', icon:'🗺️', title:'Southern Basics', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Dạ, con chào', p:'ya con chow', e:'Polite southern greeting'},
+    {v:'Hông sao đâu', p:'hom sow dow', e:'No worries (southern slang)'},
+    {v:'Ngon dữ luôn', p:'ngon zeh loo-uhn', e:'Really delicious (southern emphasis)'}]},
+  { id:'p20', icon:'🪖', title:'Road Safety', tag:'Safety', color:'stool-red', cards:[
+    {v:'Đội mũ bảo hiểm', p:'doy moo bow hee-em', e:'Wear a helmet'},
+    {v:'Đi đúng làn đường', p:'dee doong laan duh-uhng', e:'Stay in your lane'},
+    {v:'Bấm còi trước khi rẽ', p:'bum coy chuh-uhk kee zeh', e:'Honk before turning'}]},
+  { id:'p21', icon:'☕', title:'Cà Phê Sữa Đá', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Một cà phê sữa đá', p:'moht ga fe suh-a da', e:'One iced milk coffee'},
+    {v:'Ít đường thôi', p:'eet duh-uhng toy', e:'Less sugar please'},
+    {v:'Cho thêm đá', p:'cho them da', e:'More ice please'}]},
+  { id:'p22', icon:'🌆', title:'Nguyễn Huệ Walking Street', tag:'Explore', color:'stool-blue', cards:[
+    {v:'Phố đi bộ ở đâu?', p:'foh dee bo uh dow', e:"Where's the walking street?"},
+    {v:'Đông người quá', p:'dong nguh-uh-ee gwaa', e:'So crowded'},
+    {v:'Chụp ảnh giúp tôi được không?', p:'choop ang zoop toy duh-uhk khom', e:'Can you take a photo for me?'}]},
+  { id:'p23', icon:'🧊', title:'The Iced Coffee Order', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Cho tôi một ly cà phê đen đá', p:'cho toy moht lee ga fe den da', e:'One iced black coffee please'},
+    {v:'Không đường', p:'khom duh-uhng', e:'No sugar'},
+    {v:'Mang đi', p:'mang dee', e:'To go'}]},
+  { id:'p24', icon:'🎭', title:'Night at the Opera', tag:'Explore', color:'stool-blue', cards:[
+    {v:'Vé xem hôm nay còn không?', p:'veh sem hom nay con khom', e:'Any tickets left for tonight?'},
+    {v:'Bắt đầu lúc mấy giờ?', p:'but dow loop may zuh', e:'What time does it start?'},
+    {v:'Chỗ ngồi ở đâu?', p:'cho ngoy uh dow', e:'Where is my seat?'}]},
+  { id:'p25', icon:'🅿️', title:'The Parking Protocol', tag:'Transport', color:'stool-blue', cards:[
+    {v:'Gửi xe ở đâu?', p:'guh-ee seh uh dow', e:'Where do I park?'},
+    {v:'Bao nhiêu tiền giữ xe?', p:'bow nyew tee-en zuh seh', e:'How much for parking?'},
+    {v:'Cho tôi vé giữ xe', p:'cho toy veh zuh seh', e:'Give me the parking ticket'}]},
+  { id:'p26', icon:'🛠️', title:'Motorbike SOS Fix', tag:'Transport', color:'stool-red', cards:[
+    {v:'Xe tôi bị thủng lốp', p:'seh toy bee toong lohp', e:'My tire is flat'},
+    {v:'Sửa được không?', p:'suh-a duh-uhk khom', e:'Can you fix it?'},
+    {v:'Bao lâu thì xong?', p:'bow low tee song', e:'How long will it take?'}]},
+  { id:'p27', icon:'💼', title:'Office Slang Part 1: Workplace Basics', tag:'Work', color:'stool-blue', cards:[
+    {v:'Deadline là khi nào?', p:'deadline laa kee now', e:"When's the deadline?"},
+    {v:'Họp lúc mấy giờ?', p:'hop loop may zuh', e:"What time's the meeting?"},
+    {v:'Sếp đang bận', p:'sep dang bun', e:'The boss is busy'}]},
+  { id:'p28', icon:'🧋', title:'Hanging Out With Locals', tag:'Social', color:'stool-yellow', cards:[
+    {v:'Đi chơi không?', p:'dee chuh-ee khom', e:'Want to hang out?'},
+    {v:'Tối nay rảnh không?', p:'toy nay zaang khom', e:'Free tonight?'},
+    {v:'Đi đâu bây giờ?', p:'dee dow bay zuh', e:'Where to now?'}]},
+  { id:'p29', icon:'🍡', title:'Order Street Food', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Cho tôi một phần', p:'cho toy moht fun', e:'One portion please'},
+    {v:'Không hành', p:'khom hang', e:'No onions'},
+    {v:'Gói mang về', p:'goy mang veh', e:'Wrap it to go'}]},
+  { id:'p30', icon:'💊', title:'Pharmacy First Aid', tag:'Safety', color:'stool-red', cards:[
+    {v:'Tôi bị đau bụng', p:'toy bee dow boong', e:'My stomach hurts'},
+    {v:'Cho tôi thuốc đau đầu', p:'cho toy too-uhk dow dow', e:'Headache medicine please'},
+    {v:'Bao nhiêu viên một ngày?', p:'bow nyew vee-en moht ngay', e:'How many pills a day?'}]},
+  { id:'p31', icon:'🛂', title:'Lost Passport Protocol', tag:'Safety', color:'stool-red', cards:[
+    {v:'Tôi bị mất hộ chiếu', p:'toy bee mut ho chee-eu', e:'I lost my passport'},
+    {v:'Tôi cần báo cáo với công an', p:'toy kun bow cow vuh-ee kong an', e:'I need to report to the police'},
+    {v:'Đại sứ quán ở đâu?', p:'dai suh gwan uh dow', e:"Where's the embassy?"}]},
+  { id:'p32', icon:'🧾', title:'Ask For Bill', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Tính tiền giúp em', p:'ting tee-en zoop em', e:'Check please'},
+    {v:'Có thể trả bằng thẻ không?', p:'co the chaa bang teh khom', e:'Can I pay by card?'},
+    {v:'Cảm ơn, ngon lắm', p:'gam uhn ngon lam', e:'Thanks, that was delicious'}]},
+  { id:'p33', icon:'🏪', title:'Convenience Store Bites', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Hâm nóng giúp tôi', p:'hum nong zoop toy', e:'Please heat this up'},
+    {v:'Cho tôi một cái này', p:'cho toy moht kai nay', e:"I'll take one of these"},
+    {v:'Có túi không?', p:'co too-ee khom', e:'Do you have a bag?'}]},
+  { id:'p34', icon:'🍳', title:'Breakfast Combo Basics', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Bánh mì kèm gì?', p:'bang mee kem zee', e:'What comes with the bánh mì?'},
+    {v:'Cho thêm trứng', p:'cho them chung', e:'Add an egg'},
+    {v:'Một combo sáng', p:'moht combo sang', e:'One breakfast combo'}]},
+  { id:'p35', icon:'👞', title:'Street Shoe Shine', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Đánh giày giúp tôi', p:'dayng zay zoop toy', e:'Please shine my shoes'},
+    {v:'Bao nhiêu tiền?', p:'bow nyew tee-en', e:'How much?'},
+    {v:'Bao lâu xong?', p:'bow low song', e:'How long will it take?'}]},
+  { id:'p36', icon:'🏘️', title:'Exploring Alleys', tag:'Explore', color:'stool-blue', cards:[
+    {v:'Hẻm này đi đâu?', p:'hem nay dee dow', e:'Where does this alley lead?'},
+    {v:'Có lối ra không?', p:'co loy zaa khom', e:'Is there an exit?'},
+    {v:'Đường cụt hả?', p:'duh-uhng koot haa', e:'Is this a dead end?'}]},
+  { id:'p37', icon:'🧺', title:'Haggling Like a Local', tag:'Money', color:'stool-red', cards:[
+    {v:'Cho xem cái kia', p:'cho sem kai kee-a', e:'Show me that one'},
+    {v:'Giá tốt nhất là bao nhiêu?', p:'zaa toht nyut laa bow nyew', e:"What's your best price?"},
+    {v:'Có bớt được không?', p:'co buht duh-uhk khom', e:'Any discount?'}]},
+  { id:'p38', icon:'🏍️', title:"The 'Ninja Lead'", tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Chị mặc áo chống nắng đẹp quá', p:'chee mak ow chong nang dep gwaa', e:'Your sun-protection outfit looks great'},
+    {v:'Trời nắng quá', p:'chuh-uh-ee nang gwaa', e:"It's so sunny"},
+    {v:'Tôi cần khẩu trang', p:'toy kun kow chang', e:'I need a face mask'}]},
+  { id:'p39', icon:'🍵', title:"'Trà Đá' Culture", tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Cho tôi một ly trà đá', p:'cho toy moht lee chaa da', e:'One iced tea please'},
+    {v:'Miễn phí hay có tính tiền?', p:'mee-en fee hay co ting tee-en', e:'Free or does it cost?'},
+    {v:'Ngồi ghé chút được không?', p:'ngoy geh choot duh-uhk khom', e:'Can I sit for a bit?'}]},
+  { id:'p40', icon:'🍻', title:'Nhậu Culture', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Một trăm phần trăm!', p:'moht cham fun cham', e:'Bottoms up! (100%)'},
+    {v:'Cho thêm đá', p:'cho them da', e:'More ice please'},
+    {v:'Tôi uống được ít thôi', p:'toy oo-ohng duh-uhk eet toy', e:'I can only drink a little'}]},
+  { id:'p41', icon:'📚', title:'Saigon Book Street', tag:'Explore', color:'stool-blue', cards:[
+    {v:'Có sách tiếng Anh không?', p:'co sak tee-eng ayng khom', e:'Any English books?'},
+    {v:'Cho tôi xem quyển này', p:'cho toy sem gwee-en nay', e:'Let me see this one'},
+    {v:'Giá bìa là bao nhiêu?', p:'zaa bee-a laa bow nyew', e:"What's the cover price?"}]},
+  { id:'p42', icon:'💧', title:'Water Jug', tag:'Home', color:'stool-red', cards:[
+    {v:'Cho tôi một bình nước', p:'cho toy moht beeng nuh-uhk', e:'One water jug please'},
+    {v:'Giao tới nhà giúp tôi', p:'zow tuh-uh-ee nyaa zoop toy', e:'Please deliver to my house'},
+    {v:'Bình cũ đây', p:'beeng koo day', e:'Here is the empty jug'}]},
+  { id:'p43', icon:'🌧️', title:'Saigon Monsoon', tag:'Safety', color:'stool-red', cards:[
+    {v:'Trời sắp mưa rồi', p:'chuh-uh-ee sup muh-a zoy', e:"It's about to rain"},
+    {v:'Cho tôi mượn áo mưa', p:'cho toy muh-uhn ow muh-a', e:'Can I borrow a raincoat?'},
+    {v:'Đường bị ngập', p:'duh-uhng bee ngup', e:'The road is flooded'}]},
+  { id:'p44', icon:'💊', title:'Buying Medicine', tag:'Safety', color:'stool-red', cards:[
+    {v:'Tôi bị cảm', p:'toy bee gaam', e:'I have a cold'},
+    {v:'Cho tôi thuốc hạ sốt', p:'cho toy too-uhk haa soht', e:'Fever medicine please'},
+    {v:'Uống mấy lần một ngày?', p:'oo-ohng may lun moht ngay', e:'How many times a day?'}]},
+  { id:'p45', icon:'💍', title:'Wedding Guest Pro', tag:'Social', color:'stool-yellow', cards:[
+    {v:'Chúc mừng hạnh phúc!', p:'chook mung hang foop', e:'Congratulations on your marriage!'},
+    {v:'Bàn của tôi ở đâu?', p:'ban coo-a toy uh dow', e:'Where is my table?'},
+    {v:'Cảm ơn đã mời', p:'gam uhn da muh-ee', e:'Thank you for inviting me'}]},
+  { id:'p46', icon:'🥗', title:'Dietary Restrictions', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Tôi ăn chay', p:'toy an chai', e:"I'm vegetarian"},
+    {v:'Tôi bị dị ứng đậu phộng', p:'toy bee zee ung dow fong', e:"I'm allergic to peanuts"},
+    {v:'Không bỏ hành được không?', p:'khom bo hang duh-uhk khom', e:'Can you leave out onions?'}]},
+  { id:'p47', icon:'🧺', title:'Laundry Service 101', tag:'Home', color:'stool-red', cards:[
+    {v:'Giặt bao lâu xong?', p:'zut bow low song', e:'How long to wash?'},
+    {v:'Có ủi không?', p:'co oo-ee khom', e:'Do you iron too?'},
+    {v:'Bao nhiêu tiền một kí?', p:'bow nyew tee-en moht kee', e:'How much per kilo?'}]},
+  { id:'p48', icon:'🐌', title:'Snail Stall Survival', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Cho tôi một phần ốc', p:'cho toy moht fun ohk', e:'One portion of snails please'},
+    {v:'Cay được không?', p:'kai duh-uhk khom', e:'Can it be spicy?'},
+    {v:'Ngon quá, thêm phần nữa', p:'ngon gwaa them fun nuh-a', e:'So good, one more portion'}]},
+  { id:'p49', icon:'🧺', title:'Market Bargaining Skills', tag:'Money', color:'stool-red', cards:[
+    {v:'Cho xem cái kia', p:'cho sem kai kee-a', e:'Show me that one'},
+    {v:'Tôi mua hai cái', p:'toy moo-a hai kai', e:"I'll take two"},
+    {v:'Có bớt được không?', p:'co buht duh-uhk khom', e:'Any discount?'}]},
+  { id:'p50', icon:'🏚️', title:'Old Apartment Gems', tag:'Home', color:'stool-blue', cards:[
+    {v:'Thang máy ở đâu?', p:'thang my uh dow', e:"Where's the elevator?"},
+    {v:'Căn hộ ở tầng mấy?', p:'kaan ho uh tung may', e:'What floor is the apartment on?'},
+    {v:'Có ai ở đây không?', p:'co ai uh day khom', e:'Is anyone home?'}]},
+  { id:'p51', icon:'💆', title:'Herbal Hair Spa', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Tôi muốn gội đầu dưỡng sinh', p:'toy moo-uhn goy dow zuh-uhng sin', e:"I'd like an herbal hair wash"},
+    {v:'Nhẹ tay giúp tôi', p:'nyeh tai zoop toy', e:'Please be gentle'},
+    {v:'Thư giãn quá', p:'thuh zaan gwaa', e:'So relaxing'}]},
+  { id:'p52', icon:'🧵', title:'Street Side Tailor', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Sửa giúp tôi cái này', p:'suh-a zoop toy kai nay', e:'Please fix this for me'},
+    {v:'Bao giờ lấy được?', p:'bow zuh lay duh-uhk', e:'When can I pick it up?'},
+    {v:'Ngắn bớt một chút', p:'ngun buht moht choot', e:'Shorten it a bit'}]},
+  { id:'p53', icon:'🛒', title:'Modern Retail Checkout', tag:'Money', color:'stool-blue', cards:[
+    {v:'Quét mã QR ở đâu?', p:'gwet maa QR uh dow', e:'Where do I scan the QR code?'},
+    {v:'Có giảm giá không?', p:'co zam zaa khom', e:'Any discount?'},
+    {v:'Cho tôi hoá đơn', p:'cho toy hwaa duhn', e:'Receipt please'}]},
+  { id:'p54', icon:'📦', title:'The Hẻm Delivery', tag:'Transport', color:'stool-blue', cards:[
+    {v:'Giao đến hẻm này', p:'zow den hem nay', e:'Deliver to this alley'},
+    {v:'Gọi tôi khi tới nơi', p:'goy toy kee tuh-uh-ee nuh-uh-ee', e:'Call me when you arrive'},
+    {v:'Số nhà là...', p:'soh nyaa laa', e:'The house number is...'}]},
+  { id:'p55', icon:'🐢', title:'Turtle Lake Snacking', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Cho tôi một phần bò bía', p:'cho toy moht fun bo bee-a', e:'One portion of bò bía please'},
+    {v:'Ngồi đây được không?', p:'ngoy day duh-uhk khom', e:'Can I sit here?'},
+    {v:'Cho thêm tương ớt', p:'cho them tuh-uhng uht', e:'More chili sauce please'}]},
+  { id:'p56', icon:'🚤', title:'Saigon Waterbus', tag:'Transport', color:'stool-blue', cards:[
+    {v:'Vé một chiều bao nhiêu?', p:'veh moht chee-eu bow nyew', e:'How much for one way?'},
+    {v:'Bến tiếp theo là bến nào?', p:'ben tee-ep teh-o laa ben now', e:"What's the next stop?"},
+    {v:'Tàu chạy mấy giờ?', p:'tow chai may zuh', e:'What time does the boat run?'}]},
+  { id:'p57', icon:'🍡', title:'Street Food Mix', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Trộn tất cả vào đây', p:'chohn tut caa vow day', e:'Mix everything together'},
+    {v:'Không rau thơm', p:'khom zow thuhm', e:'No herbs'},
+    {v:'Ngon lắm luôn', p:'ngon lam loo-uhn', e:'Really delicious'}]},
+  { id:'p58', icon:'🌉', title:'Starlight Bridge Visit', tag:'Explore', color:'stool-blue', cards:[
+    {v:'Cầu này tên là gì?', p:'cow nay ten laa zee', e:"What's this bridge called?"},
+    {v:'Nhạc nước bắt đầu lúc mấy giờ?', p:'nyak nuh-uhk but dow loop may zuh', e:'What time does the water show start?'},
+    {v:'Đứng đây chụp đẹp không?', p:'dung day choop dep khom', e:'Is this a good photo spot?'}]},
+  { id:'p59', icon:'🥟', title:'Chợ Lớn Breakfast', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Quán này bán gì?', p:'gwan nay ban zee', e:'What does this place sell?'},
+    {v:'Cho tôi một phần há cảo', p:'cho toy moht fun haa cow', e:'One portion of dumplings please'},
+    {v:'Trà nóng giúp tôi', p:'chaa nong zoop toy', e:'Hot tea please'}]},
+  { id:'p60', icon:'⛩️', title:'Thien Hau Pagoda', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Tôi có thể vào không?', p:'toy co the vow khom', e:'May I go in?'},
+    {v:'Thắp nhang ở đâu?', p:'tup nyang uh dow', e:'Where do I light incense?'},
+    {v:'Cảm ơn, rất đẹp', p:'gam uhn zut dep', e:'Thank you, very beautiful'}]},
+  { id:'p61', icon:'🍮', title:'Sweet Soup Order', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Cho tôi một chè đậu xanh', p:'cho toy moht cheh dow sang', e:'One mung bean sweet soup please'},
+    {v:'Ít đường thôi', p:'eet duh-uhng toy', e:'Less sugar please'},
+    {v:'Thêm nước cốt dừa', p:'them nuh-uhk coht zuh-a', e:'Add coconut milk'}]},
+  { id:'p62', icon:'☕', title:'Morning Rush Orders', tag:'Food', color:'stool-yellow', cards:[
+    {v:'Cho tôi bánh mì và cà phê', p:'cho toy bang mee vaa ga fe', e:'Bánh mì and coffee please'},
+    {v:'Nhanh giúp tôi, tôi vội', p:'nyaang zoop toy toy voy', e:"Quickly please, I'm in a hurry"},
+    {v:'Mang đi giúp tôi', p:'mang dee zoop toy', e:'To go please'}]},
+  { id:'p63', icon:'💬', title:'Gen Z Vietnamese Slang', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Chill thôi', p:'chill toy', e:'Just relax'},
+    {v:'Xỉu up xỉu down', p:'see-oo oop see-oo down', e:'over-the-top reaction (slang)'},
+    {v:'Trôi nổi lỗ đen', p:'choy noy loh den', e:'spacing out (slang)'}]},
+  { id:'p64', icon:'💻', title:'Expat Daily Life', tag:'Work', color:'stool-blue', cards:[
+    {v:'Wifi ở đây mạnh không?', p:'wifi uh day mang khom', e:'Is the wifi strong here?'},
+    {v:'Tôi làm việc ở đây được không?', p:'toy laam vee-ek uh day duh-uhk khom', e:'Can I work here?'},
+    {v:'Có ổ cắm điện không?', p:'co oh cam dee-en khom', e:'Is there a power outlet?'}]},
+  { id:'p65', icon:'🏡', title:'Vietnamese Home Visit', tag:'Social', color:'stool-yellow', cards:[
+    {v:'Con xin phép vào nhà', p:'con sin fep vow nyaa', e:'May I come in'},
+    {v:'Đây là quà cho gia đình', p:'day laa gwaa cho zaa deeng', e:'This is a gift for the family'},
+    {v:'Cảm ơn đã mời con', p:'gam uhn da muh-ee con', e:'Thank you for inviting me'}]},
+  { id:'p66', icon:'🚔', title:'Traffic Stop Protocol', tag:'Safety', color:'stool-red', cards:[
+    {v:'Đây là bằng lái của tôi', p:'day laa bang lai coo-a toy', e:'This is my driver\'s license'},
+    {v:'Tôi đã làm gì sai?', p:'toy da laam zee sai', e:'What did I do wrong?'},
+    {v:'Cho tôi xem biên bản', p:'cho toy sem bee-en ban', e:'Show me the report'}]},
+  { id:'p67', icon:'🗺️', title:'North vs. South', tag:'Culture', color:'stool-yellow', cards:[
+    {v:'Người Bắc nói khác người Nam', p:'nguh-uh-ee buk noy khak nguh-uh-ee naam', e:'Northerners speak differently from Southerners'},
+    {v:'Ở đây gọi là gì?', p:'uh day goy laa zee', e:'What do you call this here?'},
+    {v:'Tuỳ vùng miền thôi', p:'twee voong mee-en toy', e:'It just depends on the region'}]},
+];
+
+const CULTURE_TIPS = [
+  "Plastic stools (đôn nhựa) come in red, blue, and yellow at nearly every street stall — sit anywhere, nobody minds.",
+  "Add 'ạ' to the end of a sentence when speaking to someone older — it's a small politeness marker that goes a long way.",
+  "Motorbikes rarely stop for pedestrians. Walk at a slow, steady pace and let traffic flow around you — don't dart.",
+  "Cà phê sữa đá (iced milk coffee) is sweetened with condensed milk, not sugar — order 'ít đường' for less sweetness.",
+  "Haggling is expected at markets, not at fixed-price shops or convenience stores — read the room.",
+  "Tipping isn't traditionally expected, but rounding up for good service is always appreciated.",
+];
+
+/* ========================= CORE PHRASES ========================= */
+// Ranked roughly by how often you'll actually reach for these in spoken,
+// everyday Vietnamese — greetings and polite words first, then the
+// question words and needs that make every other phrase possible.
+const CORE_PHRASES = [
+  {rank:1, v:'Xin chào', p:'sin chow', e:'Hello'},
+  {rank:2, v:'Cảm ơn', p:'gam uhn', e:'Thank you'},
+  {rank:3, v:'Không', p:'khom', e:'No'},
+  {rank:4, v:'Dạ / Vâng', p:'yaa / vung', e:'Yes (polite)'},
+  {rank:5, v:'Xin lỗi', p:'sin loy', e:'Sorry / excuse me'},
+  {rank:6, v:'Làm ơn', p:'laam uhn', e:'Please'},
+  {rank:7, v:'Tạm biệt', p:'tam bee-et', e:'Goodbye'},
+  {rank:8, v:'Được', p:'duh-uhk', e:"Okay / that works", note:[
+    {v:'"Được" đứng một mình nghĩa là đồng ý hoặc có thể làm được.', e:'On its own, "được" means "okay" or "that\'s doable" — one of the most useful single words in the language.'},
+    {v:'Không được — dùng để từ chối nhẹ nhàng.', e:'"Không được" is the equally common way to say something can\'t be done.', italic:true},
+  ]},
+  {rank:9, v:'Bao nhiêu tiền?', p:'bow nyew tee-en', e:'How much does it cost?'},
+  {rank:10, v:'Ở đâu?', p:'uh dow', e:'Where is it?'},
+  {rank:11, v:'Tôi không hiểu', p:'toy khom hee-eu', e:"I don't understand"},
+  {rank:12, v:'Bạn nói tiếng Anh được không?', p:'ban noy tee-eng ayng duh-uhk khom', e:'Do you speak English?'},
+  {rank:13, v:'Giúp tôi với!', p:'zoop toy vuh-ee', e:'Help me!'},
+  {rank:14, v:'Tôi muốn...', p:'toy moo-uhn', e:'I want...'},
+  {rank:15, v:'Cho tôi...', p:'cho toy', e:"Give me... / I'd like..."},
+  {rank:16, v:'Đi thẳng', p:'dee thang', e:'Go straight'},
+  {rank:17, v:'Rẽ trái / Rẽ phải', p:'zeh chai / zeh fai', e:'Turn left / right'},
+  {rank:18, v:'Gần đây', p:'gun day', e:'Nearby'},
+  {rank:19, v:'Xa không?', p:'saa khom', e:'Is it far?'},
+  {rank:20, v:'Mấy giờ?', p:'may zuh', e:'What time is it?'},
+  {rank:21, v:'Hôm nay', p:'hom nay', e:'Today'},
+  {rank:22, v:'Ngày mai', p:'ngay my', e:'Tomorrow'},
+  {rank:23, v:'Tên tôi là...', p:'ten toy laa', e:'My name is...'},
+  {rank:24, v:'Bạn tên là gì?', p:'ban ten laa zee', e:"What's your name?"},
+  {rank:25, v:'Rất vui được gặp bạn', p:'zuht voo-ee duh-uhk gap ban', e:'Nice to meet you'},
+  {rank:26, v:'Đắt quá', p:'dat gwaa', e:'Too expensive'},
+  {rank:27, v:'Bớt chút được không?', p:'buht choot duh-uhk khom', e:'Can you lower it a bit?', note:[
+    {v:'Câu này gần như bắt buộc khi mua sắm ở chợ.', e:"Almost a required phrase at any market stall — bargaining is expected, not rude."},
+  ]},
+  {rank:28, v:'Ngon quá!', p:'ngon gwaa', e:'So delicious!'},
+  {rank:29, v:'Không cay', p:'khom kai', e:'Not spicy'},
+  {rank:30, v:'Nước', p:'nuh-uhk', e:'Water'},
+  {rank:31, v:'Tính tiền', p:'ting tee-en', e:'The bill, please'},
+  {rank:32, v:'Thối lại nhé', p:'toh-ee lie nyeh', e:'Please give me my change', note:[
+    {v:'Luôn nói câu này khi đưa tờ tiền lớn — nếu không, người bán có thể quên thối lại.', e:"Always say this when handing over a large bill. In a busy market it's easy for a vendor to forget the change otherwise."},
+  ]},
+  {rank:33, v:'Chờ một chút', p:'chuh moht choot', e:'Wait a moment'},
+  {rank:34, v:'Tôi bị lạc', p:'toy bee lak', e:"I'm lost"},
+  {rank:35, v:'Nhà vệ sinh ở đâu?', p:'nyaa veh sin uh dow', e:"Where's the bathroom?"},
+  {rank:36, v:'Tôi cần...', p:'toy kun', e:'I need...'},
+  {rank:37, v:'Tôi ổn', p:'toy ohn', e:"I'm fine"},
+  {rank:38, v:'Từ từ thôi', p:'tuh tuh toy', e:'Take it slow / no rush'},
+  {rank:39, v:'Tôi suy nghĩ thêm', p:'toy swee ngee them', e:"I'll think about it", note:[
+    {v:'Tôi suy nghĩ thêm — cách từ chối lịch sự mà không nói không trực tiếp.', e:"A polite way to decline without saying \"no\" directly — very common when you don't want to buy something."},
+    {v:'Tôi suy nghĩ thêm nhé — cách rút lui duyên dáng khi không muốn mua.', e:'Adding "nhé" softens it even further — a graceful way to walk away from a sale.', italic:true},
+  ]},
+  {rank:40, v:'Đúng rồi', p:'doong zoy', e:"That's right"},
+];
+
+/* ========================= WORLDS ========================= */
+const WORLDS = [
+  { id:'everyday', icon:'🌏', title:'Everyday Vietnamese', tagline:"Real, daily conversations for travel, friends, and life here.", tags:['Basics','Culture','Admin','Home'] },
+  { id:'fnb', icon:'🍜', title:'Restaurant & F&B', tagline:"Take orders, describe dishes, connect with staff and suppliers.", tags:['Food'] },
+  { id:'dating', icon:'💬', title:'Dating & Social', tagline:"Break the ice, flirt naturally, keep the conversation alive.", tags:['Social'] },
+  { id:'travel', icon:'🧳', title:'Travel Vietnam', tagline:"Bargain at markets, book stays, order street food like a local.", tags:['Transport','Explore','Safety','Money'] },
+  { id:'factory', icon:'🏭', title:'Factory & Industrial', tagline:"Communicate clearly with workers, supervisors, and suppliers.", tags:['Work'] },
+];
+let currentWorldId = 'everyday';
+
+const CHAT_PERSONAS = {
+  everyday: [
+    { name:'Xe Ôm Driver', icon:'🛵', opener:{v:'Anh/chị đi đâu?', e:'Where are you headed?'}, turns:[
+      { youOptions:[{v:'Tôi đi chợ Bến Thành', e:"I'm going to Ben Thanh Market", correct:true},{v:'Tôi không biết', e:"I don't know", correct:false}], them:{v:'Ok, lên xe đi!', e:'Ok, hop on!'} },
+      { youOptions:[{v:'Cảm ơn anh nhiều', e:'Thank you so much', correct:true},{v:'Tôi không thích', e:"I don't like it", correct:false}], them:{v:'Không có gì, đi cẩn thận nhé!', e:"You're welcome, take care!"} },
+    ]},
+    { name:'Neighbor (Cô Ba)', icon:'🏠', opener:{v:'Chào con, dạo này khỏe không?', e:'Hello dear, how have you been?'}, turns:[
+      { youOptions:[{v:'Dạ, con khỏe, cảm ơn cô', e:"I'm well, thank you", correct:true},{v:'Con không biết cô là ai', e:"I don't know who you are", correct:false}], them:{v:'Vậy tốt rồi, ăn cơm chưa?', e:'Good — have you eaten yet?'} },
+      { youOptions:[{v:'Dạ, con ăn rồi ạ', e:"Yes, I've eaten", correct:true},{v:'Con đi ngủ đây', e:"I'm going to sleep", correct:false}], them:{v:'Rảnh thì ghé nhà cô chơi nhé', e:'Come visit when you have time'} },
+    ]},
+    { name:'Landlord', icon:'🔑', opener:{v:'Tiền nhà tháng này chưa đóng nhé.', e:"You haven't paid this month's rent yet."}, turns:[
+      { youOptions:[{v:'Dạ, con đóng tiền hôm nay', e:"I'll pay today", correct:true, tip:"Giving a clear plan is much better than saying you have no money — landlords respond well to specifics."},{v:'Con không có tiền', e:"I don't have money", correct:false, tip:"It's better to give a specific plan than to simply say you have no money — landlords respond better to a timeline."}], them:{v:'Được, chuyển khoản cho cô nhé', e:'Okay, transfer it to me then'} },
+      { youOptions:[{v:'Dạ, con chuyển ngay', e:"I'll transfer it right away", correct:true},{v:'Để mai con đóng', e:"I'll pay tomorrow", correct:false, tip:"Delaying without asking first can create friction — always confirm a new date is okay."}], them:{v:'Được rồi, cảm ơn con', e:'Alright, thank you'} },
+    ]},
+    { name:'Motorbike Mechanic', icon:'🔧', opener:{v:'Xe bạn bị sao vậy?', e:"What's wrong with your bike?"}, turns:[
+      { youOptions:[{v:'Xe không nổ máy được', e:"It won't start", correct:true},{v:'Xe đẹp lắm', e:"The bike is beautiful", correct:false, tip:"Describe the problem, not the bike — that gets it fixed faster."}], them:{v:'Để tôi kiểm tra bugi nhé', e:'Let me check the spark plug'} },
+      { youOptions:[{v:'Bao lâu thì xong?', e:'How long will it take?', correct:true},{v:'Tôi không quan tâm', e:"I don't care", correct:false}], them:{v:'Khoảng 15 phút thôi', e:'About 15 minutes'} },
+    ]},
+    { name:'Security Guard', icon:'🛡️', opener:{v:'Anh/chị ở phòng nào vậy?', e:'Which room are you staying in?'}, turns:[
+      { youOptions:[{v:'Tôi ở phòng 302', e:"I'm in room 302", correct:true},{v:'Tôi không nhớ', e:"I don't remember", correct:false}], them:{v:'Dạ, mời anh/chị vào', e:'Okay, please go ahead'} },
+      { youOptions:[{v:'Cảm ơn chú', e:'Thank you', correct:true},{v:'Sao chú hỏi nhiều vậy', e:"Why are you asking so much", correct:false, tip:"Security asking your room number is normal building protocol, not personal — a simple thanks keeps things friendly."}], them:{v:'Không có gì, chúc anh/chị một ngày tốt lành', e:'No problem, have a good day'} },
+    ]},
+  ],
+  fnb: [
+    { name:'Phở Vendor', icon:'🍜', opener:{v:'Anh/chị ăn gì?', e:'What would you like to eat?'}, turns:[
+      { youOptions:[{v:'Cho tôi một tô phở bò', e:'One beef phở please', correct:true},{v:'Tôi không đói', e:"I'm not hungry", correct:false}], them:{v:'Dạ, chờ một chút nhé', e:'Okay, one moment'} },
+      { youOptions:[{v:'Cho tôi thêm rau', e:'More herbs please', correct:true},{v:'Tôi muốn về nhà', e:'I want to go home', correct:false}], them:{v:'Đây rồi, ăn ngon nhé!', e:'Here you go, enjoy!'} },
+    ]},
+    { name:'Cafe Barista', icon:'☕', opener:{v:'Anh/chị uống gì ạ?', e:'What would you like to drink?'}, turns:[
+      { youOptions:[{v:'Cho tôi cà phê sữa đá', e:'One iced milk coffee please', correct:true},{v:'Tôi không uống cà phê', e:"I don't drink coffee", correct:false}], them:{v:'Ít đường hay nhiều đường?', e:'Less sugar or more sugar?'} },
+      { youOptions:[{v:'Ít đường thôi', e:'Less sugar please', correct:true},{v:'Không biết', e:"I don't know", correct:false}], them:{v:'Dạ, có ngay ạ', e:'Coming right up'} },
+    ]},
+    { name:'Bánh Mì Cart', icon:'🥖', opener:{v:'Bánh mì gì đây? Thịt hay chay?', e:'What kind of bánh mì? Meat or vegetarian?'}, turns:[
+      { youOptions:[{v:'Cho tôi bánh mì thịt', e:'Meat bánh mì please', correct:true},{v:'Tôi không đói', e:"I'm not hungry", correct:false}], them:{v:'Có cay không?', e:'Spicy or not?'} },
+      { youOptions:[{v:'Không cay nhé', e:'Not spicy please', correct:true},{v:'Tôi không biết', e:"I don't know", correct:false}], them:{v:'Đây bạn, 20 nghìn nhé', e:'Here you go, 20k'} },
+    ]},
+    { name:'Bia Hơi Buddy', icon:'🍻', opener:{v:'Làm một ly không?', e:'Want a glass?'}, turns:[
+      { youOptions:[{v:'Được, một ly thôi nhé', e:'Sure, just one', correct:true},{v:'Tôi không uống bia', e:"I don't drink beer", correct:false}], them:{v:'Dzô! Một trăm phần trăm!', e:'Cheers! Bottoms up!'} },
+      { youOptions:[{v:'Từ từ thôi, tôi uống ít thôi', e:"Slow down, I'll just drink a little", correct:true},{v:'Tôi say rồi', e:"I'm drunk", correct:false}], them:{v:'Ok, tuỳ bạn thôi', e:'Ok, up to you'} },
+    ]},
+  ],
+  dating: [
+    { name:'Local Friend (Linh)', icon:'👩', opener:{v:'Tối nay rảnh không? Đi ăn phở cùng đi!', e:"Free tonight? Let's get phở together!"}, turns:[
+      { youOptions:[{v:'Rảnh! Mấy giờ gặp nhau?', e:'Free! What time shall we meet?', correct:true},{v:'Xin lỗi, tôi bận', e:"Sorry, I'm busy", correct:false}], them:{v:'Bảy giờ tối nhé, ở quán quen', e:'7pm, at our usual spot'} },
+      { youOptions:[{v:'Được, hẹn gặp lại', e:'Sounds good, see you then', correct:true},{v:'Tôi không muốn đi', e:"I don't want to go", correct:false}], them:{v:'Hẹn gặp lại nha!', e:'See you then!'} },
+    ]},
+    { name:'Coffee Date', icon:'💕', opener:{v:'Bạn thích uống gì?', e:'What do you like to drink?'}, turns:[
+      { youOptions:[{v:'Cho tôi cà phê sữa đá, cảm ơn', e:'Iced milk coffee for me, thanks', correct:true},{v:'Tôi không biết bạn là ai', e:"I don't know who you are", correct:false}], them:{v:'Bạn dễ thương quá', e:"You're so charming"} },
+      { youOptions:[{v:'Cảm ơn, bạn cũng vậy', e:'Thanks, you too', correct:true},{v:'Tôi phải đi rồi', e:'I have to go now', correct:false}], them:{v:'Lần sau đi chơi tiếp nhé', e:"Let's hang out again next time"} },
+    ]},
+    { name:'Group Hangout Invite', icon:'👯', opener:{v:'Cuối tuần này nhóm mình đi Đà Lạt, đi không?', e:'Our group is going to Da Lat this weekend, want to come?'}, turns:[
+      { youOptions:[{v:'Nghe hay đó, cho tôi đi với!', e:'Sounds fun, count me in!', correct:true},{v:'Đà Lạt ở đâu?', e:"Where's Da Lat?", correct:false}], them:{v:'Tuyệt! Mình sẽ gửi lịch trình sau', e:"Great! I'll send the itinerary later"} },
+      { youOptions:[{v:'Cảm ơn đã rủ nhé', e:'Thanks for inviting me', correct:true},{v:'Chắc tôi không đi đâu', e:"I probably won't go", correct:false}], them:{v:'Không có gì, vui lắm đó!', e:"No problem, it'll be fun!"} },
+    ]},
+    { name:'Meeting the Parents', icon:'🙏', opener:{v:'Con chào hai bác ạ.', e:'Hello, nice to meet you both.'}, turns:[
+      { youOptions:[{v:'Con là bạn của Linh ạ', e:"I'm Linh's friend", correct:true},{v:'Tôi không biết nói gì', e:"I don't know what to say", correct:false, tip:"A simple self-introduction goes a long way — Vietnamese parents appreciate directness and politeness together."}], them:{v:'À, con ngồi chơi đi', e:'Ah, please sit down'} },
+      { youOptions:[{v:'Dạ, con cảm ơn ạ', e:'Thank you', correct:true},{v:'Tôi phải về rồi', e:'I have to go now', correct:false}], them:{v:'Ở lại ăn cơm với gia đình nhé', e:'Stay and eat with the family'} },
+    ]},
+  ],
+  travel: [
+    { name:'Grab Driver', icon:'🚗', opener:{v:'Bạn đang đứng ở đâu vậy?', e:'Where are you standing?'}, turns:[
+      { youOptions:[{v:'Tôi đứng ở cổng chính', e:"I'm at the main gate", correct:true},{v:'Tôi không biết ở đâu', e:"I don't know where I am", correct:false}], them:{v:'Ok, tôi tới trong 2 phút', e:"Ok, I'll be there in 2 minutes"} },
+      { youOptions:[{v:'Cảm ơn, tôi đợi ở đây', e:"Thanks, I'll wait here", correct:true},{v:'Tôi huỷ chuyến', e:"I'm cancelling", correct:false}], them:{v:'Tới nơi rồi bạn nhé!', e:"I've arrived!"} },
+    ]},
+    { name:'Market Vendor', icon:'🧺', opener:{v:'Túi này đẹp lắm, 800 nghìn thôi!', e:'This bag is lovely, only 800k!'}, turns:[
+      { youOptions:[{v:'Đắt quá, bớt được không?', e:'Too expensive, can you lower it?', correct:true, tip:"Bargaining is expected here — asking to lower the price is completely normal and polite."},{v:'Được rồi, tôi mua ngay', e:"Ok, I'll buy it now", correct:false, tip:"Agreeing to the first price you hear means you'll usually pay more than a local would."}], them:{v:'Thôi được, 250 nghìn nhé', e:'Alright, 250k then'} },
+      { youOptions:[{v:'Được rồi, cảm ơn!', e:'Deal, thank you!', correct:true}, {v:'Vẫn đắt quá', e:'Still too expensive', correct:false, tip:"Once a vendor drops the price significantly, pushing much further can come across as rude — know when to accept a fair deal."}], them:{v:'Tổng cộng 250,000 đồng nhé bạn.', e:'Total is 250,000 dong.'} },
+      { youOptions:[{v:'Đây 300,000. Thối lại cho tôi nhé.', e:"Here's 300,000. Please give me the change.", correct:true}, {v:'Đây 300,000.', e:"Here's 300,000.", correct:false, tip:"Just handing over money without asking for change — in a busy market it's easy to be forgotten. Always say 'thối lại nhé'."}], them:{v:'Dạ, gửi lại bạn 50,000 nhé.', e:"Sure, here's your 50,000 change."} },
+    ]},
+    { name:'Hotel Check-in', icon:'🏨', opener:{v:'Anh/chị đã đặt phòng chưa?', e:'Have you booked a room?'}, turns:[
+      { youOptions:[{v:'Dạ rồi, tên tôi là...', e:'Yes, my name is...', correct:true},{v:'Chưa, tôi mới tới', e:"No, I just arrived", correct:false}], them:{v:'Cho tôi xem hộ chiếu nhé', e:'May I see your passport?'} },
+      { youOptions:[{v:'Đây ạ', e:'Here you go', correct:true},{v:'Tôi không mang theo', e:"I don't have it with me", correct:false, tip:"Hotels in Vietnam are legally required to register your passport — always carry it at check-in."}], them:{v:'Cảm ơn, phòng của anh/chị ở tầng 3', e:'Thank you, your room is on the 3rd floor'} },
+    ]},
+    { name:'Bus Ticket Counter', icon:'🚌', opener:{v:'Anh/chị đi đâu?', e:'Where are you headed?'}, turns:[
+      { youOptions:[{v:'Cho tôi một vé đi Đà Nẵng', e:'One ticket to Da Nang please', correct:true},{v:'Tôi chưa biết', e:"I don't know yet", correct:false}], them:{v:'Xe chạy lúc 8 giờ tối nhé', e:'The bus leaves at 8pm'} },
+      { youOptions:[{v:'Vé bao nhiêu tiền vậy?', e:'How much is the ticket?', correct:true},{v:'Tôi không cần biết giá', e:"I don't need to know the price", correct:false}], them:{v:'350 nghìn đồng nhé', e:'350,000 dong'} },
+    ]},
+  ],
+  factory: [
+    { name:'Line Supervisor', icon:'👷', opener:{v:'Kiểm tra máy trước khi bắt đầu ca nhé.', e:'Check the machine before starting the shift.'}, turns:[
+      { youOptions:[{v:'Vâng, tôi hiểu rồi', e:'Yes, understood', correct:true},{v:'Tôi không hiểu', e:"I don't understand", correct:false}], them:{v:'Tốt. Có vấn đề gì báo ngay cho tôi.', e:'Good. Report any issues to me right away.'} },
+      { youOptions:[{v:'Vâng, sếp', e:'Yes, boss', correct:true},{v:'Tôi về trước đây', e:"I'm leaving early", correct:false}], them:{v:'Cảm ơn, làm việc tốt nhé', e:'Thanks, good work'} },
+    ]},
+    { name:'Supplier', icon:'📦', opener:{v:'Đơn hàng sẽ giao vào thứ Ba.', e:'The order will be delivered Tuesday.'}, turns:[
+      { youOptions:[{v:'Cảm ơn, tôi sẽ kiểm tra kho', e:"Thanks, I'll check the warehouse", correct:true},{v:'Tôi không cần hàng nữa', e:"I don't need the goods anymore", correct:false}], them:{v:'Có gì cứ liên hệ tôi nhé', e:'Feel free to contact me anytime'} },
+      { youOptions:[{v:'Được, cảm ơn anh', e:'Sounds good, thank you', correct:true},{v:'Trễ quá rồi', e:"That's too late", correct:false}], them:{v:'Không có gì!', e:"You're welcome!"} },
+    ]},
+    { name:'HR Onboarding', icon:'📋', opener:{v:'Bạn đã nộp đủ giấy tờ chưa?', e:'Have you submitted all your documents?'}, turns:[
+      { youOptions:[{v:'Dạ rồi, đây là hồ sơ của tôi', e:"Yes, here's my file", correct:true},{v:'Giấy tờ gì cơ?', e:'What documents?', correct:false}], them:{v:'Tốt, ca làm việc bắt đầu lúc 7 giờ sáng', e:'Good, your shift starts at 7am'} },
+      { youOptions:[{v:'Vâng, tôi sẽ đến đúng giờ', e:"Understood, I'll be on time", correct:true},{v:'7 giờ sớm quá', e:'7am is too early', correct:false}], them:{v:'Cảm ơn, chúc bạn làm việc tốt', e:'Thanks, good luck with the work'} },
+    ]},
+    { name:'Safety Briefing', icon:'⛑️', opener:{v:'Nhớ đội mũ bảo hộ khi vào xưởng nhé.', e:'Remember to wear a hard hat when entering the workshop.'}, turns:[
+      { youOptions:[{v:'Vâng, tôi sẽ đội ngay', e:"Yes, I'll put it on now", correct:true},{v:'Tôi không cần đâu', e:"I don't need it", correct:false, tip:"Safety gear isn't optional on a factory floor — refusing it can get you sent home, or worse, hurt."}], them:{v:'Tốt, an toàn là trên hết', e:'Good, safety first'} },
+      { youOptions:[{v:'Có vấn đề gì tôi sẽ báo ngay', e:"I'll report right away if there's an issue", correct:true},{v:'Chắc không sao đâu', e:'Probably fine', correct:false, tip:"Assuming small issues are fine is how accidents happen — always report promptly."}], them:{v:'Rất tốt, cảm ơn bạn', e:'Very good, thank you'} },
+    ]},
+  ],
+};
+
+/* ========================= STATE ========================= */
+const DEFAULT_STATE = {
+  name:'', dailyGoal:10,
+  completedLessons:[], savedPhrases:[], completedChats:[],
+  xp:0, streak:0, lastStudyDate:null, studyDates:[],
+  srs:{}, // srsId -> {interval, ease, reps, due, lapses}
+};
+let state = structuredClone(DEFAULT_STATE);
+let currentView = 'home';
+let selectedLevel = 'A0';
+let packFilter = 'all';
+let currentAccent = 'SG';
+let activeModal = null; // {type:'lesson'|'pack', id, cards, title}
+
+async function loadState(){
+  try{
+    const res = await window.storage.get('xinchao-state');
+    if(res && res.value){
+      state = Object.assign(structuredClone(DEFAULT_STATE), JSON.parse(res.value));
+    }
+  }catch(e){ /* no saved state yet */ }
+  renderAll();
+}
+async function saveState(){
+  try{ await window.storage.set('xinchao-state', JSON.stringify(state)); }
+  catch(e){ console.error('save failed', e); }
+}
+
+/* ========================= NAV ========================= */
+function switchView(v){
+  currentView = v;
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  renderAll();
+}
+
+/* ========================= RENDER ========================= */
+function renderAll(){
+  renderHeader(); renderHome(); renderFoundations(); renderPocket(); renderStats(); renderProfile(); renderWorlds();
+}
+function renderHeader(){ document.getElementById('streakPill').textContent = '🌀 ' + state.streak; }
+
+function totalLessonsForLevel(lv){ return LESSONS.filter(l=>l.level===lv).length; }
+function completedForLevel(lv){ return LESSONS.filter(l=>l.level===lv && state.completedLessons.includes(l.id)).length; }
+
+function renderHome(){
+  const banner = document.getElementById('homeBanner');
+  const greeting = state.name ? `Chào, ${state.name}!` : 'Chào bạn!';
+  const doneCount = state.completedLessons.length;
+  banner.querySelector('h2').textContent = doneCount===0 ? greeting : `${greeting} ${doneCount} lessons down.`;
+  banner.querySelector('p').textContent = doneCount===0
+    ? 'Start with Foundations to learn sounds and core phrases, then explore Survival packs.'
+    : 'Pick up where you left off, or dive into a Survival pack.';
+
+  const coreDue = countDue(CORE_PHRASES.map(c=>({srsId:`core_${c.rank}`})));
+  const coreSub = document.getElementById('coreDueSub');
+  if(coreSub){
+    coreSub.textContent = coreDue>0
+      ? `${coreDue} card${coreDue===1?'':'s'} due for review right now.`
+      : "You're all caught up — check back tomorrow for reviews.";
+  }
+
+  const grid = document.getElementById('packGrid');
+  grid.innerHTML = '';
+  const filtered = PACKS.filter(p=>{
+    const done = isPackDone(p.id);
+    if(packFilter==='done') return done;
+    if(packFilter==='active') return !done;
+    return true;
+  });
+  filtered.forEach(p=>{
+    const done = isPackDone(p.id);
+    const card = document.createElement('button');
+    card.className = 'pack-card';
+    card.onclick = ()=>openLessonModal('pack', p.id);
+    if(p.img){
+      card.innerHTML = `
+        <div class="pack-img-wrap">
+          <img src="${p.img}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="pack-img-fallback">${p.icon}</div>
+          ${done ? '<div class="status done">✓ DONE</div>' : ''}
+        </div>
+        <div class="pack-body">
+          <h4>${p.title}</h4>
+          <p class="pack-tag">${p.tag}</p>
+        </div>`;
+    } else {
+      card.innerHTML = `
+        <div class="stool-bar" style="background:var(--${p.color})"></div>
+        ${done ? '<div class="status done">✓ DONE</div>' : ''}
+        <div class="pack-body">
+          <span class="pack-icon">${p.icon}</span>
+          <h4>${p.title}</h4>
+          <p class="pack-tag">${p.tag}</p>
+        </div>`;
+    }
+    grid.appendChild(card);
+  });
+  if(filtered.length===0){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="big">🧭</div>Nothing here yet.</div>`;
+  }
+}
+
+document.getElementById('packFilters').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.chip');
+  if(!btn) return;
+  packFilter = btn.dataset.filter;
+  document.querySelectorAll('#packFilters .chip').forEach(c=>c.classList.toggle('active', c===btn));
+  renderHome();
+});
+
+function renderFoundations(){
+  const row = document.getElementById('levelRow');
+  row.innerHTML = '';
+  LEVELS.forEach(lv=>{
+    const total = totalLessonsForLevel(lv.id);
+    const done = completedForLevel(lv.id);
+    const card = document.createElement('button');
+    card.className = 'level-card' + (lv.id===selectedLevel ? ' selected':'');
+    card.onclick = ()=>{ selectedLevel = lv.id; renderFoundations(); };
+    card.innerHTML = `<div class="lv">${lv.id}</div><div class="lv-name">${lv.name}</div><div class="lv-progress">${done}/${total} lessons</div>`;
+    row.appendChild(card);
+  });
+
+  const lv = LEVELS.find(l=>l.id===selectedLevel);
+  document.getElementById('levelTitle').textContent = `${lv.id} · ${lv.name}`;
+  document.getElementById('levelDesc').textContent = lv.desc;
+
+  const allDone = state.completedLessons.length === LESSONS.length;
+  document.getElementById('foundBannerTitle').textContent = allDone ? 'All levels complete!' : 'Keep going';
+  document.getElementById('foundBannerSub').textContent = allDone
+    ? "You've finished every foundation lesson. Survival packs are the best way to keep sharp."
+    : 'Work through each level in order to build a real foundation.';
+
+  const route = document.getElementById('lessonRoute');
+  route.innerHTML = '';
+  const levelLessons = LESSONS.filter(l=>l.level===selectedLevel);
+  let firstIncompleteFound = false;
+  levelLessons.forEach((l, idx)=>{
+    const done = state.completedLessons.includes(l.id);
+    const prevDone = idx===0 ? true : state.completedLessons.includes(levelLessons[idx-1].id);
+    const locked = !done && !prevDone;
+    const isCurrent = !done && prevDone && !firstIncompleteFound;
+    if(isCurrent) firstIncompleteFound = true;
+
+    const node = document.createElement('div');
+    node.className = 'lesson-node' + (done?' done':'') + (isCurrent?' current':'');
+    node.innerHTML = `
+      <div class="dot">${done?'✓':idx+1}</div>
+      <div class="lesson-card ${locked?'locked':''}">
+        <div>
+          <p class="lname">${l.title}</p>
+          <p class="lviet">${l.vietTitle}</p>
+          <p class="ldesc">${l.tag}</p>
+        </div>
+        <button class="go" ${locked?'disabled':''} onclick="${locked?'':`openLessonModal('lesson','${l.id}')`}">${done?'↻':'▶'}</button>
+      </div>`;
+    route.appendChild(node);
+  });
+}
+
+function renderPocket(){
+  const list = document.getElementById('pocketList');
+  if(state.savedPhrases.length===0){
+    list.innerHTML = `<div class="empty"><div class="big">🎒</div>Save phrases from any lesson to build your pocket list.</div>`;
+    return;
+  }
+  list.innerHTML = '';
+  [...state.savedPhrases].reverse().forEach(ph=>{
+    const item = document.createElement('div');
+    item.className = 'phrase-item';
+    item.innerHTML = `
+      <div>
+        <p class="pv">${ph.v}</p>
+        <p class="pp">${ph.p}</p>
+        <p class="pe">${ph.e}</p>
+      </div>
+      <button class="icon-btn" onclick="removePhrase('${ph.id}')">✕</button>`;
+    list.appendChild(item);
+  });
+}
+
+function renderStats(){
+  document.getElementById('statStreak').textContent = state.streak;
+  document.getElementById('statXp').textContent = state.xp;
+  document.getElementById('statLessons').textContent = state.completedLessons.length;
+  document.getElementById('statPhrases').textContent = state.savedPhrases.length;
+
+  const chart = document.getElementById('weekChart');
+  chart.innerHTML = '';
+  const days = ['S','M','T','W','T','F','S'];
+  const today = new Date();
+  for(let i=6;i>=0;i--){
+    const d = new Date(today); d.setDate(d.getDate()-i);
+    const key = d.toISOString().slice(0,10);
+    const studied = state.studyDates.includes(key);
+    const bar = document.createElement('div');
+    bar.className = 'week-bar';
+    bar.innerHTML = `<div class="bar ${studied?'on':''}" style="height:${studied?'50px':'12px'}"></div><div class="lbl">${days[d.getDay()]}</div>`;
+    chart.appendChild(bar);
+  }
+}
+
+function renderProfile(){
+  document.getElementById('profileName').value = state.name || '';
+  document.getElementById('profileGoal').value = state.dailyGoal || 10;
+}
+
+/* ========================= WORLDS ========================= */
+function phrasesForWorld(worldId){
+  const world = WORLDS.find(w=>w.id===worldId);
+  let cards = [];
+  PACKS.filter(p=>world.tags.includes(p.tag)).forEach(p=>{
+    p.cards.forEach((c,j)=> cards.push({...c, srsId:`pack_${p.id}_${j}`}));
+  });
+  if(world.id==='everyday'){
+    LESSONS.forEach(l=>{
+      l.cards.forEach((c,j)=> cards.push({...c, srsId:`lesson_${l.id}_${j}`}));
+    });
+  }
+  // de-dupe by Vietnamese text, keep first srsId
+  const seen = new Set();
+  return cards.filter(c=>{ if(seen.has(c.v)) return false; seen.add(c.v); return true; });
+}
+
+function renderWorlds(){
+  const chipRow = document.getElementById('worldChipRow');
+  chipRow.innerHTML = WORLDS.map(w=>`
+    <button class="world-chip ${w.id===currentWorldId?'active':''}" onclick="selectWorld('${w.id}')">
+      <span class="wc-icon">${w.icon}</span><span class="wc-title">${w.title}</span>
+    </button>`).join('');
+  const world = WORLDS.find(w=>w.id===currentWorldId);
+  document.getElementById('worldTagline').textContent = world.tagline;
+
+  const personas = CHAT_PERSONAS[currentWorldId] || [];
+  document.getElementById('chatPersonaList').innerHTML = personas.map((p,i)=>{
+    const done = state.completedChats.includes(`chat_${currentWorldId}_${i}`);
+    return `
+    <button class="persona-card" onclick="openChat('${currentWorldId}', ${i})">
+      <span class="p-icon">${p.icon}</span>
+      <span style="flex:1;">
+        <p class="p-name">${p.name} ${done?'<span class="p-done">DONE</span>':''}</p>
+        <p class="p-line">${p.opener.v}</p>
+      </span>
+    </button>`;
+  }).join('');
+
+  const pool = phrasesForWorld(currentWorldId);
+  const dueCount = countDue(pool);
+  const goBtn = document.getElementById('swipeGoBtn');
+  if(goBtn) goBtn.textContent = dueCount>0 ? `Study (${dueCount})` : 'Study';
+
+  const sos = pool.slice(0, 8);
+  document.getElementById('sosList').innerHTML = sos.map((c,i)=>`
+    <div class="sos-item">
+      <div><p class="sv">${c.v}</p><p class="se">${c.e}</p></div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="icon-btn" onclick="speak('${c.v.replace(/'/g,"\\'")}', currentAccent)">🔊</button>
+        <button class="icon-btn" onclick="saveArbitraryPhrase(${JSON.stringify(c).replace(/"/g,'&quot;')})">♡</button>
+      </div>
+    </div>`).join('');
+}
+
+function selectWorld(id){ currentWorldId = id; renderWorlds(); }
+
+
+function saveArbitraryPhrase(card){
+  if(state.savedPhrases.some(p=>p.v===card.v)) return;
+  state.savedPhrases.push({ id:'ph_'+Date.now(), v:card.v, p:card.p||'', e:card.e });
+  saveState(); renderPocket(); renderStats();
+}
+
+/* ---------- Chat Boss ---------- */
+let chatState = null;
+function openChat(worldId, personaIdx){
+  const persona = CHAT_PERSONAS[worldId][personaIdx];
+  chatState = { worldId, personaIdx, persona, turnIdx:0, messages:[
+    { who:'them', v:persona.opener.v, e:persona.opener.e, audioId:`chat_${worldId}_${personaIdx}_opener` }
+  ]};
+  document.getElementById('chatHeaderTitle').textContent = `${persona.icon} ${persona.name}`;
+  document.getElementById('chatOverlay').classList.add('open');
+  renderChat();
+}
+function closeChat(){
+  document.getElementById('chatOverlay').classList.remove('open');
+  chatState = null;
+}
+function renderChat(){
+  const body = document.getElementById('chatBody');
+  const footer = document.getElementById('chatFooter');
+  body.innerHTML = chatState.messages.map(m=>{
+    if(m.who==='tip'){
+      return `<div class="chat-tip"><span class="chat-tip-x">✕</span> <b>Try again next time</b><p>${m.text}</p></div>`;
+    }
+    return `
+    <div class="chat-msg ${m.who}">
+      <div class="cm-row">
+        <div>
+          <div>${m.v}</div>
+          <p class="cm-e">${m.e}</p>
+        </div>
+        <button class="cm-speak" onclick="playAudio('${m.audioId}', '${m.v.replace(/'/g,"\\'")}', currentAccent)">🔊</button>
+      </div>
+      ${m.feedback ? `<p class="cm-feedback" style="color:var(--herb)">${m.feedback}</p>` : ''}
+    </div>`;
+  }).join('');
+  body.scrollTop = body.scrollHeight;
+
+  if(chatState.turnIdx < chatState.persona.turns.length){
+    const turn = chatState.persona.turns[chatState.turnIdx];
+    footer.innerHTML = turn.youOptions.map((opt,i)=>`
+      <button class="chat-reply-btn" onclick="chooseReply(${i})">${opt.v}<span class="chat-reply-e">${opt.e}</span></button>`).join('');
+  } else {
+    footer.innerHTML = `<button class="footer-btn" onclick="closeChat()">Done</button>`;
+  }
+}
+function chooseReply(optIdx){
+  const turn = chatState.persona.turns[chatState.turnIdx];
+  const opt = turn.youOptions[optIdx];
+  const base = `chat_${chatState.worldId}_${chatState.personaIdx}_t${chatState.turnIdx}`;
+  chatState.messages.push({ who:'you', v:opt.v, e:opt.e, feedback: opt.correct ? '✓ Natural choice' : null, audioId:`${base}_you${optIdx}` });
+  if(!opt.correct && opt.tip){ chatState.messages.push({ who:'tip', text: opt.tip }); }
+  chatState.messages.push({ who:'them', v:turn.them.v, e:turn.them.e, audioId:`${base}_them` });
+  chatState.turnIdx++;
+  renderChat();
+  if(chatState.turnIdx >= chatState.persona.turns.length){
+    const key = `chat_${chatState.worldId}_${chatState.personaIdx}`;
+    if(!state.completedChats.includes(key)){
+      state.completedChats.push(key);
+      state.xp += 15;
+      bumpStreak();
+      saveState();
+      renderAll();
+    }
+  }
+}
+
+/* ========================= SRS ENGINE (SM-2 style, like Anki) ========================= */
+// Each card's scheduling state lives in state.srs[srsId] = {interval, ease, reps, due, lapses}
+// interval: days until next review. ease: multiplier that grows/shrinks with performance.
+// New cards have no entry yet. "Again" resets progress and requeues the card later in
+// the same session, mirroring Anki's short learning steps without needing minute-level timers.
+const SRS_NEW_LIMIT = 15;   // new cards introduced per session, like Anki's daily new-card cap
+const SRS_SESSION_CAP = 30; // total cards per session so it stays a quick 5-minute burst
+
+function getSrs(id){
+  return state.srs[id] ? {...state.srs[id]} : { interval:0, ease:2.5, reps:0, due:null, lapses:0 };
+}
+function isNewCard(id){ return !state.srs[id]; }
+function isDueCard(id){
+  const s = state.srs[id];
+  if(!s) return true;
+  if(!s.due) return true;
+  return new Date(s.due) <= new Date();
+}
+function countDue(pool){
+  const seen = new Set();
+  let n = 0;
+  pool.forEach(c=>{ if(seen.has(c.srsId)) return; seen.add(c.srsId); if(isDueCard(c.srsId)) n++; });
+  return n;
+}
+function fmtInterval(days){
+  if(days <= 0) return '<1m';
+  if(days < 1) return '<1d';
+  if(days === 1) return '1d';
+  if(days < 30) return Math.round(days)+'d';
+  if(days < 365) return Math.round(days/30)+'mo';
+  return (Math.round(days/365*10)/10)+'y';
+}
+// grade: 0=Again, 1=Hard, 2=Good, 3=Easy — same four buttons Anki uses.
+function applyGrade(s, grade){
+  if(grade===0){
+    if(s.reps>0) s.lapses = (s.lapses||0) + 1;
+    s.reps = 0;
+    s.ease = Math.max(1.3, s.ease - 0.2);
+    s.interval = 0;
+  } else {
+    if(s.reps===0){ s.interval = grade===1 ? 1 : (grade===2 ? 1 : 4); }
+    else if(s.reps===1){ s.interval = grade===1 ? 3 : (grade===2 ? 6 : 8); }
+    else {
+      const mult = grade===1 ? 1.2 : (grade===2 ? s.ease : s.ease * 1.3);
+      s.interval = Math.max(1, Math.round(s.interval * mult));
+    }
+    if(grade===1) s.ease = Math.max(1.3, s.ease - 0.15);
+    else if(grade===3) s.ease = s.ease + 0.15;
+    s.reps++;
+  }
+  return s;
+}
+function previewIntervals(id){
+  const base = getSrs(id);
+  const sim = grade => fmtInterval(applyGrade({...base}, grade).interval);
+  return { again:'<1m', hard:sim(1), good:sim(2), easy:sim(3) };
+}
+function buildSrsQueue(pool){
+  const seen = new Set();
+  const unique = pool.filter(c=>{ if(seen.has(c.srsId)) return false; seen.add(c.srsId); return true; });
+  const due = shuffleArr(unique.filter(c=>!isNewCard(c.srsId) && isDueCard(c.srsId)));
+  const fresh = shuffleArr(unique.filter(c=>isNewCard(c.srsId))).slice(0, SRS_NEW_LIMIT);
+  return due.concat(fresh).slice(0, SRS_SESSION_CAP);
+}
+
+/* ---------- Swipe Learn (SRS session) ---------- */
+let swipeState = null;
+function startSwipe(){
+  const queue = buildSrsQueue(phrasesForWorld(currentWorldId));
+  swipeState = { deck: queue, idx:0, again:0, hard:0, good:0, easy:0, flipped:false };
+  document.getElementById('swipeOverlay').classList.add('open');
+  renderSwipe();
+}
+function startCoreSwipe(){
+  const pool = CORE_PHRASES.map(c=>({...c, srsId:`core_${c.rank}`}));
+  const queue = buildSrsQueue(pool);
+  swipeState = { deck: queue, idx:0, again:0, hard:0, good:0, easy:0, flipped:false };
+  document.getElementById('swipeOverlay').classList.add('open');
+  renderSwipe();
+}
+function closeSwipe(){
+  document.getElementById('swipeOverlay').classList.remove('open');
+  swipeState = null;
+  renderAll();
+}
+function renderSwipe(){
+  const body = document.getElementById('swipeBody');
+  if(!swipeState.deck.length){
+    body.innerHTML = `<div class="swipe-summary"><div class="emoji">✨</div><p style="font-size:16px;font-weight:800;margin:0 0 6px;">All caught up!</p><p style="color:var(--muted);font-size:13px;">No cards due for review right now — come back later.</p><button class="footer-btn" onclick="closeSwipe()" style="margin-top:20px;">Close</button></div>`;
+    return;
+  }
+  if(swipeState.idx >= swipeState.deck.length){
+    const total = swipeState.again+swipeState.hard+swipeState.good+swipeState.easy;
+    body.innerHTML = `
+      <div class="swipe-summary">
+        <div class="emoji">🎉</div>
+        <p style="font-size:17px;font-weight:800;margin:0 0 10px;">Session complete!</p>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 4px;">${total} cards reviewed</p>
+        <p style="color:var(--muted);font-size:12px;margin:0 0 20px;">🔴 ${swipeState.again} again &nbsp; 🟠 ${swipeState.hard} hard &nbsp; 🟢 ${swipeState.good} good &nbsp; 🔵 ${swipeState.easy} easy</p>
+        <button class="footer-btn" onclick="closeSwipe()">Done</button>
+      </div>`;
+    return;
+  }
+  const c = swipeState.deck[swipeState.idx];
+  const noteHtml = (c.note && c.note.length) ? `
+    <div class="sc-notes">
+      ${c.note.map(n=>`<div class="sc-note ${n.italic?'italic':''}"><p class="sn-v">${n.v}</p><p class="sn-e">${n.e}</p></div>`).join('')}
+    </div>` : '';
+  const badge = isNewCard(c.srsId) ? '<span class="srs-badge new">NEW</span>' : '<span class="srs-badge due">DUE</span>';
+  const iv = previewIntervals(c.srsId);
+  body.innerHTML = `
+    <div class="swipe-counts"><span>${badge}</span><span>${swipeState.deck.length - swipeState.idx} left</span></div>
+    <div class="swipe-card ${swipeState.flipped?'flipped':''}" onclick="flipSwipe()">
+      <p class="sc-eng">${c.e}</p>
+      <p class="sc-viet">${c.v}</p>
+      <p class="sc-pron">${c.p||''}</p>
+      ${noteHtml}
+      <p class="sc-hint">${swipeState.flipped ? '' : 'Tap to flip'}</p>
+    </div>
+    <div class="srs-actions ${swipeState.flipped?'':'disabled'}">
+      <button class="srs-btn again" onclick="gradeCard(0)"><span class="sb-label">Again</span><span class="sb-time">${iv.again}</span></button>
+      <button class="srs-btn hard" onclick="gradeCard(1)"><span class="sb-label">Hard</span><span class="sb-time">${iv.hard}</span></button>
+      <button class="srs-btn good" onclick="gradeCard(2)"><span class="sb-label">Good</span><span class="sb-time">${iv.good}</span></button>
+      <button class="srs-btn easy" onclick="gradeCard(3)"><span class="sb-label">Easy</span><span class="sb-time">${iv.easy}</span></button>
+    </div>`;
+}
+function flipSwipe(){
+  if(swipeState.flipped) return;
+  swipeState.flipped = true;
+  renderSwipe();
+}
+function gradeCard(grade){
+  if(!swipeState.flipped) return; // must see the answer before grading, like Anki
+  const card = swipeState.deck[swipeState.idx];
+  const s = getSrs(card.srsId);
+  applyGrade(s, grade);
+  if(grade===0){
+    s.due = new Date().toISOString();
+    // requeue a few cards later in this session, simulating a short learning step
+    const reinsertAt = Math.min(swipeState.deck.length, swipeState.idx + 4);
+    swipeState.deck.splice(reinsertAt, 0, card);
+    swipeState.again++;
+  } else {
+    const due = new Date(); due.setDate(due.getDate() + s.interval);
+    s.due = due.toISOString();
+    if(grade===1) swipeState.hard++; else if(grade===2) swipeState.good++; else swipeState.easy++;
+  }
+  state.srs[card.srsId] = s;
+  saveState();
+  swipeState.idx++;
+  swipeState.flipped = false;
+  renderSwipe();
+  if(swipeState.idx >= swipeState.deck.length){
+    state.xp += swipeState.good + swipeState.easy*2 + swipeState.hard;
+    bumpStreak(); saveState(); renderAll();
+  }
+}
+
+/* ========================= PACK HELPERS ========================= */
+function isPackDone(id){ return state.completedLessons.includes('pack:'+id); }
+
+/* ========================= AUDIO ========================= */
+// AUDIO_BASE_PATH points at pre-generated mp3 files (see generate_audio.py).
+// Filenames follow the pattern {type}_{lessonOrPackId}_{cardIndex}.mp3
+// e.g. lesson_l1_0.mp3, pack_p21_2.mp3 — see phrases.json for the full list.
+const AUDIO_BASE_PATH = 'audio/';
+let currentAudioEl = null;
+
+function speakFallback(text, accent){
+  if(!('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'vi-VN';
+    u.rate = accent==='SG' ? 0.85 : 0.95;
+    const voices = speechSynthesis.getVoices();
+    const viVoice = voices.find(v=>v.lang && v.lang.toLowerCase().startsWith('vi'));
+    if(viVoice) u.voice = viVoice;
+    speechSynthesis.speak(u);
+  }catch(e){ /* speech synthesis unavailable */ }
+}
+function playAudio(cardId, text, accent){
+  if(currentAudioEl){ try{ currentAudioEl.pause(); }catch(e){} }
+  const el = new Audio(AUDIO_BASE_PATH + cardId + '.mp3');
+  currentAudioEl = el;
+  let fellBack = false;
+  const fallback = ()=>{ if(fellBack) return; fellBack = true; speakFallback(text, accent); };
+  el.addEventListener('error', fallback);
+  el.play().catch(fallback);
+}
+function speak(text, accent){ speakFallback(text, accent); }
+function speakCard(idx){
+  if(!activeModal) return;
+  const cardId = `${activeModal.type}_${activeModal.id}_${idx}`;
+  playAudio(cardId, activeModal.cards[idx].v, currentAccent);
+}
+function setAccent(a){
+  currentAccent = a;
+  document.getElementById('accHN').classList.toggle('active', a==='HN');
+  document.getElementById('accSG').classList.toggle('active', a==='SG');
+}
+
+let recognitionInstance = null;
+function trySpeak(){
+  const resultEl = document.getElementById('micResult');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    if(resultEl) resultEl.textContent = "Speech recognition isn't available in this browser — tap Skip to continue.";
+    return;
+  }
+  try{
+    recognitionInstance = new SR();
+    recognitionInstance.lang = 'vi-VN';
+    recognitionInstance.onresult = (e)=>{
+      const said = e.results[0][0].transcript;
+      if(resultEl) resultEl.textContent = `You said: "${said}" — nice, keep matching the tones!`;
+    };
+    recognitionInstance.onerror = ()=>{ if(resultEl) resultEl.textContent = "Didn't catch that — try again or tap Skip."; };
+    recognitionInstance.start();
+    if(resultEl) resultEl.textContent = 'Listening...';
+  }catch(e){
+    if(resultEl) resultEl.textContent = "Couldn't start the mic — tap Skip to continue.";
+  }
+}
+
+/* ========================= CULTURE BLURBS (by pack tag) ========================= */
+const CULTURE_BLURBS = {
+  Food: [
+    {title:'Ordering Etiquette', body:"You don't need to sit at a fancy table. Just pull up a small plastic stool. The price is usually fixed and very low, often just a few thousand đồng."},
+    {title:'Street Food Manners', body:"Point at what you want if the name escapes you — vendors are used to it. Napkins are often self-serve from a tissue box already on the table."}
+  ],
+  Transport: [
+    {title:'Traffic Flow', body:"Motorbikes rarely stop fully — they flow around obstacles. Move at a steady, predictable pace on foot and traffic will adjust around you."},
+    {title:'Fare Etiquette', body:"Confirm the price or check the app's estimate before you get in. Agreeing upfront avoids an awkward negotiation later."}
+  ],
+  Safety: [
+    {title:'Staying Alert', body:"Keep bags on the side away from the road — bag-snatching from passing motorbikes does happen in busy tourist areas."},
+    {title:'When In Doubt', body:"Locals are generally happy to help a lost traveler. Asking a shopkeeper is usually faster than any map app."}
+  ],
+  Money: [
+    {title:'Haggling Norms', body:"Bargaining is expected at markets, not at fixed-price shops or convenience stores. A friendly smile gets you further than a hard stance."}
+  ],
+  Culture: [
+    {title:'Politeness Markers', body:"Adding 'ạ' to the end of a sentence when speaking to someone older is a small touch that goes a long way."}
+  ],
+  Social: [
+    {title:'Hospitality Norms', body:"Being invited somewhere personal is a real gesture. Bringing a small gift for the host is a common and appreciated custom."}
+  ],
+  Work: [
+    {title:'Office Rhythm', body:"Many offices take a long midday break — don't be surprised if things slow down between noon and 1:30pm."}
+  ],
+  Home: [
+    {title:'Everyday Fixes', body:"Small repairs are often handled by a neighborhood specialist rather than a big company. Ask around — someone always knows someone."}
+  ],
+  Explore: [
+    {title:'Wandering Well', body:"Some of the best finds are down narrow alleys (hẻm) that barely show up on maps. Getting a little lost is part of the fun."}
+  ],
+  Admin: [
+    {title:'Paperwork Patience', body:"Bring your passport and a photocopy to any official errand — most processes ask for both, even for small things."}
+  ],
+  Basics: [
+    {title:'Building Blocks', body:"Tones carry meaning, not just melody. The same syllable said with a different pitch pattern can mean something entirely different."}
+  ],
+};
+function blurbForTag(tag, seed){
+  const pool = CULTURE_BLURBS[tag] || CULTURE_BLURBS.Basics;
+  return pool[seed % pool.length];
+}
+
+/* ========================= QUIZ HELPERS ========================= */
+const ALL_TRANSLATIONS = [
+  ...LESSONS.flatMap(l=>l.cards.map(c=>c.e)),
+  ...PACKS.flatMap(p=>p.cards.map(c=>c.e)),
+];
+function shuffleArr(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function buildQuiz(card){
+  const pool = ALL_TRANSLATIONS.filter(e=>e!==card.e);
+  const distractors = shuffleArr(pool).slice(0,2);
+  return { question: card.v, correct: card.e, options: shuffleArr([card.e, ...distractors]) };
+}
+
+/* ========================= STEP BUILDER ========================= */
+function buildSteps(type, source){
+  const cards = source.cards;
+  const tag = source.tag || 'Basics';
+  const seed = (source.id || '').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const blurb = blurbForTag(tag, seed);
+  const quizCard = cards[Math.min(cards.length-1, Math.floor(cards.length/2))];
+  const steps = [
+    { kind:'mission', title: source.title, mission: "Learn the key phrases, practice out loud, and finish the pack in order." },
+    { kind:'vocab', cards },
+    { kind:'speak', cardIdx: 0 },
+    { kind:'culture', title: blurb.title, body: blurb.body },
+    { kind:'quiz', cardIdx: cards.indexOf(quizCard), quiz: buildQuiz(quizCard) },
+  ];
+  return steps;
+}
+
+/* ========================= LESSON STEPPER ========================= */
+function openLessonModal(type, id){
+  const source = type==='lesson' ? LESSONS.find(l=>l.id===id) : PACKS.find(p=>p.id===id);
+  const steps = buildSteps(type, source);
+  activeModal = { type, id, img: source.img, icon: source.icon, cards: source.cards, title: source.title, steps, stepIndex: 0, quizAnswered:false };
+  document.getElementById('stepOverlay').classList.add('open');
+  currentAccent = 'SG';
+  setAccent('SG');
+  renderStepScreen();
+}
+function closeModal(){
+  document.getElementById('stepOverlay').classList.remove('open');
+  if(recognitionInstance){ try{ recognitionInstance.abort(); }catch(e){} }
+  if(currentAudioEl){ try{ currentAudioEl.pause(); }catch(e){} }
+  activeModal = null;
+}
+function nextStep(){
+  if(!activeModal) return;
+  if(activeModal.stepIndex >= activeModal.steps.length-1){
+    markLessonComplete();
+    return;
+  }
+  activeModal.stepIndex++;
+  activeModal.quizAnswered = false;
+  renderStepScreen();
+}
+
+function renderProgress(){
+  const wrap = document.getElementById('stepProgress');
+  const steps = activeModal.steps;
+  wrap.innerHTML = steps.map((s,i)=>`<div class="seg ${i<=activeModal.stepIndex?'filled':''}"></div>`).join('');
+}
+
+function renderStepScreen(){
+  renderProgress();
+  const body = document.getElementById('stepBody');
+  const footer = document.getElementById('stepFooter');
+  const step = activeModal.steps[activeModal.stepIndex];
+
+  if(step.kind==='mission'){
+    const heroImg = activeModal.img
+      ? `<div class="mission-img"><img src="${activeModal.img}" alt="" onerror="this.parentElement.style.display='none';"></div>`
+      : '';
+    body.innerHTML = `
+      ${heroImg}
+      <div class="mission-title"><h2>${step.title}</h2><button class="speak-icon-btn" onclick="speakCard(0)">🔊</button></div>
+      <div class="mission-box">
+        <p class="lab">Your mission:</p>
+        <p class="big">${step.mission}</p>
+      </div>`;
+    footer.innerHTML = `<button class="footer-btn" onclick="nextStep()">START THE MISSION</button>`;
+  }
+
+  else if(step.kind==='vocab'){
+    body.innerHTML = step.cards.map((c,i)=>{
+      const saved = state.savedPhrases.some(p=>p.v===c.v);
+      return `
+      <div class="vocab-list-item">
+        <div><p class="vv">${c.v}</p><p class="ve">${c.e}</p></div>
+        <div class="vocab-list-btns">
+          <button class="icon-btn" onclick="speakCard(${i})">🔊</button>
+          <button class="icon-btn" onclick="savePhraseAt(${i})">${saved?'✓':'♡'}</button>
+        </div>
+      </div>`;
+    }).join('');
+    footer.innerHTML = `<button class="footer-btn" onclick="nextStep()">GEAR UP & CONTINUE</button>`;
+  }
+
+  else if(step.kind==='speak'){
+    const c = activeModal.cards[step.cardIdx];
+    const saved = state.savedPhrases.some(p=>p.v===c.v);
+    body.innerHTML = `
+      <div class="say-it-wrap">
+        <button class="save-icon" onclick="savePhraseAt(${step.cardIdx})">${saved?'♥':'♡'}</button>
+        <button class="speak-icon" onclick="speakCard(${step.cardIdx})">🔊</button>
+        <h2>${c.v}</h2>
+        <p class="eng">"${c.e}"</p>
+        <button class="big-mic" onclick="trySpeak()">🎙️</button>
+        <p class="hint" id="micResult">HOLD TO SPEAK</p>
+      </div>`;
+    footer.innerHTML = `<button class="footer-skip" onclick="nextStep()">Skip — continue lesson</button>`;
+  }
+
+  else if(step.kind==='culture'){
+    const imgHtml = activeModal.img
+      ? `<img class="img-ph" src="${activeModal.img}" alt="" onerror="this.outerHTML='<div class=&quot;img-ph&quot;>${(activeModal.icon||'🍵')}</div>';">`
+      : `<div class="img-ph">${activeModal.icon||'🍵'}</div>`;
+    body.innerHTML = `
+      <div class="culture-card">
+        ${imgHtml}
+        <h2>${step.title}<button class="speak-icon-btn" style="width:32px;height:32px;font-size:13px;" onclick="speak('${step.title.replace(/'/g,"\\'")}', currentAccent)">🔊</button></h2>
+        <p>${step.body}</p>
+      </div>`;
+    footer.innerHTML = `<button class="footer-btn" onclick="nextStep()">GEAR UP & CONTINUE</button>`;
+  }
+
+  else if(step.kind==='quiz'){
+    const q = step.quiz;
+    body.innerHTML = `
+      <div class="quiz-label">ⓘ Pop quiz</div>
+      <p class="quiz-q">What does "${q.question}" mean?<button class="speak-icon-btn" onclick="speakCard(${step.cardIdx})">🔊</button></p>
+      <div id="quizOptions">
+        ${q.options.map((opt,i)=>`<button class="quiz-option" onclick="answerQuiz(${i})">${opt}</button>`).join('')}
+      </div>`;
+    footer.innerHTML = '';
+  }
+}
+
+function answerQuiz(idx){
+  if(activeModal.quizAnswered) return;
+  activeModal.quizAnswered = true;
+  const step = activeModal.steps[activeModal.stepIndex];
+  const buttons = document.querySelectorAll('#quizOptions .quiz-option');
+  buttons.forEach((b,i)=>{
+    b.disabled = true;
+    if(b.textContent===step.quiz.correct) b.classList.add('correct');
+    else if(i===idx) b.classList.add('wrong');
+  });
+  setTimeout(()=>nextStep(), 900);
+}
+
+function savePhraseAt(idx){
+  const card = activeModal.cards[idx];
+  if(state.savedPhrases.some(p=>p.v===card.v)) return;
+  state.savedPhrases.push({ id:'ph_'+Date.now()+'_'+idx, v:card.v, p:card.p, e:card.e });
+  saveState();
+  renderStepScreen();
+  renderPocket();
+  renderStats();
+}
+function removePhrase(id){
+  state.savedPhrases = state.savedPhrases.filter(p=>p.id!==id);
+  saveState(); renderPocket(); renderStats();
+}
+
+function markLessonComplete(){
+  const key = activeModal.type==='lesson' ? activeModal.id : 'pack:'+activeModal.id;
+  if(!state.completedLessons.includes(key)){
+    state.completedLessons.push(key);
+    state.xp += activeModal.cards.length*5;
+    bumpStreak();
+    saveState();
+  }
+  renderAll();
+  closeModal();
+}
+
+function bumpStreak(){
+  const todayKey = new Date().toISOString().slice(0,10);
+  if(!state.studyDates.includes(todayKey)) state.studyDates.push(todayKey);
+  if(state.studyDates.length>60) state.studyDates = state.studyDates.slice(-60);
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yKey = yesterday.toISOString().slice(0,10);
+  if(state.lastStudyDate === todayKey){ /* unchanged */ }
+  else if(state.lastStudyDate === yKey){ state.streak += 1; }
+  else{ state.streak = 1; }
+  state.lastStudyDate = todayKey;
+}
+
+function goToNextLesson(){
+  const next = LESSONS.find(l=>!state.completedLessons.includes(l.id));
+  if(next){
+    selectedLevel = next.level;
+    switchView('foundations');
+    setTimeout(()=>openLessonModal('lesson', next.id), 50);
+  } else {
+    switchView('home');
+    packFilter='all';
+    document.querySelectorAll('#packFilters .chip').forEach(c=>c.classList.toggle('active', c.dataset.filter==='all'));
+    renderHome();
+  }
+}
+
+/* ========================= TOOLS ========================= */
+function openTool(kind){
+  document.getElementById('toolBackdrop').classList.add('open');
+  const body = document.getElementById('toolBody');
+  if(kind==='currency'){
+    document.getElementById('toolTitle').textContent = 'Currency';
+    body.innerHTML = `
+      <p class="section-sub" style="margin-top:0;">Rough VND ⇄ USD conversion (≈25,000₫ per $1). Always check a live rate before big purchases.</p>
+      <div class="profile-field"><label>US Dollars</label><input type="number" id="usdInput" placeholder="10" oninput="convertCurrency('usd')"></div>
+      <div class="profile-field"><label>Vietnamese Đồng</label><input type="number" id="vndInput" placeholder="250000" oninput="convertCurrency('vnd')"></div>`;
+  } else {
+    document.getElementById('toolTitle').textContent = 'Culture tip';
+    const tip = CULTURE_TIPS[Math.floor(Math.random()*CULTURE_TIPS.length)];
+    body.innerHTML = `
+      <div class="hero-card"><p style="margin:0;font-size:15px;line-height:1.5;">${tip}</p></div>
+      <button class="mark-complete-btn" style="background:var(--herb);color:var(--ink);" onclick="openTool('culture')">Show another tip</button>`;
+  }
+}
+function closeTool(){ document.getElementById('toolBackdrop').classList.remove('open'); }
+function convertCurrency(from){
+  const rate = 25000;
+  const usdEl = document.getElementById('usdInput');
+  const vndEl = document.getElementById('vndInput');
+  if(from==='usd'){ const usd = parseFloat(usdEl.value)||0; vndEl.value = Math.round(usd*rate); }
+  else{ const vnd = parseFloat(vndEl.value)||0; usdEl.value = (vnd/rate).toFixed(2); }
+}
+
+/* ========================= PROFILE ========================= */
+function updateName(v){ state.name = v; saveState(); }
+function updateGoal(v){ state.dailyGoal = parseInt(v)||10; saveState(); }
+function resetProgress(){
+  if(!confirm('Reset all progress? This clears completed lessons, saved phrases, XP, and your streak.')) return;
+  state = structuredClone(DEFAULT_STATE);
+  saveState(); renderAll();
+}
+
+/* ========================= INIT ========================= */
+loadState();
+</script>
+</body>
+</html>
