@@ -164,7 +164,8 @@
   .status.active{background:var(--gold);color:var(--ink);}
 
   /* ---------- foundations ---------- */
-  .level-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+  .level-row{display:flex;gap:10px;margin-bottom:20px;overflow-x:auto;padding-bottom:2px;}
+  .level-row .level-card{flex-shrink:0;min-width:104px;}
   .level-card{background:var(--surface);border-radius:14px;padding:14px 10px;border:2px solid transparent;text-align:left;}
   .level-card.selected{border-color:var(--gold);background:var(--surface-2);}
   .level-card .lv{font-size:17px;font-weight:800;}
@@ -368,6 +369,9 @@
   .chat-msg.you .cm-row{flex-direction:row-reverse;}
   .chat-msg .cm-speak{background:none;border:none;font-size:14px;flex-shrink:0;opacity:.75;color:inherit;}
   .chat-msg .cm-e{font-size:11px;opacity:.7;margin:3px 0 0;font-style:italic;}
+  .chat-hint{text-align:center;color:var(--muted);font-size:11.5px;font-style:italic;margin:2px 0 16px;}
+  .en-toggle{flex-shrink:0;width:36px;height:36px;border-radius:11px;border:1px solid rgba(242,233,216,0.15);background:var(--surface);color:var(--muted);font-size:11px;font-weight:800;}
+  .en-toggle.active{background:var(--gold);color:var(--ink);border-color:transparent;}
   .chat-msg .cm-feedback{font-size:10.5px;font-weight:800;margin-top:4px;}
   .chat-tip{align-self:center;max-width:92%;text-align:center;margin:2px 0 12px;font-size:12px;color:var(--gold);}
   .chat-tip-x{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--vermillion);color:var(--rice);font-size:10px;margin-right:4px;}
@@ -588,7 +592,7 @@
   <div class="step-topbar">
     <button class="step-close" onclick="closeChat()">✕</button>
     <div style="flex:1;text-align:center;font-weight:800;font-size:13px;" id="chatHeaderTitle"></div>
-    <div style="width:36px;"></div>
+    <button class="en-toggle" id="chatEnToggle" onclick="toggleChatEnglish()">EN</button>
   </div>
   <div class="step-body chat-body-flex" id="chatBody"></div>
   <div class="step-footer" id="chatFooter"></div>
@@ -621,6 +625,9 @@ const LEVELS = [
   { id:'A0', name:'Sound Base', desc:'Hear and produce core Vietnamese sounds, tones, and greetings.' },
   { id:'A1', name:'Survival Core', desc:'Order food, name prices, and get where you\'re going.' },
   { id:'A2', name:'Everyday Flow', desc:'Small talk, plans, and handling the unexpected.' },
+  { id:'B1', name:'Working Fluency', desc:'Talk about past and future, share opinions, and hold a real conversation.' },
+  { id:'B2', name:'Confident Fluency', desc:'Handle complications, use idioms naturally, and hold your own in a debate.' },
+  { id:'C1', name:'Native Nuance', desc:'Read between the lines, switch registers, and sound like you grew up here.' },
 ];
 
 const LESSONS = [
@@ -677,6 +684,150 @@ const LESSONS = [
     cards:[
       {v:'Giúp tôi với!', p:'zoop toy vuh-ee', e:'Help me!'},{v:'Gọi bác sĩ', p:'goy bak see', e:'Call a doctor'},
       {v:'Tôi bị lạc', p:'toy bee lak', e:"I'm lost"},{v:'Đồn công an ở đâu?', p:'don kong an uh dow', e:'Where is the police station?'},{v:'Tôi cần giúp đỡ', p:'toy kun zoop duh', e:'I need help'},
+    ]},
+  { id:'l11', level:'B1', title:'Talking About the Past', vietTitle:'Nói về quá khứ', tag:'Past tense',
+    cards:[
+      {v:'Tôi đã đi Việt Nam năm ngoái', p:'toy da dee viet nam nam ngwai', e:'I went to Vietnam last year'},
+      {v:'Chúng tôi đã ăn phở rồi', p:'choong toy da an fuh zoy', e:'We already ate phở'},
+      {v:'Bạn đã làm gì hôm qua?', p:'ban da laam zee hom gwaa', e:'What did you do yesterday?'},
+      {v:'Tôi chưa từng thử món này', p:'toy chuh-a tuhng thuh mon nay', e:"I've never tried this dish"},
+      {v:'Lúc đó tôi còn trẻ', p:'loop do toy con cheh', e:'Back then I was young'},
+    ]},
+  { id:'l12', level:'B1', title:'Making Plans & Future', vietTitle:'Lên kế hoạch', tag:'Future tense',
+    cards:[
+      {v:'Tôi sẽ đi du lịch tuần sau', p:'toy seh dee zoo lick twun sow', e:'I will travel next week'},
+      {v:'Chúng ta sẽ gặp nhau ở đâu?', p:'choong taa seh gap nyow uh dow', e:'Where will we meet?'},
+      {v:'Tôi dự định ở lại một tháng', p:'toy zuh ding uh lai moht thang', e:'I plan to stay for a month'},
+      {v:'Có lẽ tôi sẽ quay lại', p:'co leh toy seh gway lai', e:"Maybe I'll come back"},
+      {v:'Chúng tôi sắp khởi hành', p:'choong toy sup khuh-ee hang', e:"We're about to depart"},
+    ]},
+  { id:'l13', level:'B1', title:'Giving Opinions', vietTitle:'Nêu ý kiến', tag:'Opinions & agreement',
+    cards:[
+      {v:'Tôi nghĩ món này rất ngon', p:'toy ngee mon nay zut ngon', e:'I think this dish is very good'},
+      {v:'Theo tôi, giá này hơi cao', p:'teh-o toy, zaa nay huh-ee cow', e:'In my opinion, this price is a bit high'},
+      {v:'Tôi đồng ý với bạn', p:'toy dong ee vuh-ee ban', e:'I agree with you'},
+      {v:'Tôi không chắc lắm', p:'toy khom chuk lam', e:"I'm not too sure"},
+      {v:'Có lẽ bạn nói đúng', p:'co leh ban noy doong', e:"Maybe you're right"},
+    ]},
+  { id:'l14', level:'B2', title:'Handling Complications', vietTitle:'Xử lý tình huống', tag:'Problems & complaints',
+    cards:[
+      {v:'Có vẻ như có sự nhầm lẫn', p:'co veh nyuh co suh nyum lun', e:"It seems there's been a mix-up"},
+      {v:'Đây không phải là những gì tôi đặt', p:'day khom fai laa nyung zee toy dat', e:"This isn't what I ordered"},
+      {v:'Bạn có thể sửa lại giúp tôi không?', p:'ban co the suh-a lai zoop toy khom', e:'Could you fix this for me?'},
+      {v:'Tôi cần nói chuyện với quản lý', p:'toy kun noy chwee-en vuh-ee gwan lee', e:'I need to speak with the manager'},
+      {v:'Xin lỗi vì sự bất tiện này', p:'sin loy vee suh but tee-en nay', e:'Sorry for this inconvenience'},
+    ]},
+  { id:'l15', level:'B2', title:'Nuance & Idioms', vietTitle:'Thành ngữ & sắc thái', tag:'Idiomatic expressions',
+    cards:[
+      {v:'Chậm mà chắc', p:'chum maa chuk', e:'Slow but steady'},
+      {v:'Nước đến chân mới nhảy', p:'nuh-uhk den chun muh-ee nyay', e:'Waiting until the last minute'},
+      {v:'Một công đôi việc', p:'moht kong doy vee-ek', e:'Two birds with one stone'},
+      {v:'Ăn quả nhớ kẻ trồng cây', p:'an gwaa nyuh keh chong kay', e:'Remember those who helped you'},
+      {v:'Nói vậy thôi chứ', p:'noy vay toy chuh', e:"That's just a figure of speech"},
+    ]},
+  { id:'l16', level:'B2', title:'Debate & Persuasion', vietTitle:'Tranh luận & thuyết phục', tag:'Persuasion',
+    cards:[
+      {v:'Tôi hiểu ý bạn, nhưng...', p:'toy hee-eu ee ban, nyuhng', e:'I understand your point, but...'},
+      {v:'Thực ra vấn đề là...', p:'thuk zaa vun deh laa', e:'Actually, the issue is...'},
+      {v:'Hãy nghe tôi giải thích', p:'hay ngeh toy zai theek', e:'Please let me explain'},
+      {v:'Tôi tin rằng điều này quan trọng', p:'toy tin zung dee-eu nay gwan chong', e:'I believe this is important'},
+      {v:'Chúng ta nên thoả hiệp', p:'choong taa nen thwaa hee-ep', e:'We should compromise'},
+    ]},
+  { id:'l17', level:'B1', title:'Describing People & Things', vietTitle:'Miêu tả người và vật', tag:'Comparisons',
+    cards:[
+      {v:'Cái này đẹp hơn cái kia', p:'kai nay dep huhn kai kee-a', e:'This one is prettier than that one'},
+      {v:'Anh ấy cao hơn tôi', p:'ayng ay cow huhn toy', e:"He's taller than me"},
+      {v:'Nó giống như cái này', p:'no zong nyuh kai nay', e:"It's similar to this one"},
+      {v:'Khác với tôi nghĩ', p:'khak vuh-ee toy ngee', e:'Different from what I thought'},
+      {v:'Cái nào tốt nhất?', p:'kai now toht nyut', e:'Which one is best?'},
+    ]},
+  { id:'l18', level:'B1', title:'On the Phone', vietTitle:'Gọi điện thoại', tag:'Phone calls',
+    cards:[
+      {v:'A lô, ai đó ạ?', p:'aa lo, ai do a', e:'Hello, who\'s calling?'},
+      {v:'Tôi gọi nhầm số', p:'toy goy nyum soh', e:'I dialed the wrong number'},
+      {v:'Bạn nói to hơn được không?', p:'ban noy to huhn duh-uhk khom', e:'Can you speak louder?'},
+      {v:'Tôi sẽ gọi lại sau', p:'toy seh goy lai sow', e:"I'll call back later"},
+      {v:'Đường dây hơi kém', p:'duh-uhng zay huh-ee kem', e:'The line is a bit bad'},
+    ]},
+  { id:'l19', level:'B1', title:'Expressing Feelings', vietTitle:'Bày tỏ cảm xúc', tag:'Emotions',
+    cards:[
+      {v:'Tôi thấy rất vui', p:'toy tay zut voo-ee', e:'I feel very happy'},
+      {v:'Tôi hơi lo lắng', p:'toy huh-ee lo lung', e:"I'm a bit worried"},
+      {v:'Điều đó làm tôi ngạc nhiên', p:'dee-eu do laam toy ngak nyee-en', e:'That surprised me'},
+      {v:'Tôi cảm thấy mệt', p:'toy gam tay met', e:'I feel tired'},
+      {v:'Đừng lo, mọi thứ sẽ ổn', p:'dung lo, moy thuh seh ohn', e:"Don't worry, everything will be fine"},
+    ]},
+  { id:'l20', level:'B2', title:'Workplace Communication', vietTitle:'Giao tiếp công sở', tag:'Professional register',
+    cards:[
+      {v:'Tôi muốn đề xuất một ý kiến', p:'toy moo-uhn deh swut moht ee kee-en', e:"I'd like to propose an idea"},
+      {v:'Deadline có thể gia hạn không?', p:'deadline co the zaa han khom', e:'Can the deadline be extended?'},
+      {v:'Chúng ta cần thống nhất trước', p:'choong taa kun thohng nyut chuh-uhk', e:'We need to align first'},
+      {v:'Tôi sẽ phụ trách phần này', p:'toy seh foo chak fun nay', e:"I'll be in charge of this part"},
+      {v:'Cảm ơn vì đã phản hồi nhanh', p:'gam uhn vee da fan hoy nyaang', e:'Thanks for the quick feedback'},
+    ]},
+  { id:'l21', level:'B2', title:'Telling a Story', vietTitle:'Kể chuyện', tag:'Narrative Vietnamese',
+    cards:[
+      {v:'Chuyện là thế này...', p:'chwee-en laa theh nay', e:"So here's what happened..."},
+      {v:'Đột nhiên trời đổ mưa', p:'dot nyee-en chuh-uh-ee doh muh-a', e:'Suddenly it started raining'},
+      {v:'Cuối cùng mọi chuyện cũng ổn', p:'coo-oy coong moy chwee-en coong ohn', e:'In the end everything turned out fine'},
+      {v:'Bạn sẽ không tin đâu', p:'ban seh khom tin dow', e:"You won't believe this"},
+      {v:'Đó là một kỷ niệm khó quên', p:'do laa moht kee nee-em kho gwen', e:"That's an unforgettable memory"},
+    ]},
+  { id:'l22', level:'B2', title:'Hypotheticals & What-Ifs', vietTitle:'Giả định', tag:'Conditional Vietnamese',
+    cards:[
+      {v:'Nếu tôi là bạn, tôi sẽ đi', p:'neh-oo toy laa ban, toy seh dee', e:'If I were you, I would go'},
+      {v:'Giá mà tôi biết trước', p:'zaa maa toy bee-et chuh-uhk', e:'I wish I had known beforehand'},
+      {v:'Nếu có thời gian, tôi sẽ ghé qua', p:'neh-oo co thuh-ee zaan, toy seh geh gwaa', e:"If I have time, I'll stop by"},
+      {v:'Chuyện gì sẽ xảy ra nếu...?', p:'chwee-en zee seh sigh raa neh-oo', e:'What would happen if...?'},
+      {v:'Thế thì tốt quá', p:'theh tee toht gwaa', e:'That would be great then'},
+    ]},
+  { id:'l23', level:'C1', title:'Reading Between the Lines', vietTitle:'Nói tránh, nói giảm', tag:'Indirect communication',
+    cards:[
+      {v:'Để tôi xem đã', p:'deh toy sem da', e:'Let me see (often really means "probably not")'},
+      {v:'Chắc là được', p:'chuk laa duh-uhk', e:'Probably okay (a soft, noncommittal yes)'},
+      {v:'Cũng được', p:'coong duh-uhk', e:"It's fine, I guess (lukewarm agreement)"},
+      {v:'Tuỳ bạn thôi', p:'twee ban toy', e:"Up to you (often deflects a decision)"},
+      {v:'Để tính sau', p:'deh ting sow', e:"We'll figure it out later (politely postponing)"},
+    ]},
+  { id:'l24', level:'C1', title:'Humor & Wordplay', vietTitle:'Hài hước & chơi chữ', tag:'Humor',
+    cards:[
+      {v:'Nói đùa thôi', p:'noy doo-a toy', e:'Just kidding'},
+      {v:'Bạn có khiếu hài hước đấy', p:'ban co khee-oo hai huh-uhk day', e:"You've got a good sense of humor"},
+      {v:'Chuyện đó buồn cười thật', p:'chwee-en do boo-uhn kuh-uh-ee thut', e:"That's really funny"},
+      {v:'Đừng có đùa nữa', p:'dung co doo-a nuh-a', e:'Stop joking around'},
+      {v:'Cười muốn xỉu', p:'kuh-uh-ee moo-uhn see-oo', e:'Laughing so hard I could pass out (slang)'},
+    ]},
+  { id:'l25', level:'C1', title:'Formal Register & Speeches', vietTitle:'Văn phong trang trọng', tag:'Formal address',
+    cards:[
+      {v:'Kính thưa quý vị', p:'keeng thuh gwee vee', e:'Respectfully addressing everyone (formal opening)'},
+      {v:'Xin phép được chia sẻ', p:'sin fep duh-uhk chee-a seh', e:'May I share (formal permission-asking)'},
+      {v:'Thay mặt cho...', p:'thay mut cho', e:'On behalf of...'},
+      {v:'Xin trân trọng cảm ơn', p:'sin chun chong gam uhn', e:'With sincere thanks (formal)'},
+      {v:'Kính chúc sức khoẻ', p:'keeng chook suk khweh', e:'Wishing you good health (formal toast)'},
+    ]},
+  { id:'l26', level:'C1', title:'Following the News', vietTitle:'Theo dõi tin tức', tag:'Current events',
+    cards:[
+      {v:'Bạn có xem tin tức hôm nay chưa?', p:'ban co sem tin tuk hom nay chuh-a', e:"Have you seen today's news?"},
+      {v:'Tình hình kinh tế thế nào?', p:'ting hing king teh theh now', e:"How's the economic situation?"},
+      {v:'Theo báo chí đưa tin...', p:'teh-o bow chee duh-a tin', e:'According to the press...'},
+      {v:'Vấn đề này đang gây tranh cãi', p:'vun deh nay dang gay chaang cai', e:'This issue is causing controversy'},
+      {v:'Dư luận đang quan tâm đến...', p:'zuh loo-un dang gwan tum den', e:'Public opinion is focused on...'},
+    ]},
+  { id:'l27', level:'C1', title:'Deep Empathy & Consoling', vietTitle:'An ủi, đồng cảm', tag:'Emotional support',
+    cards:[
+      {v:'Mình hiểu cảm giác của bạn', p:'meeng hee-eu gam zaak coo-a ban', e:'I understand how you feel'},
+      {v:'Mọi chuyện rồi sẽ ổn thôi', p:'moy chwee-en zoy seh ohn toy', e:'Everything will be okay'},
+      {v:'Bạn đã cố gắng hết sức rồi', p:'ban da coh gung het suk zoy', e:"You've tried your best"},
+      {v:'Có mình ở đây với bạn', p:'co meeng uh day vuh-ee ban', e:"I'm here with you"},
+      {v:'Đừng tự trách bản thân', p:'dung tuh chak ban thun', e:"Don't blame yourself"},
+    ]},
+  { id:'l28', level:'C1', title:'High-Stakes Negotiation', vietTitle:'Đàm phán', tag:'Business negotiation',
+    cards:[
+      {v:'Điều khoản này cần xem lại', p:'dee-eu khwan nay kun sem lai', e:'This clause needs review'},
+      {v:'Chúng ta có thể thương lượng thêm', p:'choong taa co the thuh-uhng luh-uhng them', e:'We can negotiate further'},
+      {v:'Đây là điều kiện cuối cùng', p:'day laa dee-eu kee-en coo-oy coong', e:'This is the final condition'},
+      {v:'Tôi cần thời gian suy nghĩ thêm', p:'toy kun thuh-ee zaan swee ngee them', e:'I need more time to think it over'},
+      {v:'Hợp đồng sẽ có hiệu lực từ...', p:'hop dong seh co hee-eu luk tuh', e:'The contract will take effect from...'},
     ]},
 ];
 
@@ -797,7 +948,7 @@ const PACKS = [
     {v:'Cho tôi một phần', p:'cho toy moht fun', e:'One portion please'},
     {v:'Không hành', p:'khom hang', e:'No onions'},
     {v:'Gói mang về', p:'goy mang veh', e:'Wrap it to go'}]},
-  { id:'p30', icon:'💊', title:'Pharmacy First Aid', tag:'Safety', color:'stool-red', cards:[
+  { id:'p30', icon:'💊', title:'Pharmacy First Aid', tag:'Health', color:'stool-red', cards:[
     {v:'Tôi bị đau bụng', p:'toy bee dow boong', e:'My stomach hurts'},
     {v:'Cho tôi thuốc đau đầu', p:'cho toy too-uhk dow dow', e:'Headache medicine please'},
     {v:'Bao nhiêu viên một ngày?', p:'bow nyew vee-en moht ngay', e:'How many pills a day?'}]},
@@ -853,7 +1004,7 @@ const PACKS = [
     {v:'Trời sắp mưa rồi', p:'chuh-uh-ee sup muh-a zoy', e:"It's about to rain"},
     {v:'Cho tôi mượn áo mưa', p:'cho toy muh-uhn ow muh-a', e:'Can I borrow a raincoat?'},
     {v:'Đường bị ngập', p:'duh-uhng bee ngup', e:'The road is flooded'}]},
-  { id:'p44', icon:'💊', title:'Buying Medicine', tag:'Safety', color:'stool-red', cards:[
+  { id:'p44', icon:'💊', title:'Buying Medicine', tag:'Health', color:'stool-red', cards:[
     {v:'Tôi bị cảm', p:'toy bee gaam', e:'I have a cold'},
     {v:'Cho tôi thuốc hạ sốt', p:'cho toy too-uhk haa soht', e:'Fever medicine please'},
     {v:'Uống mấy lần một ngày?', p:'oo-ohng may lun moht ngay', e:'How many times a day?'}]},
@@ -1022,32 +1173,324 @@ const WORLDS = [
   { id:'everyday', icon:'🌏', title:'Everyday Vietnamese', tagline:"Real, daily conversations for travel, friends, and life here.", tags:['Basics','Culture','Admin','Home'] },
   { id:'fnb', icon:'🍜', title:'Restaurant & F&B', tagline:"Take orders, describe dishes, connect with staff and suppliers.", tags:['Food'] },
   { id:'dating', icon:'💬', title:'Dating & Social', tagline:"Break the ice, flirt naturally, keep the conversation alive.", tags:['Social'] },
-  { id:'travel', icon:'🧳', title:'Travel Vietnam', tagline:"Bargain at markets, book stays, order street food like a local.", tags:['Transport','Explore','Safety','Money'] },
+  { id:'travel', icon:'🧳', title:'Travel Vietnam', tagline:"Bargain at markets, book stays, order street food like a local.", tags:['Transport','Explore','Safety','Money','Health'] },
   { id:'factory', icon:'🏭', title:'Factory & Industrial', tagline:"Communicate clearly with workers, supervisors, and suppliers.", tags:['Work'] },
+  { id:'health', icon:'🏥', title:'Healthcare & Wellness', tagline:"Doctor visits, pharmacy runs, and taking care of yourself while you're here.", tags:['Health'] },
+  { id:'housing', icon:'🏘️', title:'Housing & Real Estate', tagline:"Renting, moving in, and dealing with landlords, agents, and bills.", tags:['Home'] },
+  { id:'business', icon:'💼', title:'Business & Professional', tagline:"Meetings, negotiations, and getting things done in a Vietnamese office.", tags:['Work'] },
 ];
 let currentWorldId = 'everyday';
 
+/* ========================= SOS PHRASEBOOK ========================= */
+// Hand-picked per world — the phrases you actually reach for "the exact
+// moment you get stuck," not just whatever happened to be first in a pack.
+const SOS_PHRASES = {
+  everyday: [
+    {v:'Giúp tôi với!', p:'zoop toy vuh-ee', e:'Help me!'},
+    {v:'Tôi không hiểu', p:'toy khom hee-eu', e:"I don't understand"},
+    {v:'Làm ơn nói chậm lại', p:'laam uhn noy chum lai', e:'Please speak slower'},
+    {v:'Bạn nói tiếng Anh được không?', p:'ban noy tee-eng ayng duh-uhk khom', e:'Do you speak English?'},
+    {v:'Tôi bị lạc', p:'toy bee lak', e:"I'm lost"},
+    {v:'Gọi giúp tôi taxi được không?', p:'goy zoop toy tak-see duh-uhk khom', e:'Can you call me a taxi?'},
+    {v:'Nhà vệ sinh ở đâu?', p:'nyaa veh sin uh dow', e:"Where's the bathroom?"},
+    {v:'Tôi cần bác sĩ', p:'toy kun bak see', e:'I need a doctor'},
+    {v:'Xin lỗi, làm phiền bạn', p:'sin loy, laam fee-en ban', e:'Excuse me, sorry to bother you'},
+    {v:'Tôi bị mất điện thoại', p:'toy bee mut dee-en twai', e:'I lost my phone'},
+    {v:'Cho tôi xin số điện thoại', p:'cho toy sin soh dee-en twai', e:'Can I get your phone number'},
+    {v:'Đây là địa chỉ của tôi', p:'day laa dee-a chee coo-a toy', e:'This is my address'},
+    {v:'Tôi không có tiền mặt', p:'toy khom co tee-en mut', e:"I don't have cash"},
+    {v:'Wifi ở đây là gì?', p:'wifi uh day laa zee', e:"What's the wifi here?"},
+  ],
+  fnb: [
+    {v:'Cho tôi xem thực đơn', p:'cho toy sem thuk duhn', e:'Can I see the menu'},
+    {v:'Tôi bị dị ứng...', p:'toy bee zee ung', e:"I'm allergic to..."},
+    {v:'Không cay', p:'khom kai', e:'Not spicy'},
+    {v:'Tôi ăn chay', p:'toy an chai', e:"I'm vegetarian"},
+    {v:'Cho tôi thêm một cái nĩa', p:'cho toy them moht kai nee-a', e:'Can I get another fork'},
+    {v:'Món này có thịt không?', p:'mon nay co teet khom', e:'Does this dish have meat?'},
+    {v:'Tính tiền giúp tôi', p:'ting tee-en zoop toy', e:'Check please'},
+    {v:'Có thể thanh toán bằng thẻ không?', p:'co the thaang twan bang teh khom', e:'Can I pay by card?'},
+    {v:'Cho tôi thêm nước', p:'cho toy them nuh-uhk', e:'More water please'},
+    {v:'Món này nguội rồi', p:'mon nay ngoo-oy zoy', e:'This dish is cold'},
+    {v:'Tôi không gọi món này', p:'toy khom goy mon nay', e:"I didn't order this"},
+    {v:'Cho tôi gói mang về', p:'cho toy goy mang veh', e:'Can I get this to go'},
+    {v:'Ở đây có Wifi không?', p:'uh day co wifi khom', e:'Is there wifi here?'},
+    {v:'Ngon quá!', p:'ngon gwaa', e:'So delicious!'},
+  ],
+  dating: [
+    {v:'Bạn có thời gian không?', p:'ban co thuh-ee zaan khom', e:'Do you have time?'},
+    {v:'Mình xin số được không?', p:'meeng sin soh duh-uhk khom', e:'Can I get your number?'},
+    {v:'Bạn đẹp/đẹp trai quá', p:'ban dep / dep chai gwaa', e:"You're beautiful/handsome"},
+    {v:'Mình hơi ngại', p:'meeng huh-ee ngai', e:"I'm a bit shy"},
+    {v:'Bạn có người yêu chưa?', p:'ban co nguh-uh-ee yee-oo chuh-a', e:'Do you have a partner?'},
+    {v:'Mình thích bạn', p:'meeng theek ban', e:'I like you'},
+    {v:'Hẹn gặp lại nhé', p:'hen gap lai nyeh', e:'See you again'},
+    {v:'Mình phải về rồi', p:'meeng fai veh zoy', e:'I have to go now'},
+    {v:'Cho mình xin lỗi', p:'cho meeng sin loy', e:"I'm sorry, excuse me"},
+    {v:'Bạn có Zalo không?', p:'ban co zaa-lo khom', e:'Do you have Zalo?'},
+    {v:'Mình không rảnh hôm nay', p:'meeng khom zaang hom nay', e:"I'm not free today"},
+    {v:'Nói chuyện với bạn vui quá', p:'noy chwee-en vuh-ee ban voo-ee gwaa', e:'Talking with you is fun'},
+    {v:'Đừng ngại', p:'dung ngai', e:"Don't be shy"},
+    {v:'Mình đùa thôi', p:'meeng doo-a toy', e:"I'm just kidding"},
+  ],
+  travel: [
+    {v:'Tôi bị mất hộ chiếu', p:'toy bee mut ho chee-eu', e:'I lost my passport'},
+    {v:'Đại sứ quán ở đâu?', p:'dai suh gwan uh dow', e:"Where's the embassy?"},
+    {v:'Gọi giúp tôi cảnh sát', p:'goy zoop toy caan sat', e:'Call the police for me'},
+    {v:'Tôi cần đổi tiền', p:'toy kun doy tee-en', e:'I need to exchange money'},
+    {v:'Vé này đi đâu?', p:'veh nay dee dow', e:'Where does this ticket go?'},
+    {v:'Chuyến bay của tôi bị hoãn', p:'chwee-en bay coo-a toy bee hwaan', e:'My flight is delayed'},
+    {v:'Tôi cần một phòng', p:'toy kun moht fong', e:'I need a room'},
+    {v:'Giá này đã bao gồm gì?', p:'zaa nay da bow gom zee', e:"What's included in this price?"},
+    {v:'Xe buýt này có đi... không?', p:'seh bweet nay co dee khom', e:'Does this bus go to...?'},
+    {v:'Tôi bị say xe', p:'toy bee say seh', e:"I'm carsick"},
+    {v:'Đây có an toàn không?', p:'day co an twaan khom', e:'Is this safe?'},
+    {v:'Tôi cần sạc điện thoại', p:'toy kun sak dee-en twai', e:'I need to charge my phone'},
+    {v:'Có thể mặc cả không?', p:'co the mak caa khom', e:'Can I bargain?'},
+    {v:'Chụp ảnh giúp tôi được không?', p:'choop ang zoop toy duh-uhk khom', e:'Can you take a photo for me?'},
+  ],
+  factory: [
+    {v:'Tôi cần báo cáo sự cố', p:'toy kun bow cow suh coh', e:'I need to report an issue'},
+    {v:'Máy này bị hỏng', p:'my nay bee hong', e:'This machine is broken'},
+    {v:'Tôi cần thiết bị bảo hộ', p:'toy kun tee-et bee bow ho', e:'I need safety equipment'},
+    {v:'Ca làm việc bắt đầu lúc mấy giờ?', p:'kaa laam vee-ek but dow loop may zuh', e:'What time does the shift start?'},
+    {v:'Tôi bị đau, cần nghỉ', p:'toy bee dow, kun ngee', e:"I'm hurt, I need a break"},
+    {v:'Ai là quản lý ở đây?', p:'ai laa gwan lee uh day', e:"Who's the supervisor here?"},
+    {v:'Tôi không hiểu hướng dẫn', p:'toy khom hee-eu huh-uhng zun', e:"I don't understand the instructions"},
+    {v:'Cần thêm nguyên liệu', p:'kun them ngwee-en lee-oo', e:'We need more materials'},
+    {v:'Đơn hàng này khi nào giao?', p:'duhn hang nay kee now zow', e:'When is this order delivered?'},
+    {v:'Tôi cần ký giấy tờ gì?', p:'toy kun kee zay tuh zee', e:'What paperwork do I need to sign?'},
+    {v:'Chỗ này có nguy hiểm không?', p:'cho nay co ngwee hee-em khom', e:'Is this area dangerous?'},
+    {v:'Tôi xin nghỉ phép', p:'toy sin ngee fep', e:"I'd like to request time off"},
+    {v:'Lương được trả khi nào?', p:'luh-uhng duh-uhk chaa kee now', e:'When is payroll?'},
+    {v:'Cảm ơn vì đã hướng dẫn', p:'gam uhn vee da huh-uhng zun', e:'Thanks for showing me'},
+  ],
+  health: [
+    {v:'Tôi cần bác sĩ', p:'toy kun bak see', e:'I need a doctor'},
+    {v:'Tôi bị đau ở đây', p:'toy bee dow uh day', e:'It hurts here'},
+    {v:'Tôi bị sốt', p:'toy bee soht', e:'I have a fever'},
+    {v:'Tôi bị dị ứng với...', p:'toy bee zee ung vuh-ee', e:"I'm allergic to..."},
+    {v:'Cho tôi thuốc giảm đau', p:'cho toy too-uhk zaam dow', e:'Pain reliever please'},
+    {v:'Bệnh viện gần nhất ở đâu?', p:'beng vee-en gun nyut uh dow', e:"Where's the nearest hospital?"},
+    {v:'Tôi cần gọi cấp cứu', p:'toy kun goy kup koo', e:'I need to call an ambulance'},
+    {v:'Thuốc này uống mấy lần một ngày?', p:'too-uhk nay oo-ohng may lun moht ngay', e:'How many times a day do I take this?'},
+    {v:'Tôi bị đau bụng', p:'toy bee dow boong', e:'My stomach hurts'},
+    {v:'Có bác sĩ nói tiếng Anh không?', p:'co bak see noy tee-eng ayng khom', e:'Is there an English-speaking doctor?'},
+    {v:'Tôi cần khám sức khoẻ', p:'toy kun kaam suk khweh', e:'I need a check-up'},
+    {v:'Tôi quên mang bảo hiểm y tế', p:'toy gwen mang bow hee-em ee teh', e:'I forgot my health insurance'},
+    {v:'Vết thương này có cần khâu không?', p:'vet thuh-uhng nay co kun kow khom', e:'Does this wound need stitches?'},
+    {v:'Tôi cảm thấy chóng mặt', p:'toy gam tay chong mut', e:'I feel dizzy'},
+  ],
+  housing: [
+    {v:'Tôi muốn thuê phòng này', p:'toy moo-uhn thoo-eh fong nay', e:'I want to rent this room'},
+    {v:'Giá thuê một tháng là bao nhiêu?', p:'zaa thoo-eh moht thang laa bow nyew', e:"What's the monthly rent?"},
+    {v:'Tiền điện nước tính riêng hay gộp?', p:'tee-en dee-en nuh-uhk ting zee-eng hay gop', e:'Are utilities separate or included?'},
+    {v:'Tôi cần đặt cọc bao nhiêu?', p:'toy kun dat kok bow nyew', e:'How much deposit do I need?'},
+    {v:'Hợp đồng thuê nhà ở đâu ký?', p:'hop dong thoo-eh nyaa uh dow kee', e:'Where do I sign the lease?'},
+    {v:'Wifi có sẵn trong phòng không?', p:'wifi co sun chong fong khom', e:'Does the room already have wifi?'},
+    {v:'Máy lạnh phòng này bị hỏng', p:'my laang fong nay bee hong', e:'The AC in this room is broken'},
+    {v:'Tôi muốn trả phòng sớm', p:'toy moo-uhn chaa fong soym', e:"I'd like to move out early"},
+    {v:'Chủ nhà có ở gần đây không?', p:'choo nyaa co uh gun day khom', e:'Does the landlord live nearby?'},
+    {v:'Tôi cần thêm một chìa khoá', p:'toy kun them moht chee-a kwaa', e:'I need an extra key'},
+    {v:'Hàng xóm ồn quá', p:'hang som ohn gwaa', e:'The neighbors are too loud'},
+    {v:'Tiền nhà tháng này con đã chuyển rồi', p:'tee-en nyaa thang nay con da chwee-en zoy', e:"I've already transferred this month's rent"},
+    {v:'Phòng này có cho nuôi thú cưng không?', p:'fong nay co cho noo-ee thoo guhng khom', e:'Are pets allowed in this room?'},
+    {v:'Tôi cần gia hạn hợp đồng', p:'toy kun zaa han hop dong', e:'I need to extend the lease'},
+  ],
+  business: [
+    {v:'Tôi muốn đặt lịch họp', p:'toy moo-uhn dat lick hop', e:"I'd like to schedule a meeting"},
+    {v:'Deadline dự án là khi nào?', p:'deadline zuh an laa kee now', e:"When's the project deadline?"},
+    {v:'Tôi cần gửi báo cáo', p:'toy kun guh-ee bow cow', e:'I need to send a report'},
+    {v:'Chúng ta cần thống nhất về giá', p:'choong taa kun thohng nyut veh zaa', e:'We need to agree on pricing'},
+    {v:'Xin lỗi vì trả lời trễ', p:'sin loy vee chaa luh-ee cheh', e:'Sorry for the late reply'},
+    {v:'Tôi sẽ xác nhận lại qua email', p:'toy seh sak nyun lai gwaa email', e:"I'll confirm via email"},
+    {v:'Cuộc họp bắt đầu lúc mấy giờ?', p:'koo-ok hop but dow loop may zuh', e:'What time does the meeting start?'},
+    {v:'Tôi cần thêm thông tin trước khi quyết định', p:'toy kun them thong tin chuh-uhk kee gwee-et ding', e:'I need more information before deciding'},
+    {v:'Hợp đồng này có thể điều chỉnh không?', p:'hop dong nay co the dee-eu cheeng khom', e:'Can this contract be adjusted?'},
+    {v:'Tôi xin phép nghỉ một ngày', p:'toy sin fep ngee moht ngay', e:"I'd like to request a day off"},
+    {v:'Chúng tôi rất mong được hợp tác', p:'choong toy zut mong duh-uhk hop tak', e:'We look forward to working together'},
+    {v:'Tôi cần chữ ký của anh/chị', p:'toy kun chuh kee coo-a ayng/chee', e:'I need your signature'},
+    {v:'Buổi họp này online hay trực tiếp?', p:'boo-oy hop nay online hay chuk tee-ep', e:'Is this meeting online or in person?'},
+    {v:'Cảm ơn vì đã hợp tác hiệu quả', p:'gam uhn vee da hop tak hee-eu gwaa', e:'Thanks for the productive collaboration'},
+  ],
+};
 const CHAT_PERSONAS = {
   everyday: [
     { name:'Xe Ôm Driver', icon:'🛵', opener:{v:'Anh/chị đi đâu?', e:'Where are you headed?'}, turns:[
-      { youOptions:[{v:'Tôi đi chợ Bến Thành', e:"I'm going to Ben Thanh Market", correct:true},{v:'Tôi không biết', e:"I don't know", correct:false}], them:{v:'Ok, lên xe đi!', e:'Ok, hop on!'} },
-      { youOptions:[{v:'Cảm ơn anh nhiều', e:'Thank you so much', correct:true},{v:'Tôi không thích', e:"I don't like it", correct:false}], them:{v:'Không có gì, đi cẩn thận nhé!', e:"You're welcome, take care!"} },
+      { youOptions:[
+          {v:'Tôi đi chợ Bến Thành', e:"I'm going to Ben Thanh Market", correct:true},
+          {v:'Tôi không biết', e:"I don't know", correct:false, tip:"Doesn't give the driver anything to work with — he needs a destination before he can quote a price."},
+          {v:'Xe máy đẹp quá', e:'Nice bike!', correct:false, tip:"He's asking where you're headed, not for a compliment — off-topic here."},
+        ], them:{v:'Ok, 50 nghìn nhé. Lên xe đi!', e:'Ok, 50k. Hop on!'} },
+      { youOptions:[
+          {v:'Được, cảm ơn anh', e:'Sounds good, thank you', correct:true},
+          {v:'Đắt quá!', e:'Too expensive!', correct:false, tip:"Haggling over an already-fair short ride is a bit much — save bargaining for bigger purchases."},
+          {v:'Tôi đi bộ vậy', e:"I'll just walk then", correct:false, tip:"Backing out right after he's quoted a fair price feels abrupt."},
+        ], them:{v:'Ok, ngồi vững nhé!', e:'Ok, hold on tight!'} },
+      { youOptions:[
+          {v:'Anh chạy chậm chậm thôi nhé', e:'Please drive a bit slowly', correct:true},
+          {v:'Nhanh lên!', e:'Faster!', correct:false, tip:"Rushing a xe ôm driver in traffic is genuinely unsafe — ask for a comfortable pace instead."},
+          {v:'Tôi không sợ đâu', e:"I'm not scared", correct:false, tip:"Doesn't respond to anything he's said — reads as a non sequitur mid-ride."},
+        ], them:{v:'Yên tâm đi, tôi chạy an toàn', e:'Relax, I drive safely'} },
+      { youOptions:[
+          {v:'Dừng ở đây được rồi, cảm ơn anh', e:'You can stop here, thank you', correct:true},
+          {v:'Tôi đổi ý rồi', e:'I changed my mind', correct:false, tip:"Changing plans without naming a new destination just confuses the driver mid-ride."},
+          {v:'Ok bye', e:'Ok bye', correct:false, tip:"A little too casual for ending a paid ride — a quick thank-you lands better."},
+        ], them:{v:'Được rồi, 50 nghìn nhé. Cảm ơn bạn!', e:'Alright, 50k. Thanks!'} },
     ]},
     { name:'Neighbor (Cô Ba)', icon:'🏠', opener:{v:'Chào con, dạo này khỏe không?', e:'Hello dear, how have you been?'}, turns:[
-      { youOptions:[{v:'Dạ, con khỏe, cảm ơn cô', e:"I'm well, thank you", correct:true},{v:'Con không biết cô là ai', e:"I don't know who you are", correct:false}], them:{v:'Vậy tốt rồi, ăn cơm chưa?', e:'Good — have you eaten yet?'} },
-      { youOptions:[{v:'Dạ, con ăn rồi ạ', e:"Yes, I've eaten", correct:true},{v:'Con đi ngủ đây', e:"I'm going to sleep", correct:false}], them:{v:'Rảnh thì ghé nhà cô chơi nhé', e:'Come visit when you have time'} },
+      { youOptions:[
+          {v:'Dạ, con khỏe, cảm ơn cô', e:"I'm well, thank you", correct:true},
+          {v:'Con không biết cô là ai', e:"I don't know who you are", correct:false, tip:"She's a warm, familiar neighbor — pretending not to know her reads as oddly cold."},
+          {v:'Cô hỏi làm gì vậy?', e:'Why are you asking?', correct:false, tip:"This is just a normal friendly greeting — treating it as suspicious feels off."},
+        ], them:{v:'Vậy tốt rồi, ăn cơm chưa?', e:'Good — have you eaten yet?'} },
+      { youOptions:[
+          {v:'Dạ, con ăn rồi ạ', e:"Yes, I've eaten", correct:true},
+          {v:'Con đi ngủ đây', e:"I'm going to sleep", correct:false, tip:"Doesn't answer her question and ends the chat rather abruptly."},
+          {v:'Cô ăn cơm với con nhé', e:'Eat with me, auntie', correct:false, tip:"Sweet idea, but comes out of nowhere before you've even answered her question."},
+        ], them:{v:'Rảnh thì ghé nhà cô chơi nhé', e:'Come visit when you have time'} },
+      { youOptions:[
+          {v:'Dạ, con sẽ ghé qua cuối tuần', e:"I'll stop by this weekend", correct:true},
+          {v:'Con bận lắm, không đi được', e:"I'm too busy, can't go", correct:false, tip:"Flatly declining a kind invitation without any softening can feel cold here."},
+          {v:'Nhà cô ở đâu vậy?', e:'Where do you live?', correct:false, tip:"A little strange to ask — as her neighbor, you'd normally already know."},
+        ], them:{v:'Được đó, cô nấu chè đợi con', e:"Great, I'll make chè and wait for you"} },
+      { youOptions:[
+          {v:'Dạ, con cảm ơn cô nhiều lắm', e:'Thank you so much', correct:true},
+          {v:'Thôi khỏi cô ơi', e:"Oh no, you don't have to", correct:false, tip:"Turning down her generosity outright can feel like refusing hospitality — accept warmly instead."},
+          {v:'Chè gì vậy cô?', e:'What kind of chè?', correct:false, tip:"Not wrong exactly, but skips thanking her first — a little graceless before asking for details."},
+        ], them:{v:'Không có gì đâu con, cô thương con mà', e:"It's nothing, dear — I care about you"} },
     ]},
     { name:'Landlord', icon:'🔑', opener:{v:'Tiền nhà tháng này chưa đóng nhé.', e:"You haven't paid this month's rent yet."}, turns:[
-      { youOptions:[{v:'Dạ, con đóng tiền hôm nay', e:"I'll pay today", correct:true, tip:"Giving a clear plan is much better than saying you have no money — landlords respond well to specifics."},{v:'Con không có tiền', e:"I don't have money", correct:false, tip:"It's better to give a specific plan than to simply say you have no money — landlords respond better to a timeline."}], them:{v:'Được, chuyển khoản cho cô nhé', e:'Okay, transfer it to me then'} },
-      { youOptions:[{v:'Dạ, con chuyển ngay', e:"I'll transfer it right away", correct:true},{v:'Để mai con đóng', e:"I'll pay tomorrow", correct:false, tip:"Delaying without asking first can create friction — always confirm a new date is okay."}], them:{v:'Được rồi, cảm ơn con', e:'Alright, thank you'} },
+      { youOptions:[
+          {v:'Dạ, con đóng tiền hôm nay', e:"I'll pay today", correct:true},
+          {v:'Con không có tiền', e:"I don't have money", correct:false, tip:"Giving a clear plan works much better than saying you have no money — landlords respond to specifics, not vague refusals."},
+          {v:'Sao tháng nào cô cũng nhắc vậy', e:'Why do you remind me every month?', correct:false, tip:"Reads as confrontational — she has every right to remind you about rent."},
+        ], them:{v:'Được, chuyển khoản cho cô nhé', e:'Okay, transfer it to me then'} },
+      { youOptions:[
+          {v:'Dạ, con chuyển ngay', e:"I'll transfer it right away", correct:true},
+          {v:'Để mai con đóng', e:"I'll pay tomorrow", correct:false, tip:"Delaying without asking first can create friction — always confirm a new date is okay."},
+          {v:'Số tài khoản của cô là gì?', e:"What's your account number?", correct:false, tip:"Reasonable, but she's likely already given this before — reads like you weren't listening."},
+        ], them:{v:'Được rồi, cảm ơn con', e:'Alright, thank you'} },
+      { youOptions:[
+          {v:'Dạ, máy nước nóng phòng con bị hỏng ạ', e:'By the way, my water heater is broken', correct:true},
+          {v:'Nhà cô nát quá', e:"Your place is falling apart", correct:false, tip:"Insulting the property to your landlord's face will sour things fast — report issues neutrally instead."},
+          {v:'Thôi kệ đi', e:"Never mind, forget it", correct:false, tip:"Letting a real maintenance issue go unreported means it never gets fixed."},
+        ], them:{v:'Ồ, để cô gọi thợ qua sửa nhé', e:"Oh, I'll call someone to fix it"} },
+      { youOptions:[
+          {v:'Dạ, con cảm ơn cô nhiều', e:'Thank you so much', correct:true},
+          {v:'Bao giờ thợ tới vậy?', e:'When will the repairman come?', correct:false, tip:"Fair question, but jumping straight to logistics without a thank-you first feels transactional."},
+          {v:'Cô nhớ gọi sớm nha', e:"Remember to call soon", correct:false, tip:"Comes across as instructing your landlord — better to simply thank her and let her handle timing."},
+        ], them:{v:'Không có gì, con ở thoải mái nhé', e:'No problem, make yourself at home'} },
     ]},
     { name:'Motorbike Mechanic', icon:'🔧', opener:{v:'Xe bạn bị sao vậy?', e:"What's wrong with your bike?"}, turns:[
-      { youOptions:[{v:'Xe không nổ máy được', e:"It won't start", correct:true},{v:'Xe đẹp lắm', e:"The bike is beautiful", correct:false, tip:"Describe the problem, not the bike — that gets it fixed faster."}], them:{v:'Để tôi kiểm tra bugi nhé', e:'Let me check the spark plug'} },
-      { youOptions:[{v:'Bao lâu thì xong?', e:'How long will it take?', correct:true},{v:'Tôi không quan tâm', e:"I don't care", correct:false}], them:{v:'Khoảng 15 phút thôi', e:'About 15 minutes'} },
+      { youOptions:[
+          {v:'Xe không nổ máy được', e:"It won't start", correct:true},
+          {v:'Xe đẹp lắm', e:'The bike is beautiful', correct:false, tip:"Describe the problem, not the bike — that's what gets it fixed faster."},
+          {v:'Tôi mới mua xe này', e:'I just bought this bike', correct:false, tip:"Interesting, but doesn't tell him what's actually wrong — he still can't diagnose anything."},
+        ], them:{v:'Để tôi kiểm tra bugi nhé', e:'Let me check the spark plug'} },
+      { youOptions:[
+          {v:'Bao lâu thì xong?', e:'How long will it take?', correct:true},
+          {v:'Tôi không quan tâm', e:"I don't care", correct:false, tip:"Comes across dismissive to someone about to spend time fixing your bike."},
+          {v:'Bugi là gì vậy?', e:"What's a spark plug?", correct:false, tip:"Fair question, but pulls him away from working — better saved for after."},
+        ], them:{v:'Khoảng 15 phút thôi', e:'About 15 minutes'} },
+      { youOptions:[
+          {v:'Sửa xong hết bao nhiêu tiền vậy anh?', e:'How much will the whole repair cost?', correct:true},
+          {v:'Rẻ thôi nhé', e:'Keep it cheap', correct:false, tip:"Telling the mechanic what to charge before he's even quoted a price can come across pushy."},
+          {v:'Tôi trả sau được không?', e:'Can I pay later?', correct:false, tip:"Asking to pay later before you even know the price, with no prior relationship, is a big ask."},
+        ], them:{v:'Khoảng 100 nghìn thôi, rẻ mà', e:"Only about 100k, it's cheap"} },
+      { youOptions:[
+          {v:'Được, cảm ơn anh nhiều', e:'Great, thank you so much', correct:true},
+          {v:'Đắt vậy?', e:"That expensive?", correct:false, tip:"100k for a spark plug fix is genuinely cheap here — pushing back reads as out of touch with local prices."},
+          {v:'Anh sửa xe lâu chưa?', e:'Have you been a mechanic long?', correct:false, tip:"Friendly, but skips agreeing to the price — confirm first, chat after."},
+        ], them:{v:'Xong rồi đó, chạy thử xem sao', e:'All done, try starting it up'} },
     ]},
     { name:'Security Guard', icon:'🛡️', opener:{v:'Anh/chị ở phòng nào vậy?', e:'Which room are you staying in?'}, turns:[
-      { youOptions:[{v:'Tôi ở phòng 302', e:"I'm in room 302", correct:true},{v:'Tôi không nhớ', e:"I don't remember", correct:false}], them:{v:'Dạ, mời anh/chị vào', e:'Okay, please go ahead'} },
-      { youOptions:[{v:'Cảm ơn chú', e:'Thank you', correct:true},{v:'Sao chú hỏi nhiều vậy', e:"Why are you asking so much", correct:false, tip:"Security asking your room number is normal building protocol, not personal — a simple thanks keeps things friendly."}], them:{v:'Không có gì, chúc anh/chị một ngày tốt lành', e:'No problem, have a good day'} },
+      { youOptions:[
+          {v:'Tôi ở phòng 302', e:"I'm in room 302", correct:true},
+          {v:'Tôi không nhớ', e:"I don't remember", correct:false, tip:"Not remembering your own room number will likely prompt more questions, not fewer."},
+          {v:'Sao chú cần biết?', e:'Why do you need to know?', correct:false, tip:"Building security checking who's coming in is routine, not intrusive — answering directly is easiest."},
+        ], them:{v:'Dạ, mời anh/chị vào', e:'Okay, please go ahead'} },
+      { youOptions:[
+          {v:'Cảm ơn chú', e:'Thank you', correct:true},
+          {v:'Sao chú hỏi nhiều vậy', e:'Why are you asking so much?', correct:false, tip:"Security asking your room number is normal protocol, not personal — a simple thanks keeps things friendly."},
+          {v:'Chú làm ở đây lâu chưa?', e:'Have you worked here long?', correct:false, tip:"Friendly, but skips thanking him for letting you through — small courtesies go first."},
+        ], them:{v:'Không có gì, chúc anh/chị một ngày tốt lành', e:'No problem, have a good day'} },
+      { youOptions:[
+          {v:'Chú ơi, thang máy bên này có hoạt động không ạ?', e:'Excuse me, is the elevator on this side working?', correct:true},
+          {v:'Thang máy hỏng lâu chưa vậy?', e:'How long has the elevator been broken?', correct:false, tip:"Leads with a complaint tone rather than simply asking if it's working right now."},
+          {v:'Tôi tự đi tìm được', e:"I'll find it myself", correct:false, tip:"He's right there to help — brushing off the offer can feel needlessly independent."},
+        ], them:{v:'Dạ, thang máy bên trái đang sửa, anh/chị đi bên phải nhé', e:'The left elevator is under repair, please use the right one'} },
+      { youOptions:[
+          {v:'Dạ, cảm ơn chú đã chỉ', e:'Thank you for showing me', correct:true},
+          {v:'Sao không sửa sớm hơn', e:"Why isn't it fixed already?", correct:false, tip:"Complaining about building maintenance to the guard, who doesn't control repair schedules, puts him on the spot unfairly."},
+          {v:'Ừ', e:'Yeah', correct:false, tip:"A bit too curt for someone who just helped you — a proper cảm ơn is warmer."},
+        ], them:{v:'Dạ không có gì ạ', e:"You're welcome"} },
+    ]},
+    { name:'Ve Chai Collector', icon:'♻️', opener:{v:'Ai bán ve chai không?', e:'Anyone selling scrap/recyclables?'}, turns:[
+      { youOptions:[
+          {v:'Tôi có mấy cái lon với giấy cũ', e:'I have some cans and old paper', correct:true},
+          {v:'Tôi không có gì bán', e:"I don't have anything to sell", correct:false, tip:"Fine if true — but if you do have items, this ends things before you've even checked."},
+          {v:'Chị mua bao nhiêu một cân?', e:'How much per kilo?', correct:false, tip:"Jumps to price before saying what you actually have to sell."},
+        ], them:{v:'Được, chị xem qua giúp em nhé', e:'Sure, let me take a look'} },
+      { youOptions:[
+          {v:'Được bao nhiêu tiền vậy chị?', e:'How much will this come to?', correct:true},
+          {v:'Chị tính rẻ vậy sao', e:"You're pricing it that low?", correct:false, tip:"Assumes a low price before she's even weighed anything — a bit premature."},
+          {v:'Thôi khỏi cũng được', e:"Never mind then", correct:false, tip:"Backing out mid-transaction after she's already started looking through your items feels abrupt."},
+        ], them:{v:'Khoảng 20 nghìn thôi em', e:'About 20k'} },
+      { youOptions:[
+          {v:'Dạ được, cảm ơn chị', e:'Sounds good, thank you', correct:true},
+          {v:'Ít vậy à', e:"That little?", correct:false, tip:"Scrap prices are genuinely low and fairly standard — not really negotiable like a market stall."},
+          {v:'Chị lấy hết đồ trong nhà em luôn được không', e:'Can you take everything in my house?', correct:false, tip:"Funny thought, but derails the transaction — she buys what's offered, not everything you own."},
+        ], them:{v:'Dạ, cảm ơn em nhiều', e:'Thank you so much'} },
+      { youOptions:[
+          {v:'Lần sau em gọi chị lại nha', e:"I'll call you again next time", correct:true},
+          {v:'Chị đi đâu suốt vậy', e:'Where do you go all day?', correct:false, tip:"A bit personal for what's usually a quick, transactional exchange."},
+          {v:'Ok bye', e:'Ok bye', correct:false, tip:"Fine in a pinch, but a warmer send-off matches the friendly tone she's shown you."},
+        ], them:{v:'Dạ được, chị đi tiếp đây nhé', e:"Sure thing, I'll be on my way"} },
+    ]},
+    { name:'Barber', icon:'💈', opener:{v:'Cắt kiểu gì hôm nay anh?', e:'What style are we cutting today?'}, turns:[
+      { youOptions:[
+          {v:'Cắt ngắn gọn thôi anh', e:'Just a short, neat cut please', correct:true},
+          {v:'Tuỳ anh luôn', e:'Whatever you think is best', correct:false, tip:"Can work, but for a first visit it's safer to give at least a general direction."},
+          {v:'Tóc tôi dài quá', e:'My hair is too long', correct:false, tip:"States the obvious rather than answering what style you actually want."},
+        ], them:{v:'Được, ngồi thoải mái nhé', e:'Sure, get comfortable'} },
+      { youOptions:[
+          {v:'Hai bên ngắn thôi, ở trên để dài chút', e:'Short on the sides, a bit longer on top', correct:true},
+          {v:'Cắt sao cũng được', e:'Cut it however', correct:false, tip:"After he's asked for specifics, staying vague again means you might not get what you want."},
+          {v:'Giống ca sĩ Sơn Tùng', e:"Like singer Sơn Tùng", correct:false, tip:"Referencing a specific celebrity can be an awkward ask for an exact match — describing the cut works better."},
+        ], them:{v:'Ok, để tôi cắt thử nhé', e:'Okay, let me start cutting'} },
+      { youOptions:[
+          {v:'Vậy được rồi anh, đẹp lắm', e:'That looks great, thank you', correct:true},
+          {v:'Ngắn quá rồi', e:"It's too short now", correct:false, tip:"If unhappy mid-cut, it's worth saying earlier and specifically — a vague complaint after it's done is hard to fix."},
+          {v:'Anh cắt tóc lâu chưa?', e:'Have you been a barber long?', correct:false, tip:"Friendly, but skips reacting to the haircut he just showed you."},
+        ], them:{v:'Cảm ơn anh, có gội đầu không?', e:'Thanks — want a shampoo too?'} },
+      { youOptions:[
+          {v:'Dạ có, cảm ơn anh', e:'Yes please, thank you', correct:true},
+          {v:'Thôi khỏi, mất thời gian', e:"No thanks, takes too long", correct:false, tip:"A shampoo is usually quick and often included — declining like it's a burden feels abrupt."},
+          {v:'Bao nhiêu tiền thêm vậy', e:'How much extra is that?', correct:false, tip:"Fair to ask, but leading with price before saying yes/no feels transactional for a small add-on."},
+        ], them:{v:'Được, mời anh qua bên này', e:'Great, come this way'} },
+    ]},
+    { name:'New Neighbor', icon:'🏢', opener:{v:'Chào bạn, mình mới chuyển đến tầng này', e:'Hi, I just moved to this floor'}, turns:[
+      { youOptions:[
+          {v:'Chào bạn, rất vui được làm quen', e:'Hello, nice to meet you', correct:true},
+          {v:'Ừ', e:'Yeah', correct:false, tip:"A bit flat for meeting someone new — a proper greeting sets a friendlier tone."},
+          {v:'Bạn ở phòng nào vậy?', e:'Which room are you in?', correct:false, tip:"Reasonable follow-up, but skips greeting them back first — comes across brusque."},
+        ], them:{v:'Mình ở phòng 405, cạnh bạn đó', e:"I'm in 405, right next to you"} },
+      { youOptions:[
+          {v:'Ồ vậy à, có gì cần giúp cứ nói nhé', e:'Oh really, let me know if you need anything', correct:true},
+          {v:'Chúc may mắn nha', e:'Good luck', correct:false, tip:"Reads as a farewell rather than a welcome — a bit premature this early."},
+          {v:'Ở đây ồn lắm đó', e:"It's really noisy here", correct:false, tip:"Leading with a complaint about the building isn't the warmest welcome for a new neighbor."},
+        ], them:{v:'Cảm ơn bạn nhiều, bạn ở đây lâu chưa?', e:'Thank you so much, how long have you lived here?'} },
+      { youOptions:[
+          {v:'Mình ở đây khoảng hai năm rồi', e:"I've been here about two years", correct:true},
+          {v:'Lâu lắm rồi, không nhớ nữa', e:"A long time, I don't remember", correct:false, tip:"Comes across evasive for a simple, friendly question — a rough estimate is fine."},
+          {v:'Sao bạn hỏi vậy?', e:'Why do you ask?', correct:false, tip:"A little defensive for small talk — she's just making conversation."},
+        ], them:{v:'Vậy chắc bạn rành khu này lắm', e:'So you must know the area well'} },
+      { youOptions:[
+          {v:'Cũng khá rành, có gì bạn cứ hỏi mình', e:'Pretty well, feel free to ask me anything', correct:true},
+          {v:'Không rành lắm đâu', e:"Not that well, actually", correct:false, tip:"Undersells your own local knowledge right after she hinted she'd like your advice — a small missed opportunity."},
+          {v:'Mình bận lắm, không có thời gian đâu', e:"I'm too busy, no time", correct:false, tip:"Shuts down a friendly new-neighbor connection before it starts — even a brief offer to help goes a long way."},
+        ], them:{v:'Cảm ơn bạn, chắc mình sẽ hỏi nhiều đó!', e:"Thanks, I'll probably ask a lot!"} },
     ]},
   ],
   fnb: [
@@ -1123,6 +1566,144 @@ const CHAT_PERSONAS = {
       { youOptions:[{v:'Có vấn đề gì tôi sẽ báo ngay', e:"I'll report right away if there's an issue", correct:true},{v:'Chắc không sao đâu', e:'Probably fine', correct:false, tip:"Assuming small issues are fine is how accidents happen — always report promptly."}], them:{v:'Rất tốt, cảm ơn bạn', e:'Very good, thank you'} },
     ]},
   ],
+  health: [
+    { name:'Clinic Doctor', icon:'🩺', opener:{v:'Bạn bị làm sao vậy?', e:"What's wrong?"}, turns:[
+      { youOptions:[
+          {v:'Tôi bị sốt và đau đầu', e:'I have a fever and headache', correct:true},
+          {v:'Tôi khoẻ mà', e:"I'm fine", correct:false, tip:"Contradicts the reason you're at the clinic — describe what's actually wrong."},
+          {v:'Bao giờ tôi khoẻ lại?', e:'When will I be better?', correct:false, tip:"Skips describing symptoms first, which the doctor needs before diagnosing anything."},
+        ], them:{v:'Để tôi khám cho bạn nhé', e:'Let me examine you'} },
+      { youOptions:[
+          {v:'Tôi bị vậy khoảng hai ngày rồi', e:"I've had this for about two days", correct:true},
+          {v:'Tôi không nhớ', e:"I don't remember", correct:false, tip:"A timeline of symptoms genuinely helps diagnosis — worth trying to recall."},
+          {v:'Chắc không sao đâu', e:"It's probably fine", correct:false, tip:"Downplays your symptoms right when the doctor is trying to assess them."},
+        ], them:{v:'Bạn có bị dị ứng thuốc gì không?', e:'Are you allergic to any medication?'} },
+      { youOptions:[
+          {v:'Không, tôi không bị dị ứng gì', e:"No, I'm not allergic to anything", correct:true},
+          {v:'Tôi không biết', e:"I don't know", correct:false, tip:"Worth thinking hard about this — it genuinely matters for what he can safely prescribe."},
+          {v:'Thuốc gì cũng được', e:'Any medicine is fine', correct:false, tip:"Doesn't actually answer the allergy question he asked."},
+        ], them:{v:'Được, tôi sẽ kê đơn cho bạn', e:"Okay, I'll write you a prescription"} },
+      { youOptions:[
+          {v:'Cảm ơn bác sĩ nhiều', e:'Thank you so much, doctor', correct:true},
+          {v:'Thuốc này có tác dụng phụ không?', e:'Does this medicine have side effects?', correct:false, tip:"A fair question, but thank him first before adding more questions."},
+          {v:'Xong chưa?', e:'Are we done?', correct:false, tip:"A bit abrupt for wrapping up an appointment with a doctor."},
+        ], them:{v:'Nhớ uống thuốc đúng giờ nhé', e:'Remember to take the medicine on time'} },
+    ]},
+    { name:'Pharmacist', icon:'💊', opener:{v:'Bạn cần mua thuốc gì?', e:'What medicine do you need?'}, turns:[
+      { youOptions:[
+          {v:'Tôi cần thuốc hạ sốt', e:'I need fever medicine', correct:true},
+          {v:'Thuốc gì cũng được', e:'Any medicine', correct:false, tip:"The pharmacist needs specifics to recommend something safely."},
+          {v:'Tôi không chắc', e:"I'm not sure", correct:false, tip:"Fine to be unsure, but try describing the symptom instead of leaving it fully open."},
+        ], them:{v:'Bạn có triệu chứng gì khác không?', e:'Any other symptoms?'} },
+      { youOptions:[
+          {v:'Tôi cũng bị đau họng', e:'I also have a sore throat', correct:true},
+          {v:'Tôi không muốn nói', e:"I don't want to say", correct:false, tip:"Withholding symptoms makes it harder for her to recommend the right medicine."},
+          {v:'Bạn tự đoán đi', e:'You guess', correct:false, tip:"Puts the burden on the pharmacist unfairly — just describe it."},
+        ], them:{v:'Vậy tôi sẽ đưa bạn thêm thuốc ngậm ho', e:"I'll also give you throat lozenges"} },
+      { youOptions:[
+          {v:'Bao nhiêu tiền tất cả vậy?', e:'How much for everything?', correct:true},
+          {v:'Rẻ thôi nhé', e:'Keep it cheap', correct:false, tip:"Telling the pharmacist what to charge before she's quoted anything comes across pushy."},
+          {v:'Tôi trả sau được không', e:'Can I pay later?', correct:false, tip:"Unusual to ask this at a pharmacy counter without any prior arrangement."},
+        ], them:{v:'Tất cả là 45 nghìn đồng', e:"That's 45,000 dong total"} },
+      { youOptions:[
+          {v:'Dạ, gửi tiền chị nè', e:"Here's the money", correct:true},
+          {v:'Đắt vậy?', e:'That expensive?', correct:false, tip:"This is a very standard, low price — pushing back here reads as out of touch."},
+          {v:'Thôi tôi không mua nữa', e:"Never mind, I won't buy it", correct:false, tip:"Backing out after everything's already been prepared is inconsiderate."},
+        ], them:{v:'Cảm ơn bạn, mau khỏe nhé', e:'Thank you, get well soon'} },
+    ]},
+  ],
+  housing: [
+    { name:'Real Estate Agent', icon:'🏠', opener:{v:'Bạn đang tìm phòng loại nào?', e:'What kind of place are you looking for?'}, turns:[
+      { youOptions:[
+          {v:'Tôi cần phòng một phòng ngủ, gần trung tâm', e:'I need a one-bedroom near downtown', correct:true},
+          {v:'Phòng nào cũng được', e:'Any room is fine', correct:false, tip:"Gives the agent nothing to search with — specifics get you better matches."},
+          {v:'Tôi chưa muốn thuê', e:"I don't want to rent yet", correct:false, tip:"Contradicts the reason you're talking to an agent in the first place."},
+        ], them:{v:'Tôi có vài chỗ phù hợp, ngân sách bạn khoảng bao nhiêu?', e:"I have a few good options, what's your budget?"} },
+      { youOptions:[
+          {v:'Khoảng 8 triệu một tháng', e:'About 8 million a month', correct:true},
+          {v:'Tiền không phải vấn đề', e:"Money isn't an issue", correct:false, tip:"Even so, a number helps him filter listings much faster."},
+          {v:'Tôi không muốn nói', e:"I don't want to say", correct:false, tip:"Budget is standard, necessary info for a rental search."},
+        ], them:{v:'Được, tôi có một căn rất hợp, xem thử nhé?', e:"I have one that's a great fit, want to see it?"} },
+      { youOptions:[
+          {v:'Được, khi nào xem được vậy?', e:'Sure, when can I see it?', correct:true},
+          {v:'Chắc không hợp đâu', e:"Probably won't fit", correct:false, tip:"Dismisses it before you've even seen it."},
+          {v:'Gửi ảnh trước đi', e:'Send photos first', correct:false, tip:"Reasonable elsewhere, but seeing in person is the norm here — photos alone can mislead."},
+        ], them:{v:'Chiều nay được không?', e:'Is this afternoon okay?'} },
+      { youOptions:[
+          {v:'Được, hẹn gặp anh lúc 3 giờ', e:'Sounds good, see you at 3', correct:true},
+          {v:'Tôi bận rồi', e:"I'm busy", correct:false, tip:"Fine to decline, but offering an alternative time keeps things moving instead of a flat no."},
+          {v:'Ok', e:'Ok', correct:false, tip:"A bit too curt for confirming an appointment — repeating the time back avoids mix-ups."},
+        ], them:{v:'Tuyệt, hẹn gặp bạn nhé!', e:'Great, see you then!'} },
+    ]},
+    { name:'Landlord — Move-In Day', icon:'🔑', opener:{v:'Chào bạn, đây là chìa khoá phòng của bạn', e:"Hi, here's your room key"}, turns:[
+      { youOptions:[
+          {v:'Cảm ơn cô, phòng có gì cần lưu ý không ạ?', e:'Thank you, is there anything I should know about the room?', correct:true},
+          {v:'Chìa khoá đâu nữa không?', e:'Are there more keys?', correct:false, tip:"Reasonable question, but skips thanking her for the handover first."},
+          {v:'Tôi vào luôn được chưa?', e:'Can I go in now?', correct:false, tip:"A bit abrupt without acknowledging the handover she just gave you."},
+        ], them:{v:'Wifi và tiền điện nước tính riêng nhé', e:'Wifi and utilities are billed separately'} },
+      { youOptions:[
+          {v:'Dạ, khoảng bao nhiêu một tháng vậy cô?', e:'About how much per month?', correct:true},
+          {v:'Mắc quá', e:'Too expensive', correct:false, tip:"Reacting to a cost you haven't even heard yet."},
+          {v:'Thôi kệ đi', e:'Never mind', correct:false, tip:"Skips a genuinely useful question about your future bills."},
+        ], them:{v:'Khoảng 300 nghìn tiền điện nước, wifi 100 nghìn', e:'About 300k for utilities, 100k for wifi'} },
+      { youOptions:[
+          {v:'Dạ được, con hiểu rồi ạ', e:'Got it, understood', correct:true},
+          {v:'Sao mắc vậy cô', e:'Why so expensive', correct:false, tip:"This is a fairly standard rate — pushing back here reads as out of touch."},
+          {v:'Con trả gộp vào tiền nhà được không', e:'Can I just pay it with rent?', correct:false, tip:"She's already explained it's billed separately — accept first, ask about alternatives later if needed."},
+        ], them:{v:'Có gì cần thì cứ nhắn cho cô nhé', e:'Message me if you need anything'} },
+      { youOptions:[
+          {v:'Dạ, con cảm ơn cô nhiều', e:'Thank you so much', correct:true},
+          {v:'Chắc con không cần đâu', e:"I probably won't need anything", correct:false, tip:"Closes the door on a helpful offer rather unnecessarily."},
+          {v:'Số điện thoại cô là gì?', e:"What's your phone number?", correct:false, tip:"Reasonable, but she'll likely share it herself if you simply say thanks first."},
+        ], them:{v:'Không có gì, chúc con ở vui vẻ nhé!', e:'No problem, enjoy your new place!'} },
+    ]},
+  ],
+  business: [
+    { name:'Job Interview', icon:'💼', opener:{v:'Mời bạn giới thiệu bản thân', e:'Please introduce yourself'}, turns:[
+      { youOptions:[
+          {v:'Dạ, tôi tên là..., tôi có 3 năm kinh nghiệm trong ngành này', e:'My name is..., I have 3 years of experience in this field', correct:true},
+          {v:'Tôi không biết nói gì', e:"I don't know what to say", correct:false, tip:"A prepared self-intro is expected in interviews — worth having a short pitch ready."},
+          {v:'Đọc CV của tôi đi', e:'Just read my resume', correct:false, tip:"Comes across dismissive of a completely standard interview question."},
+        ], them:{v:'Vì sao bạn muốn làm việc ở đây?', e:'Why do you want to work here?'} },
+      { youOptions:[
+          {v:'Tôi rất thích văn hoá và sản phẩm của công ty', e:"I really admire the company's culture and products", correct:true},
+          {v:'Vì lương cao', e:'Because the pay is good', correct:false, tip:"Honest, but usually lands better paired with genuine interest in the role, not stated alone."},
+          {v:'Tôi cũng chưa chắc', e:"I'm not sure either", correct:false, tip:"Undermines your own candidacy right in the interview."},
+        ], them:{v:'Bạn có câu hỏi gì cho chúng tôi không?', e:'Do you have any questions for us?'} },
+      { youOptions:[
+          {v:'Dạ có, văn hoá làm việc ở đây như thế nào ạ?', e:"Yes, what's the work culture like here?", correct:true},
+          {v:'Không có câu hỏi gì', e:'No questions', correct:false, tip:"Asking nothing can read as low interest — even one thoughtful question helps."},
+          {v:'Khi nào tôi biết kết quả?', e:'When will I hear back?', correct:false, tip:"Fair eventually, but usually works better as your final question, not the first."},
+        ], them:{v:'Câu hỏi hay đó! Chúng tôi sẽ liên hệ trong tuần này', e:"Great question! We'll be in touch this week"} },
+      { youOptions:[
+          {v:'Dạ, cảm ơn anh/chị đã dành thời gian', e:'Thank you for your time', correct:true},
+          {v:'Vậy thôi hả?', e:"That's it?", correct:false, tip:"A bit abrupt for closing out an interview."},
+          {v:'Tôi chắc chắn được nhận', e:"I'm sure I'll get hired", correct:false, tip:"Overconfident framing before any decision has actually been made."},
+        ], them:{v:'Cảm ơn bạn đã đến phỏng vấn nhé', e:'Thank you for coming in today'} },
+    ]},
+    { name:'Client Meeting', icon:'🤝', opener:{v:'Cảm ơn đã dành thời gian gặp chúng tôi hôm nay', e:'Thanks for meeting with us today'}, turns:[
+      { youOptions:[
+          {v:'Dạ, rất vui được hợp tác cùng anh/chị', e:'Happy to be working with you', correct:true},
+          {v:'Vào việc luôn đi', e:"Let's just get to it", correct:false, tip:"Skips the normal opening courtesy — comes across brusque for a first client meeting."},
+          {v:'Tôi hơi bận', e:"I'm a bit busy", correct:false, tip:"An odd thing to lead with right as the meeting is starting."},
+        ], them:{v:'Vậy chúng ta bắt đầu với ngân sách dự án nhé', e:"Let's start with the project budget then"} },
+      { youOptions:[
+          {v:'Dạ, ngân sách dự kiến của chúng tôi là...', e:'Our projected budget is...', correct:true},
+          {v:'Ngân sách tuỳ anh/chị thôi', e:'The budget is up to you', correct:false, tip:"Too vague to be useful — a real number moves the conversation forward."},
+          {v:'Chuyện đó tính sau đi', e:"Let's figure that out later", correct:false, tip:"Budget is usually foundational — deferring it stalls the whole meeting."},
+        ], them:{v:'Được, vậy thời gian hoàn thành dự kiến là khi nào?', e:"Okay, and what's the expected timeline?"} },
+      { youOptions:[
+          {v:'Chúng tôi dự kiến hoàn thành trong 2 tháng', e:'We expect to finish in 2 months', correct:true},
+          {v:'Nhanh thì được, chậm cũng được', e:'Fast is fine, slow is also fine', correct:false, tip:"Too noncommittal for a client who needs to plan around your timeline."},
+          {v:'Không chắc được', e:"Can't be sure", correct:false, tip:"Some uncertainty is normal, but a rough estimate is far more useful than no answer at all."},
+        ], them:{v:'Nghe hợp lý đó. Chúng ta ký hợp đồng khi nào?', e:'That sounds reasonable. When do we sign the contract?'} },
+      { youOptions:[
+          {v:'Chúng tôi có thể gửi hợp đồng trong tuần này', e:'We can send the contract this week', correct:true},
+          {v:'Từ từ đã', e:'Slow down', correct:false, tip:"After agreeing on scope and timeline, stalling on the contract can read as hesitation."},
+          {v:'Anh/chị ký trước đi', e:'You sign first', correct:false, tip:"An unusual, slightly presumptive ask this early in a partnership."},
+        ], them:{v:'Tuyệt vời, chúng tôi rất mong hợp tác', e:'Excellent, we look forward to working together'} },
+    ]},
+  ],
 };
 
 /* ========================= STATE ========================= */
@@ -1131,6 +1712,7 @@ const DEFAULT_STATE = {
   completedLessons:[], savedPhrases:[], completedChats:[],
   xp:0, streak:0, lastStudyDate:null, studyDates:[],
   srs:{}, // srsId -> {interval, ease, reps, due, lapses}
+  chatEnglishVisible:false,
 };
 let state = structuredClone(DEFAULT_STATE);
 let currentView = 'home';
@@ -1139,18 +1721,19 @@ let packFilter = 'all';
 let currentAccent = 'SG';
 let activeModal = null; // {type:'lesson'|'pack', id, cards, title}
 
+const STORAGE_KEY = 'xinchao-state';
 async function loadState(){
   try{
-    const res = await window.storage.get('xinchao-state');
-    if(res && res.value){
-      state = Object.assign(structuredClone(DEFAULT_STATE), JSON.parse(res.value));
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      state = Object.assign(structuredClone(DEFAULT_STATE), JSON.parse(raw));
     }
-  }catch(e){ /* no saved state yet */ }
+  }catch(e){ /* no saved state yet, or storage unavailable (e.g. private browsing) */ }
   renderAll();
 }
 async function saveState(){
-  try{ await window.storage.set('xinchao-state', JSON.stringify(state)); }
-  catch(e){ console.error('save failed', e); }
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ console.error('save failed — storage may be full or unavailable', e); }
 }
 
 /* ========================= NAV ========================= */
@@ -1378,15 +1961,18 @@ function renderWorlds(){
   const goBtn = document.getElementById('swipeGoBtn');
   if(goBtn) goBtn.textContent = dueCount>0 ? `Study (${dueCount})` : 'Study';
 
-  const sos = pool.slice(0, 8);
-  document.getElementById('sosList').innerHTML = sos.map((c,i)=>`
+  const sos = SOS_PHRASES[currentWorldId] || [];
+  document.getElementById('sosList').innerHTML = sos.map((c,i)=>{
+    const audioId = `sos_${currentWorldId}_${i}`;
+    return `
     <div class="sos-item">
       <div><p class="sv">${c.v}</p><p class="se">${c.e}</p></div>
       <div style="display:flex;gap:6px;flex-shrink:0;">
-        <button class="icon-btn" onclick="speak('${c.v.replace(/'/g,"\\'")}', currentAccent)">🔊</button>
+        <button class="icon-btn" onclick="playAudio('${audioId}', '${c.v.replace(/'/g,"\\'")}', currentAccent)">🔊</button>
         <button class="icon-btn" onclick="saveArbitraryPhrase(${JSON.stringify(c).replace(/"/g,'&quot;')})">♡</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function selectWorld(id){ currentWorldId = id; renderWorlds(); }
@@ -1407,16 +1993,26 @@ function openChat(worldId, personaIdx){
   ]};
   document.getElementById('chatHeaderTitle').textContent = `${persona.icon} ${persona.name}`;
   document.getElementById('chatOverlay').classList.add('open');
+  document.getElementById('chatEnToggle').classList.toggle('active', state.chatEnglishVisible);
   renderChat();
 }
 function closeChat(){
   document.getElementById('chatOverlay').classList.remove('open');
   chatState = null;
 }
+function toggleChatEnglish(){
+  state.chatEnglishVisible = !state.chatEnglishVisible;
+  saveState();
+  document.getElementById('chatEnToggle').classList.toggle('active', state.chatEnglishVisible);
+  renderChat();
+}
 function renderChat(){
   const body = document.getElementById('chatBody');
   const footer = document.getElementById('chatFooter');
-  body.innerHTML = chatState.messages.map(m=>{
+  const isDone = chatState.turnIdx >= chatState.persona.turns.length;
+  const showEnglish = state.chatEnglishVisible || isDone;
+  const hint = !showEnglish ? `<p class="chat-hint">Try to follow along in Vietnamese — tap "EN" above to reveal translations anytime.</p>` : '';
+  body.innerHTML = hint + chatState.messages.map(m=>{
     if(m.who==='tip'){
       return `<div class="chat-tip"><span class="chat-tip-x">✕</span> <b>Try again next time</b><p>${m.text}</p></div>`;
     }
@@ -1425,7 +2021,7 @@ function renderChat(){
       <div class="cm-row">
         <div>
           <div>${m.v}</div>
-          <p class="cm-e">${m.e}</p>
+          ${showEnglish ? `<p class="cm-e">${m.e}</p>` : ''}
         </div>
         <button class="cm-speak" onclick="playAudio('${m.audioId}', '${m.v.replace(/'/g,"\\'")}', currentAccent)">🔊</button>
       </div>
@@ -1434,10 +2030,10 @@ function renderChat(){
   }).join('');
   body.scrollTop = body.scrollHeight;
 
-  if(chatState.turnIdx < chatState.persona.turns.length){
+  if(!isDone){
     const turn = chatState.persona.turns[chatState.turnIdx];
     footer.innerHTML = turn.youOptions.map((opt,i)=>`
-      <button class="chat-reply-btn" onclick="chooseReply(${i})">${opt.v}<span class="chat-reply-e">${opt.e}</span></button>`).join('');
+      <button class="chat-reply-btn" onclick="chooseReply(${i})">${opt.v}${showEnglish ? `<span class="chat-reply-e">${opt.e}</span>` : ''}</button>`).join('');
   } else {
     footer.innerHTML = `<button class="footer-btn" onclick="closeChat()">Done</button>`;
   }
@@ -1455,7 +2051,7 @@ function chooseReply(optIdx){
     const key = `chat_${chatState.worldId}_${chatState.personaIdx}`;
     if(!state.completedChats.includes(key)){
       state.completedChats.push(key);
-      state.xp += 15;
+      state.xp += chatState.persona.turns.length * 5;
       bumpStreak();
       saveState();
       renderAll();
@@ -1753,13 +2349,23 @@ function buildSteps(type, source){
   const cards = source.cards;
   const tag = source.tag || 'Basics';
   const seed = (source.id || '').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  const blurb = blurbForTag(tag, seed);
+  const pool = CULTURE_BLURBS[tag] || CULTURE_BLURBS.Basics;
+  const blurb1 = pool[seed % pool.length];
+  // Second culture card: a different tag-specific blurb if one exists, otherwise
+  // fall back to the general culture tips pool so the two cards don't repeat.
+  const blurb2 = pool.length > 1
+    ? pool[(seed + 1) % pool.length]
+    : { title: 'Good to know', body: CULTURE_TIPS[seed % CULTURE_TIPS.length] };
   const quizCard = cards[Math.min(cards.length-1, Math.floor(cards.length/2))];
+  const speakIdx1 = 0;
+  const speakIdx2 = cards.length > 1 ? cards.length - 1 : 0;
   const steps = [
     { kind:'mission', title: source.title, mission: "Learn the key phrases, practice out loud, and finish the pack in order." },
+    { kind:'culture', title: blurb1.title, body: blurb1.body },
     { kind:'vocab', cards },
-    { kind:'speak', cardIdx: 0 },
-    { kind:'culture', title: blurb.title, body: blurb.body },
+    { kind:'speak', cardIdx: speakIdx1 },
+    { kind:'speak', cardIdx: speakIdx2 },
+    { kind:'culture', title: blurb2.title, body: blurb2.body },
     { kind:'quiz', cardIdx: cards.indexOf(quizCard), quiz: buildQuiz(quizCard) },
   ];
   return steps;
