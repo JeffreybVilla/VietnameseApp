@@ -1304,25 +1304,30 @@ let currentWordInfoText = '';
 // Finds real sentences from the app's own content that contain this exact word —
 // our stand-in for Migaku's AI-generated "sentence breakdown," using genuine
 // examples instead of a live API call (which wouldn't work once this is hosted
-// as a static file outside Claude's environment anyway).
+// as a static file outside Claude's environment anyway). Tracks each example's
+// real audioId too, so playback can use generated audio instead of browser TTS.
 function findExampleSentences(word, limit){
   limit = limit || 4;
   const w = word.toLowerCase().normalize('NFC');
   const examples = [];
   const seen = new Set();
-  const consider = (v, e)=>{
+  const consider = (v, e, id)=>{
     if(examples.length >= limit || seen.has(v)) return;
     const tokens = v.toLowerCase().normalize('NFC').replace(/[\/\-]/g,' ').replace(/[.,!?;:()"'…]/g,'').split(/\s+/);
-    if(tokens.includes(w)){ seen.add(v); examples.push({v, e}); }
+    if(tokens.includes(w)){ seen.add(v); examples.push({v, e, id}); }
   };
-  LESSONS.forEach(l=>l.cards.forEach(c=>consider(c.v,c.e)));
-  PACKS.forEach(p=>p.cards.forEach(c=>consider(c.v,c.e)));
-  Object.values(CHAT_PERSONAS).forEach(arr=>arr.forEach(p=>{
-    consider(p.opener.v, p.opener.e);
-    p.turns.forEach(t=>{ t.youOptions.forEach(o=>consider(o.v,o.e)); consider(t.them.v, t.them.e); });
+  LESSONS.forEach(l=>l.cards.forEach((c,i)=>consider(c.v,c.e,`lesson_${l.id}_${i}`)));
+  PACKS.forEach(p=>p.cards.forEach((c,i)=>consider(c.v,c.e,`pack_${p.id}_${i}`)));
+  Object.entries(CHAT_PERSONAS).forEach(([worldId,arr])=>arr.forEach((p,pIdx)=>{
+    consider(p.opener.v, p.opener.e, `chat_${worldId}_${pIdx}_opener`);
+    p.turns.forEach((t,tIdx)=>{
+      t.youOptions.forEach((o,oIdx)=>consider(o.v,o.e,`chat_${worldId}_${pIdx}_t${tIdx}_you${oIdx}`));
+      consider(t.them.v, t.them.e, `chat_${worldId}_${pIdx}_t${tIdx}_them`);
+    });
   }));
-  Object.values(SOS_PHRASES).forEach(arr=>arr.forEach(c=>consider(c.v,c.e)));
-  CORE_PHRASES.forEach(c=>consider(c.v,c.e));
+  Object.entries(SOS_PHRASES).forEach(([worldId,arr])=>arr.forEach((c,i)=>consider(c.v,c.e,`sos_${worldId}_${i}`)));
+  CORE_PHRASES.forEach(c=>consider(c.v,c.e,`core_${c.rank}`));
+  COMMON_PHRASES.forEach(c=>consider(c.v,c.e,`cphrase_${c.rank}`));
   return examples;
 }
 function showWordInfo(word){
@@ -1343,7 +1348,7 @@ function showWordInfo(word){
           <div class="word-ex-item">
             <div class="word-ex-row">
               <p class="word-ex-v">${wrapWords(ex.v)}</p>
-              <button class="mini-speak" onclick="speak('${ex.v.replace(/'/g,"\\'")}', currentAccent)">🔊</button>
+              <button class="mini-speak" onclick="playAudio('${ex.id}', '${ex.v.replace(/'/g,"\\'")}', currentAccent)">🔊</button>
             </div>
             <p class="word-ex-e">${ex.e}</p>
           </div>`).join('')}
@@ -1352,22 +1357,21 @@ function showWordInfo(word){
   document.getElementById('wordSheetBackdrop').classList.add('open');
 }
 function closeWordInfo(){ document.getElementById('wordSheetBackdrop').classList.remove('open'); }
-function speakWordInfo(){ speak(currentWordInfoText, currentAccent); }
-// Builds the FULL Vietnamese frequency list — all 30,000 words from the embedded
-// corpus (top 1,500/5,000/15,000/30,000 tiers), not just words the app happens to
-// use. This means every 500-word bucket shows a true, complete count. `count` still
-// tracks how many times each word appears in the app's own content (0 for most,
-// since the app only actually uses ~880 of these 30,000 words) — kept around
-// because findExampleSentences and a few other places still care whether a word
-// has real example sentences to show. Computed once and cached.
+function speakWordInfo(){ playAudio(`word_${currentWordInfoText}`, currentWordInfoText, currentAccent); }
+// Builds the Vietnamese frequency list — capped at the top 3,000 words by real
+// corpus rank, matching exactly what has real HyperTTS audio generated. Words
+// ranked 3,001+ exist in the raw corpus data but are deliberately excluded here
+// so the Words tab and flashcards never show something with no real audio behind
+// it. `count` still tracks how many times each word appears in the app's own
+// content — kept around because findExampleSentences and a few other places
+// still care whether a word has real example sentences to show. Computed once
+// and cached.
 let _wordListCache = null;
 function buildWordFrequencyList(){
   if(_wordListCache) return _wordListCache;
   const list = [
     ...FREQ_TIER5.map((word,i)=>({ word, rank:i+1, star:5 })),
-    ...FREQ_TIER4.map((word,i)=>({ word, rank:1500+i+1, star:4 })),
-    ...FREQ_TIER3.map((word,i)=>({ word, rank:5000+i+1, star:3 })),
-    ...FREQ_TIER2.map((word,i)=>({ word, rank:15000+i+1, star:2 })),
+    ...FREQ_TIER4.slice(0,1500).map((word,i)=>({ word, rank:1500+i+1, star:4 })),
   ];
 
   const allText = [];
@@ -3037,7 +3041,7 @@ function renderFrequency(){
       const gloss = WORD_GLOSS[w.word];
       const wEsc = w.word.replace(/'/g,"\\'");
       return `
-      <div class="freq-item" onclick="speak('${wEsc}', currentAccent)">
+      <div class="freq-item" onclick="playAudio('word_${wEsc}', '${wEsc}', currentAccent)">
         <p class="fw"><span class="tap-word" onclick="event.stopPropagation();showWordInfo('${wEsc}')">${w.word}</span>${gloss?`<span class="fw-en"> — ${gloss}</span>`:''}</p>
         <div class="freq-num-pill" style="background:${TIER_COLOR[w.star]}">${rankLabel}</div>
       </div>`;
@@ -3059,8 +3063,7 @@ function renderFrequency(){
     document.getElementById('freqCount').textContent = `${filtered.length} phrase${filtered.length===1?'':'s'}`;
     document.getElementById('freqList').innerHTML = filtered.map(p=>`
       <div class="freq-item" onclick="playAudio('cphrase_${p.rank}', '${p.v.replace(/'/g,"\\'")}', currentAccent)">
-        <p class="fw">${p.v}</p>
-        <p class="fw-en" style="display:block;margin-top:2px;">${p.e}</p>
+        <p class="fw">${p.v}<span class="fw-en"> — ${p.e}</span></p>
       </div>`).join('');
   }
 }
@@ -3371,7 +3374,7 @@ function viewMasteredWords(){
     const gloss = WORD_GLOSS[w.word];
     const wEsc = w.word.replace(/'/g,"\\'");
     return `
-    <div class="freq-item" onclick="speak('${wEsc}', currentAccent)">
+    <div class="freq-item" onclick="playAudio('word_${wEsc}', '${wEsc}', currentAccent)">
       <p class="fw"><span class="tap-word" onclick="event.stopPropagation();showWordInfo('${wEsc}')">${w.word}</span>${gloss?`<span class="fw-en"> — ${gloss}</span>`:''}</p>
       <div class="freq-num-pill" style="background:${TIER_COLOR[w.star]}">${w.rank>=999999?'Not ranked':w.rank.toLocaleString()}</div>
     </div>`;
@@ -3415,8 +3418,7 @@ function viewMasteredPhrases(){
   document.getElementById('toolTitle').textContent = `Mastered phrases (${mastered.length})`;
   document.getElementById('toolBody').innerHTML = mastered.length ? mastered.map(p=>`
     <div class="freq-item" onclick="playAudio('cphrase_${p.rank}', '${p.v.replace(/'/g,"\\'")}', currentAccent)">
-      <p class="fw">${p.v}</p>
-      <p class="fw-en" style="display:block;margin-top:2px;">${p.e}</p>
+      <p class="fw">${p.v}<span class="fw-en"> — ${p.e}</span></p>
     </div>`).join('') : `<div class="empty"><div class="big">🏆</div>No phrases mastered yet — keep studying and they'll show up here.</div>`;
   document.getElementById('toolBackdrop').classList.add('open');
 }
@@ -3452,11 +3454,14 @@ function renderSwipe(){
     const rankLabel = c.rank>=999999 ? 'Not ranked' : ('#' + c.rank.toLocaleString());
     const examples = swipeState.flipped ? findExampleSentences(c.word, 5) : [];
     // Plays on every card state change — front, and again on flip. On flip, chain
-    // the first example sentence right after the word itself finishes.
+    // the first example sentence right after the word itself finishes. Both use
+    // real generated audio now (word_<word> / the example's own phrase ID) rather
+    // than browser TTS, same as everything else in the app.
+    const wordAudioId = `word_${c.word}`;
     if(swipeState.flipped && examples.length){
-      speakQueue([c.word, examples[0].v], currentAccent);
+      playAudio(wordAudioId, c.word, currentAccent, ()=>{ playAudio(examples[0].id, examples[0].v, currentAccent); });
     } else {
-      speak(c.word, currentAccent);
+      playAudio(wordAudioId, c.word, currentAccent);
     }
     cardHtml = `
     <div class="swipe-card ${swipeState.flipped?'flipped':''}" onclick="flipSwipe()">
@@ -3466,7 +3471,7 @@ function renderSwipe(){
       ${examples.length ? `
         <div class="sc-notes">
           ${examples.map(ex=>`
-            <div class="sc-note" onclick="event.stopPropagation();speak('${ex.v.replace(/'/g,"\\'")}', currentAccent)">
+            <div class="sc-note" onclick="event.stopPropagation();playAudio('${ex.id}', '${ex.v.replace(/'/g,"\\'")}', currentAccent)">
               <div class="sc-note-row">
                 <p class="sn-v">${ex.v}</p>
                 <span class="mini-speak">🔊</span>
@@ -3599,15 +3604,10 @@ function playAudio(cardId, text, accent, onEnded){
   const el = new Audio(AUDIO_BASE_PATH + cardId + '.mp3');
   currentAudioEl = el;
   let fellBack = false;
-  const fallback = (reason)=>{
-    if(fellBack) return;
-    fellBack = true;
-    console.warn('[audio debug] Falling back to TTS for', cardId, '— reason:', reason, '— el.error:', el.error);
-    speakFallback(text, accent, onEnded);
-  };
-  el.addEventListener('error', ()=>fallback('error event, code='+(el.error&&el.error.code)));
+  const fallback = ()=>{ if(fellBack) return; fellBack = true; speakFallback(text, accent, onEnded); };
+  el.addEventListener('error', fallback);
   if(onEnded) el.addEventListener('ended', ()=>{ if(!fellBack) onEnded(); });
-  el.play().catch(err=>fallback('play() rejected: '+err.name+' — '+err.message));
+  el.play().catch(fallback);
 }
 // Plays a sequence of chat messages back-to-back — your chosen reply, then their
 // response — waiting for each to genuinely finish before starting the next.
