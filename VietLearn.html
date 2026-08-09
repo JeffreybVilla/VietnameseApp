@@ -3058,7 +3058,7 @@ function renderFrequency(){
     });
     document.getElementById('freqCount').textContent = `${filtered.length} phrase${filtered.length===1?'':'s'}`;
     document.getElementById('freqList').innerHTML = filtered.map(p=>`
-      <div class="freq-item" onclick="speak('${p.v.replace(/'/g,"\\'")}', currentAccent)">
+      <div class="freq-item" onclick="playAudio('cphrase_${p.rank}', '${p.v.replace(/'/g,"\\'")}', currentAccent)">
         <p class="fw">${p.v}</p>
         <p class="fw-en" style="display:block;margin-top:2px;">${p.e}</p>
       </div>`).join('');
@@ -3414,7 +3414,7 @@ function viewMasteredPhrases(){
   const mastered = phraseStudyPool().filter(p=>isMasteredWord(p.srsId)).sort((a,b)=>a.rank-b.rank);
   document.getElementById('toolTitle').textContent = `Mastered phrases (${mastered.length})`;
   document.getElementById('toolBody').innerHTML = mastered.length ? mastered.map(p=>`
-    <div class="freq-item" onclick="speak('${p.v.replace(/'/g,"\\'")}', currentAccent)">
+    <div class="freq-item" onclick="playAudio('cphrase_${p.rank}', '${p.v.replace(/'/g,"\\'")}', currentAccent)">
       <p class="fw">${p.v}</p>
       <p class="fw-en" style="display:block;margin-top:2px;">${p.e}</p>
     </div>`).join('') : `<div class="empty"><div class="big">🏆</div>No phrases mastered yet — keep studying and they'll show up here.</div>`;
@@ -3482,7 +3482,7 @@ function renderSwipe(){
     // the opposite of the original Core Phrases/pack/lesson layout (English
     // first), which is why this stays its own mode rather than reusing 'phrase'.
     // Plays on every render — front and again on flip — same as word cards.
-    speak(c.v, currentAccent);
+    playAudio(`cphrase_${c.rank}`, c.v, currentAccent);
     cardHtml = `
     <div class="swipe-card ${swipeState.flipped?'flipped':''}" onclick="flipSwipe()">
       <p class="sc-viet" style="display:block;">${wrapWords(c.v)}</p>
@@ -3599,10 +3599,15 @@ function playAudio(cardId, text, accent, onEnded){
   const el = new Audio(AUDIO_BASE_PATH + cardId + '.mp3');
   currentAudioEl = el;
   let fellBack = false;
-  const fallback = ()=>{ if(fellBack) return; fellBack = true; speakFallback(text, accent, onEnded); };
-  el.addEventListener('error', fallback);
+  const fallback = (reason)=>{
+    if(fellBack) return;
+    fellBack = true;
+    console.warn('[audio debug] Falling back to TTS for', cardId, '— reason:', reason, '— el.error:', el.error);
+    speakFallback(text, accent, onEnded);
+  };
+  el.addEventListener('error', ()=>fallback('error event, code='+(el.error&&el.error.code)));
   if(onEnded) el.addEventListener('ended', ()=>{ if(!fellBack) onEnded(); });
-  el.play().catch(fallback);
+  el.play().catch(err=>fallback('play() rejected: '+err.name+' — '+err.message));
 }
 // Plays a sequence of chat messages back-to-back — your chosen reply, then their
 // response — waiting for each to genuinely finish before starting the next.
