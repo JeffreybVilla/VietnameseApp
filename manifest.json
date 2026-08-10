@@ -1,6 +1,6 @@
 {
-  "name": "XinChao - Vietnamese Learning",
-  "short_name": "XinChao",
+  "name": "VietLearn - Let's learn Vietnamese!",
+  "short_name": "VietLearn",
   "start_url": "./VietLearn.html",
   "display": "standalone",
   "background_color": "#0E211D",
