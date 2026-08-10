@@ -1,6 +1,6 @@
 {
-  "name": "VietLearn - Let's learn Vietnamese!",
-  "short_name": "VietLearn",
+  "name": "Daily Viet - Learn Southern Vietnamese Daily",
+  "short_name": "Daily Viet",
   "start_url": "./VietLearn.html",
   "display": "standalone",
   "background_color": "#0E211D",
