@@ -11,13 +11,19 @@ const APP_SHELL_CACHE = `vietlearn-shell-${CACHE_VERSION}`;
 const AUDIO_CACHE = 'vietlearn-audio'; // no version suffix — persists across app updates
 
 const APP_SHELL_URLS = [
-  './',
   './VietLearn.html',
 ];
 
 self.addEventListener('install', (event) => {
+  // Promise.allSettled (not addAll/all) deliberately — if any single URL here
+  // fails to cache, the whole install step must NOT fail, or the service
+  // worker gets stuck "installing" forever and never reaches "activated".
+  // That silent-stuck-forever failure mode is exactly what caused the
+  // Download for Offline Use button to hang with no explanation earlier.
   event.waitUntil(
-    caches.open(APP_SHELL_CACHE).then(cache => cache.addAll(APP_SHELL_URLS))
+    caches.open(APP_SHELL_CACHE).then(cache =>
+      Promise.allSettled(APP_SHELL_URLS.map(url => cache.add(url)))
+    )
   );
   self.skipWaiting();
 });
