@@ -2937,6 +2937,37 @@ async function downloadAllAudioOffline(){
     console.error('Offline download failed:', e);
   }
 }
+// Runs on every app load — reads what's ACTUALLY sitting in the offline cache
+// right now and reflects that in the UI, rather than the button always
+// resetting to its default "nothing downloaded yet" appearance regardless of
+// real state. Safe to call even if the cache is empty or unsupported.
+async function checkOfflineDownloadStatus(){
+  const btn = document.getElementById('downloadOfflineBtn');
+  if(!btn || !('caches' in window)) return;
+  try{
+    const cache = await caches.open('vietlearn-audio');
+    const requests = await cache.keys();
+    if(requests.length === 0) return; // nothing cached yet — leave the default "Download" button as-is
+
+    const cachedIds = new Set(
+      requests.map(req => {
+        const m = req.url.match(/\/audio\/([^/]+)\.mp3$/);
+        return m ? m[1] : null;
+      }).filter(Boolean)
+    );
+
+    const byCategory = getAudioIdsByCategory();
+    const byCategoryTotal = Object.fromEntries(Object.entries(byCategory).map(([k,v])=>[k,v.length]));
+    const byCategoryDone = Object.fromEntries(Object.entries(byCategory).map(([k,ids])=>[k, ids.filter(id=>cachedIds.has(id)).length]));
+    const total = Object.values(byCategoryTotal).reduce((a,b)=>a+b, 0);
+    const done = Object.values(byCategoryDone).reduce((a,b)=>a+b, 0);
+    const missing = total - done;
+
+    btn.textContent = done > 0 ? '✓ Downloaded for offline use' : '📥 Download for offline use';
+    renderDownloadProgressUI(byCategoryDone, byCategoryTotal, done, total,
+      missing > 0 ? `${done} / ${total} cached (${missing} missing — audio likely not generated for those yet).` : `All ${total} audio files cached for offline use.`);
+  }catch(e){ console.error('Checking offline cache status failed — download button left at default.', e); }
+}
 
 async function loadState(){
   try{
@@ -2947,6 +2978,7 @@ async function loadState(){
   }catch(e){ /* no saved state yet, or storage unavailable (e.g. private browsing) */ }
   renderAll();
   initSync();
+  checkOfflineDownloadStatus();
 }
 async function saveState(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
