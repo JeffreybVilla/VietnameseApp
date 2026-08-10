@@ -211,6 +211,11 @@
   .wc-hero-num{font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:700;color:var(--gold);line-height:1;}
   .wc-hero-label{font-size:12.5px;color:var(--muted);margin:6px 0 16px;}
   .wc-progress-track{height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden;}
+  .dl-progress-track{height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin:8px 0 14px;}
+  .dl-progress-fill{height:100%;background:var(--gold);border-radius:99px;transition:width .2s ease;}
+  .dl-categories{background:var(--surface);border-radius:12px;padding:10px 14px;margin-bottom:14px;}
+  .dl-cat-row{display:flex;justify-content:space-between;font-size:13px;color:var(--rice);padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .dl-cat-row:last-child{border-bottom:none;}
   .wc-progress-track.small{height:6px;}
   .wc-progress-fill{height:100%;background:linear-gradient(90deg,var(--herb),var(--gold));border-radius:99px;transition:width .3s ease;}
   .wc-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
@@ -646,6 +651,10 @@
       <p class="section-sub">Cache every audio file on this device so lessons, phrases, and words all play with no internet connection.</p>
       <button class="footer-btn" id="downloadOfflineBtn" style="width:100%;" onclick="downloadAllAudioOffline()">📥 Download for offline use</button>
       <p class="section-sub" id="downloadOfflineProgress" style="margin-top:8px;"></p>
+      <div id="downloadOfflineBarWrap" class="dl-progress-track" style="display:none;">
+        <div id="downloadOfflineBar" class="dl-progress-fill" style="width:0%;"></div>
+      </div>
+      <div id="downloadOfflineCategories" class="dl-categories" style="display:none;"></div>
 
       <button class="danger-btn" onclick="resetProgress()">Reset all progress</button>
     </section>
@@ -2817,67 +2826,116 @@ async function syncOnSignIn(session){
    front, rather than waiting for organic play-throughs to slowly build the
    cache — the whole point being reliable offline use starting immediately,
    not "eventually offline once you've played everything once." */
+let _swRegistration = null;
+let _swRegistrationError = null;
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(e => console.error('Service worker registration failed — app still works online.', e));
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => { _swRegistration = reg; })
+      .catch(e => { _swRegistrationError = e; console.error('Service worker registration failed — app still works online, but offline download won\'t.', e); });
   });
 }
-// Every real audio ID the app knows about, across every content source —
-// mirrors the exact ID scheme used everywhere else (lesson_/pack_/chat_/
-// sos_/core_/cphrase_/word_/wordex_), so this list always matches reality
-// rather than needing to be hand-maintained separately.
-function getAllAudioIds(){
-  const ids = [];
-  LESSONS.forEach(l=>l.cards.forEach((c,i)=>ids.push(`lesson_${l.id}_${i}`)));
-  PACKS.forEach(p=>p.cards.forEach((c,i)=>ids.push(`pack_${p.id}_${i}`)));
+// Every real audio ID the app knows about, grouped by content type — mirrors
+// the exact ID scheme used everywhere else (lesson_/pack_/chat_/sos_/core_/
+// cphrase_/word_/wordex_), so this always matches reality rather than
+// needing to be hand-maintained separately. Grouped (not flat) so the
+// download UI can show per-section progress, not just one overall number.
+function getAudioIdsByCategory(){
+  const cats = { 'Lessons':[], 'Survival Packs':[], 'Chat Boss':[], 'SOS Phrasebook':[], 'Core Phrases':[], 'Common Phrases':[], 'Words':[], 'Word Examples':[] };
+  LESSONS.forEach(l=>l.cards.forEach((c,i)=>cats['Lessons'].push(`lesson_${l.id}_${i}`)));
+  PACKS.forEach(p=>p.cards.forEach((c,i)=>cats['Survival Packs'].push(`pack_${p.id}_${i}`)));
   Object.entries(CHAT_PERSONAS).forEach(([worldId,arr])=>arr.forEach((p,pIdx)=>{
-    ids.push(`chat_${worldId}_${pIdx}_opener`);
+    cats['Chat Boss'].push(`chat_${worldId}_${pIdx}_opener`);
     p.turns.forEach((t,tIdx)=>{
-      t.youOptions.forEach((o,oIdx)=>ids.push(`chat_${worldId}_${pIdx}_t${tIdx}_you${oIdx}`));
-      ids.push(`chat_${worldId}_${pIdx}_t${tIdx}_them`);
+      t.youOptions.forEach((o,oIdx)=>cats['Chat Boss'].push(`chat_${worldId}_${pIdx}_t${tIdx}_you${oIdx}`));
+      cats['Chat Boss'].push(`chat_${worldId}_${pIdx}_t${tIdx}_them`);
     });
   }));
-  Object.entries(SOS_PHRASES).forEach(([worldId,arr])=>arr.forEach((c,i)=>ids.push(`sos_${worldId}_${i}`)));
-  CORE_PHRASES.forEach(c=>ids.push(`core_${c.rank}`));
-  COMMON_PHRASES.forEach(c=>ids.push(`cphrase_${c.rank}`));
-  wordStudyPool().forEach(w=>ids.push(`word_${w.word}`));
-  Object.keys(WORD_EXAMPLES).forEach(w=>ids.push(`wordex_${w}`));
-  return ids;
+  Object.entries(SOS_PHRASES).forEach(([worldId,arr])=>arr.forEach((c,i)=>cats['SOS Phrasebook'].push(`sos_${worldId}_${i}`)));
+  CORE_PHRASES.forEach(c=>cats['Core Phrases'].push(`core_${c.rank}`));
+  COMMON_PHRASES.forEach(c=>cats['Common Phrases'].push(`cphrase_${c.rank}`));
+  wordStudyPool().forEach(w=>cats['Words'].push(`word_${w.word}`));
+  Object.keys(WORD_EXAMPLES).forEach(w=>cats['Word Examples'].push(`wordex_${w}`));
+  return cats;
+}
+function getAllAudioIds(){ return Object.values(getAudioIdsByCategory()).flat(); }
+function renderDownloadProgressUI(byCategoryDone, byCategoryTotal, done, total, statusLine){
+  document.getElementById('downloadOfflineProgress').textContent = statusLine;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('downloadOfflineBar').style.width = pct + '%';
+  document.getElementById('downloadOfflineBarWrap').style.display = 'block';
+  document.getElementById('downloadOfflineCategories').innerHTML = Object.keys(byCategoryTotal).map(cat => {
+    const d = byCategoryDone[cat] || 0, t = byCategoryTotal[cat];
+    const done = d >= t;
+    return `<div class="dl-cat-row"><span>${done?'✓':'…'} ${cat}</span><span>${d} / ${t}</span></div>`;
+  }).join('');
+  document.getElementById('downloadOfflineCategories').style.display = 'block';
 }
 async function downloadAllAudioOffline(){
   const btn = document.getElementById('downloadOfflineBtn');
   const progressEl = document.getElementById('downloadOfflineProgress');
-  if(!('serviceWorker' in navigator)){
-    progressEl.textContent = 'Offline download isn\'t supported in this browser.';
-    return;
-  }
-  await navigator.serviceWorker.ready; // the SW must be active for its fetch handler to actually cache these
-  const ids = getAllAudioIds();
-  const total = ids.length;
-  let done = 0, failed = 0;
   btn.disabled = true;
-  btn.textContent = 'Downloading...';
-  const CONCURRENCY = 8; // enough to be fast without overwhelming a mobile connection
-  let idx = 0;
-  async function worker(){
-    while(idx < ids.length){
-      const id = ids[idx++];
-      try{
-        const res = await fetch(AUDIO_BASE_PATH + id + '.mp3');
-        if(!res.ok) failed++;
-      }catch(e){ failed++; }
-      done++;
-      if(done % 15 === 0 || done === total){
-        progressEl.textContent = `${done} / ${total} downloaded${failed ? ` (${failed} unavailable)` : ''}`;
+  btn.textContent = 'Preparing...';
+  progressEl.textContent = 'Checking offline support...';
+
+  try{
+    if(!('serviceWorker' in navigator)){
+      throw new Error('This browser doesn\'t support offline caching (Service Workers unavailable).');
+    }
+    if(_swRegistrationError){
+      throw new Error('Service worker failed to install: ' + _swRegistrationError.message + '. Try reloading the page.');
+    }
+    // Race against a timeout so a stuck/never-activating service worker shows
+    // a clear error instead of hanging forever with no visible feedback —
+    // exactly the silent-failure this replaces.
+    const ready = await Promise.race([
+      navigator.serviceWorker.ready.then(()=>true),
+      new Promise(resolve => setTimeout(()=>resolve(false), 8000)),
+    ]);
+    if(!ready){
+      throw new Error('Service worker never activated after 8s. Try a full reload of the page, then try again.');
+    }
+
+    const byCategory = getAudioIdsByCategory();
+    const byCategoryTotal = Object.fromEntries(Object.entries(byCategory).map(([k,v])=>[k,v.length]));
+    const byCategoryDone = Object.fromEntries(Object.keys(byCategory).map(k=>[k,0]));
+    const idToCategory = {};
+    Object.entries(byCategory).forEach(([cat, ids])=>ids.forEach(id=>idToCategory[id]=cat));
+
+    const ids = getAllAudioIds();
+    const total = ids.length;
+    let done = 0, failed = 0;
+    btn.textContent = 'Downloading...';
+    renderDownloadProgressUI(byCategoryDone, byCategoryTotal, 0, total, `0 / ${total} downloaded`);
+
+    const CONCURRENCY = 8; // enough to be fast without overwhelming a mobile connection
+    let idx = 0;
+    async function worker(){
+      while(idx < ids.length){
+        const id = ids[idx++];
+        try{
+          const res = await fetch(AUDIO_BASE_PATH + id + '.mp3');
+          if(!res.ok) failed++;
+        }catch(e){ failed++; }
+        done++;
+        byCategoryDone[idToCategory[id]]++;
+        if(done % 10 === 0 || done === total){
+          renderDownloadProgressUI(byCategoryDone, byCategoryTotal, done, total, `${done} / ${total} downloaded${failed ? ` (${failed} unavailable)` : ''}`);
+        }
       }
     }
+    await Promise.all(Array.from({length: CONCURRENCY}, worker));
+
+    btn.disabled = false;
+    btn.textContent = '✓ Downloaded for offline use';
+    renderDownloadProgressUI(byCategoryDone, byCategoryTotal, done, total,
+      failed ? `${total - failed} / ${total} cached (${failed} missing — audio likely not generated for those yet).` : `All ${total} audio files cached for offline use.`);
+  }catch(e){
+    btn.disabled = false;
+    btn.textContent = '📥 Download for offline use';
+    progressEl.textContent = '⚠️ ' + e.message;
+    console.error('Offline download failed:', e);
   }
-  await Promise.all(Array.from({length: CONCURRENCY}, worker));
-  btn.disabled = false;
-  btn.textContent = '✓ Downloaded for offline use';
-  progressEl.textContent = failed
-    ? `${total - failed} / ${total} cached for offline use (${failed} missing — likely audio not yet generated for those).`
-    : `All ${total} audio files cached for offline use.`;
 }
 
 async function loadState(){
