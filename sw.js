@@ -1,0 +1,89 @@
+// Service Worker for VietLearn — enables the app to load with zero internet,
+// and lets audio files be cached for offline playback (either organically, as
+// each is played, or all at once via the "Download for offline" button).
+//
+// Bump CACHE_VERSION whenever VietLearn.html changes meaningfully, so the old
+// app-shell cache gets cleared and the new version is fetched fresh. Audio
+// files don't need this treatment the same way — once a phrase's audio
+// exists, it doesn't change, so the audio cache persists across versions.
+const CACHE_VERSION = 'v1';
+const APP_SHELL_CACHE = `vietlearn-shell-${CACHE_VERSION}`;
+const AUDIO_CACHE = 'vietlearn-audio'; // no version suffix — persists across app updates
+
+const APP_SHELL_URLS = [
+  './',
+  './VietLearn.html',
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(APP_SHELL_CACHE).then(cache => cache.addAll(APP_SHELL_URLS))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(k => k !== APP_SHELL_CACHE && k !== AUDIO_CACHE)
+          .map(k => caches.delete(k))
+      )
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // Audio files: cache-first. Once a clip has been played (or bulk
+  // downloaded), it's served instantly from cache forever after, with no
+  // network dependency at all.
+  if (url.pathname.includes('/audio/') && url.pathname.endsWith('.mp3')) {
+    event.respondWith(
+      caches.open(AUDIO_CACHE).then(cache =>
+        cache.match(event.request).then(cached => {
+          if (cached) return cached;
+          return fetch(event.request)
+            .then(response => {
+              if (response.ok) cache.put(event.request, response.clone());
+              return response;
+            })
+            .catch(() => cached); // offline and never cached — nothing more we can do for this one clip
+        })
+      )
+    );
+    return;
+  }
+
+  // The app page itself: network-first, so you always get the latest version
+  // when online, falling back to the cached copy the moment you're offline.
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/' || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const copy = response.clone();
+          caches.open(APP_SHELL_CACHE).then(cache => cache.put(event.request, copy));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then(cached => cached || caches.match('./VietLearn.html')))
+    );
+    return;
+  }
+
+  // Everything else (e.g. the Supabase SDK loaded from a CDN): cache-first,
+  // since these rarely change and don't need the "always freshest" treatment.
+  event.respondWith(
+    caches.match(event.request).then(cached =>
+      cached || fetch(event.request).then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(APP_SHELL_CACHE).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      })
+    )
+  );
+});

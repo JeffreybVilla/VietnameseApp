@@ -1,0 +1,15 @@
+{
+  "name": "XinChao - Vietnamese Learning",
+  "short_name": "XinChao",
+  "start_url": "./VietLearn.html",
+  "display": "standalone",
+  "background_color": "#0E211D",
+  "theme_color": "#0E211D",
+  "icons": [
+    {
+      "src": "./AppIcon.PNG",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
