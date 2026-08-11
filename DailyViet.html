@@ -291,8 +291,8 @@
   .danger-btn{width:100%;background:var(--vermillion-dim);color:var(--rice);border:none;padding:13px;border-radius:12px;font-weight:700;font-size:13.5px;margin-top:10px;}
 
   /* ===== Home redesign (Victor-AI-style hero) ===== */
-  .home-hero{position:relative;overflow:hidden;margin:-18px -18px 16px;width:calc(100% + 36px);background:linear-gradient(160deg,#1a2f4a,#0d1420);}
-  .home-hero img{display:block;width:100%;height:auto;}
+  .home-hero{position:relative;overflow:hidden;height:300px;margin:-18px -18px -46px;width:calc(100% + 36px);background:linear-gradient(160deg,#1a2f4a,#0d1420);}
+  .home-hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;}
   .home-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.78) 100%);}
   .home-hero-loc{position:absolute;top:14px;left:16px;color:#fff;font-weight:700;font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,.6);z-index:2;max-width:65%;}
   .home-flag-badge{position:absolute;top:12px;right:12px;z-index:2;width:42px;height:42px;border-radius:50%;background:var(--vermillion);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 2px 8px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.3);}
@@ -300,9 +300,9 @@
   .home-pill{background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;border:1px solid rgba(255,255,255,0.18);padding:9px 15px;border-radius:999px;font-weight:700;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;}
   .home-pill.icon-only{padding:9px;width:36px;height:36px;justify-content:center;}
 
-  .lesson-card{background:linear-gradient(135deg,#1c2b3d,#0e1620);border:1px solid rgba(120,170,220,0.28);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;}
-  .lesson-card .lc-eyebrow{color:var(--sky);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;}
-  .lesson-card h2{color:#fff;font-size:15.5px;margin:0;font-weight:800;}
+  .home-next-lesson{background:linear-gradient(135deg,#1c2b3d,#0e1620);border:1px solid rgba(120,170,220,0.28);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;position:relative;z-index:2;}
+  .home-next-lesson .lc-eyebrow{color:var(--sky);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;}
+  .home-next-lesson h2{color:#fff;font-size:15.5px;margin:0;font-weight:800;}
   .lesson-card-thumb{width:44px;height:44px;border-radius:50%;background:var(--surface-2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;position:relative;}
   .lesson-card-thumb .dot{position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;background:var(--sky);border-radius:50%;border:2px solid #0e1620;}
 
@@ -609,7 +609,7 @@
       </div>
 
       <!-- YOUR NEXT LESSON (moved from the old welcome-back banner, restyled) -->
-      <button class="lesson-card" id="homeBanner" onclick="goToNextLesson()">
+      <button class="home-next-lesson" id="homeBanner" onclick="goToNextLesson()">
         <div>
           <p class="lc-eyebrow" id="homeBannerEyebrow">Your Next Lesson</p>
           <h2 id="homeBannerTitle">Welcome back</h2>
@@ -921,7 +921,7 @@
     </div>
     <div class="ch-confirm-row">
       <div class="icn">🧠</div>
-      <div><h4 id="chConfirmReviewCount">300 vocab reviews</h4><p>Spaced repetition</p></div>
+      <div><h4>1,054 vocab reviews</h4><p>Spaced repetition</p></div>
     </div>
     <div class="ch-confirm-row">
       <div class="icn">⏩</div>
@@ -929,7 +929,7 @@
     </div>
     <div class="ch-confirm-row">
       <div class="icn">🕐</div>
-      <div><h4>Day resets at midnight</h4><p>Local time</p></div>
+      <div><h4>Day resets at 6 AM</h4><p>Local time</p></div>
     </div>
     <div class="ch-confirm-warn"><b>No half measures.</b> Miss more than 2 days in a row without a skip and the challenge resets to Day 1.</div>
     <div class="ch-confirm-btns">
@@ -4616,11 +4616,23 @@ function bumpStreak(){
 
 /* ========================= 60-DAY CHALLENGE =========================
    Additive feature inspired by Victor AI's onboarding flow: a 60-day, two-
-   mission-a-day quest (Learn a dialogue + Review 5 words) layered on top of
+   mission-a-day quest (Learn a dialogue + Review words) layered on top of
    the existing lesson/SRS systems below, without changing how they work.
    Entirely separate from the app's regular streak (state.streak) — this has
    its own losable streak that resets after 2 missed calendar days. */
-function chTodayKey(){ return new Date().toISOString().slice(0,10); }
+// 18/day × 60 days = 1,080 — closest clean daily quota to the quoted
+// 1,054-review target (1,054 doesn't divide evenly across 60 days).
+const CHALLENGE_DAILY_REVIEW_TARGET = 18;
+function chTodayKey(){
+  // Challenge day boundary is 6 AM local time (not midnight) — times between
+  // midnight and 6 AM still count as "yesterday" for the challenge.
+  const RESET_HOUR = 6;
+  const shifted = new Date(Date.now() - RESET_HOUR*3600*1000);
+  const y = shifted.getFullYear();
+  const m = String(shifted.getMonth()+1).padStart(2,'0');
+  const d = String(shifted.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
 function chDateOffset(key, days){
   const d = new Date(key+'T00:00:00');
   d.setDate(d.getDate()+days);
@@ -4642,9 +4654,7 @@ function startChallenge(){
 // Entry points (Home card + Challenge intro screen) route through this
 // confirmation modal before actually starting, matching the Victor AI flow.
 function openChallengeConfirm(){
-  const reviewCountEl = document.getElementById('chConfirmReviewCount');
   const skipCountEl = document.getElementById('chConfirmSkipCount');
-  if(reviewCountEl) reviewCountEl.textContent = `${5*60} vocab reviews`; // 5/day mission × 60 days
   if(skipCountEl) skipCountEl.textContent = `${DEFAULT_STATE.challenge.skipTokens} skip days allowed`;
   document.getElementById('challengeConfirmBackdrop').classList.add('open');
 }
@@ -4677,7 +4687,7 @@ function evaluateChallengeDays(){
   let cursor = c.lastCheckedDate || c.startDate || tk;
   while(cursor < tk){
     const log = c.dailyLog[cursor];
-    const secured = !!(log && log.learn && log.reviewCount>=5);
+    const secured = !!(log && log.learn && log.reviewCount>=CHALLENGE_DAILY_REVIEW_TARGET);
     const skipped = c.skippedDates.includes(cursor);
     if(secured){
       if(!c.securedDates.includes(cursor)) c.securedDates.push(cursor);
@@ -4707,7 +4717,7 @@ function skipToday(){
   const tk = chTodayKey();
   if(c.skipTokens<=0 || c.skippedDates.includes(tk)) return;
   const log = c.dailyLog[tk];
-  if(log && log.learn && log.reviewCount>=5) return; // already secured — no need to skip
+  if(log && log.learn && log.reviewCount>=CHALLENGE_DAILY_REVIEW_TARGET) return; // already secured — no need to skip
   c.skippedDates.push(tk);
   c.skipTokens -= 1;
   saveState(); renderAll();
@@ -4744,7 +4754,7 @@ function renderChallenge(){
       hSub.textContent = `${c.securedDates.length} days secured. Tap to start a new run.`;
     } else {
       const log = c.dailyLog[chTodayKey()];
-      const secured = !!(log && log.learn && log.reviewCount>=5);
+      const secured = !!(log && log.learn && log.reviewCount>=CHALLENGE_DAILY_REVIEW_TARGET);
       hTitle.textContent = `Day ${challengeDayNumber()} / 60`;
       hSub.textContent = secured ? 'Today is secured. Nice work.' : 'Both missions still open today.';
     }
@@ -4776,7 +4786,7 @@ function renderChallenge(){
   const tk = chTodayKey();
   const log = c.dailyLog[tk] || {learn:false, reviewCount:0};
   const learnDone = !!log.learn;
-  const reviewDone = log.reviewCount>=5;
+  const reviewDone = log.reviewCount>=CHALLENGE_DAILY_REVIEW_TARGET;
   const bothDone = learnDone && reviewDone;
   const skippedToday = c.skippedDates.includes(tk);
   const dayNum = challengeDayNumber();
@@ -4809,7 +4819,7 @@ function renderChallenge(){
       </button>
       <button class="ch-mission ${reviewDone?'done':''}" onclick="switchView('flashcards')">
         <div class="ch-check">✓</div>
-        <div class="ch-mission-body"><h4>Review</h4><p>${Math.min(log.reviewCount,5)}/5 vocab words reviewed today</p></div>
+        <div class="ch-mission-body"><h4>Review</h4><p>${Math.min(log.reviewCount,CHALLENGE_DAILY_REVIEW_TARGET)}/${CHALLENGE_DAILY_REVIEW_TARGET} vocab words reviewed today</p></div>
       </button>
     </div>
 
