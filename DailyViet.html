@@ -368,6 +368,24 @@
   .modal-head h3{margin:0;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;}
   .close-x{background:var(--surface);border:none;color:var(--rice);font-size:16px;width:32px;height:32px;border-radius:50%;}
 
+  /* ===== Challenge start-confirmation modal (dark, Victor-AI style) ===== */
+  .ch-confirm{background:#161616;border:1px solid rgba(225,75,42,.3);border-radius:22px;max-width:400px;width:100%;padding:24px 20px;margin:10px 0 40px;}
+  .ch-confirm-eyebrow{display:flex;align-items:center;gap:10px;color:var(--vermillion);font-weight:800;font-size:13px;margin-bottom:16px;}
+  .ch-confirm-eyebrow .dot{width:30px;height:30px;border-radius:50%;background:var(--vermillion);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+  .ch-confirm h2{color:#fff;font-size:24px;font-weight:800;margin:0 0 12px;line-height:1.2;}
+  .ch-confirm-desc{color:rgba(255,255,255,.6);font-size:13.5px;line-height:1.55;margin:0 0 18px;}
+  .ch-confirm-divider{border-top:1px solid rgba(255,255,255,.1);margin-bottom:18px;}
+  .ch-confirm-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+  .ch-confirm-row .icn{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .ch-confirm-row h4{color:#fff;font-size:14.5px;font-weight:700;margin:0 0 2px;}
+  .ch-confirm-row p{color:rgba(255,255,255,.45);font-size:12px;margin:0;}
+  .ch-confirm-warn{background:rgba(225,75,42,.12);border:1px solid rgba(225,75,42,.35);border-radius:14px;padding:14px 16px;font-size:12.5px;line-height:1.6;color:rgba(255,180,160,.9);margin:4px 0 20px;}
+  .ch-confirm-warn b{color:var(--vermillion);}
+  .ch-confirm-btns{display:flex;gap:10px;}
+  .ch-confirm-btns button{flex:1;padding:14px;border-radius:12px;font-weight:800;font-size:14px;border:none;}
+  .ch-confirm-cancel{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);}
+  .ch-confirm-start{background:var(--vermillion);color:#fff;}
+
   .hero-card{
     background:linear-gradient(135deg, var(--gold), #C9861F);
     border-radius:18px;padding:18px;color:var(--ink);margin-bottom:18px;
@@ -600,7 +618,7 @@
       </button>
 
       <!-- 60-DAY CHALLENGE (restyled, same feature/data as before) -->
-      <button class="challenge-banner" id="challengeHomeCard" onclick="switchView('challenge')">
+      <button class="challenge-banner" id="challengeHomeCard" onclick="handleChallengeCardClick()">
         <div class="ch-bignum">60</div>
         <p class="ch-eyebrow2">The 60 Day Speaking Challenge</p>
         <h2 id="challengeHomeTitle">A streak you can actually lose</h2>
@@ -887,6 +905,37 @@
       <button class="close-x" onclick="closeTool()">✕</button>
     </div>
     <div id="toolBody"></div>
+  </div>
+</div>
+
+<!-- 60-DAY CHALLENGE START CONFIRMATION -->
+<div class="modal-backdrop" id="challengeConfirmBackdrop">
+  <div class="ch-confirm">
+    <div class="ch-confirm-eyebrow"><span class="dot">⭐</span> SPEAKING CHALLENGE</div>
+    <h2>Start 60-Day Challenge</h2>
+    <p class="ch-confirm-desc">Commit to daily lessons and vocab reviews. Build real fluency through consistent practice.</p>
+    <div class="ch-confirm-divider"></div>
+    <div class="ch-confirm-row">
+      <div class="icn">📖</div>
+      <div><h4>60 speaking lessons</h4><p>1 per day</p></div>
+    </div>
+    <div class="ch-confirm-row">
+      <div class="icn">🧠</div>
+      <div><h4 id="chConfirmReviewCount">300 vocab reviews</h4><p>Spaced repetition</p></div>
+    </div>
+    <div class="ch-confirm-row">
+      <div class="icn">⏩</div>
+      <div><h4 id="chConfirmSkipCount">8 skip days allowed</h4><p>Use wisely</p></div>
+    </div>
+    <div class="ch-confirm-row">
+      <div class="icn">🕐</div>
+      <div><h4>Day resets at midnight</h4><p>Local time</p></div>
+    </div>
+    <div class="ch-confirm-warn"><b>No half measures.</b> Miss more than 2 days in a row without a skip and the challenge resets to Day 1.</div>
+    <div class="ch-confirm-btns">
+      <button class="ch-confirm-cancel" onclick="closeChallengeConfirm()">Cancel</button>
+      <button class="ch-confirm-start" onclick="confirmStartChallenge()">Start Challenge</button>
+    </div>
   </div>
 </div>
 
@@ -4590,6 +4639,29 @@ function startChallenge(){
   state.challenge.stats = keepStats; // lifetime stats survive a fresh run
   saveState(); renderAll();
 }
+// Entry points (Home card + Challenge intro screen) route through this
+// confirmation modal before actually starting, matching the Victor AI flow.
+function openChallengeConfirm(){
+  const reviewCountEl = document.getElementById('chConfirmReviewCount');
+  const skipCountEl = document.getElementById('chConfirmSkipCount');
+  if(reviewCountEl) reviewCountEl.textContent = `${5*60} vocab reviews`; // 5/day mission × 60 days
+  if(skipCountEl) skipCountEl.textContent = `${DEFAULT_STATE.challenge.skipTokens} skip days allowed`;
+  document.getElementById('challengeConfirmBackdrop').classList.add('open');
+}
+function closeChallengeConfirm(){
+  document.getElementById('challengeConfirmBackdrop').classList.remove('open');
+}
+function confirmStartChallenge(){
+  startChallenge();
+  closeChallengeConfirm();
+  switchView('challenge');
+}
+// Home card routes to the confirm modal before a run is active, and straight
+// into the dashboard/recap once a run exists.
+function handleChallengeCardClick(){
+  if(!state.challenge.active) openChallengeConfirm();
+  else switchView('challenge');
+}
 function chEnsureTodayLog(){
   const tk = chTodayKey();
   if(!state.challenge.dailyLog[tk]) state.challenge.dailyLog[tk] = {learn:false, reviewCount:0};
@@ -4684,7 +4756,7 @@ function renderChallenge(){
         <p class="ch-eyebrow">The 60-Day Challenge</p>
         <h2>A streak you can actually lose.</h2>
         <p>Two missions a day — a dialogue lesson, and 5 words reviewed — about 10-15 minutes total. Miss more than 2 days and the challenge resets to Day 1. Complete 60 secured days and you'll have learned 60 dialogues, reviewed hundreds of words, and built the habit for real.</p>
-        <button class="footer-btn" onclick="startChallenge()">Start the challenge</button>
+        <button class="footer-btn" onclick="openChallengeConfirm()">Start the challenge</button>
       </div>`;
     return;
   }
@@ -4696,7 +4768,7 @@ function renderChallenge(){
         <p class="ch-eyebrow">Challenge complete</p>
         <h2>Day 60 of 60 secured</h2>
         <p>${c.stats.dialoguesLearned} dialogues learned · ${c.stats.wordsReviewed} words reviewed · ${c.stats.phrasesSpoken} phrases spoken. That's what 10-15 minutes a day for 60 days looks like.</p>
-        <button class="footer-btn" onclick="startChallenge()">Start a new 60-day run</button>
+        <button class="footer-btn" onclick="openChallengeConfirm()">Start a new 60-day run</button>
       </div>`;
     return;
   }
