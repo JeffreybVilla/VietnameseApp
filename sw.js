@@ -2,16 +2,16 @@
 // and lets audio files be cached for offline playback (either organically, as
 // each is played, or all at once via the "Download for offline" button).
 //
-// Bump CACHE_VERSION whenever VietLearn.html changes meaningfully, so the old
+// Bump CACHE_VERSION whenever DailyViet.html changes meaningfully, so the old
 // app-shell cache gets cleared and the new version is fetched fresh. Audio
 // files don't need this treatment the same way — once a phrase's audio
 // exists, it doesn't change, so the audio cache persists across versions.
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const APP_SHELL_CACHE = `vietlearn-shell-${CACHE_VERSION}`;
 const AUDIO_CACHE = 'vietlearn-audio'; // no version suffix — persists across app updates
 
 const APP_SHELL_URLS = [
-  './VietLearn.html',
+  './DailyViet.html',
 ];
 
 self.addEventListener('install', (event) => {
@@ -74,7 +74,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(APP_SHELL_CACHE).then(cache => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match(event.request).then(cached => cached || caches.match('./VietLearn.html')))
+        .catch(() => caches.match(event.request).then(cached => cached || caches.match('./DailyViet.html')))
     );
     return;
   }
