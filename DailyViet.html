@@ -291,8 +291,8 @@
   .danger-btn{width:100%;background:var(--vermillion-dim);color:var(--rice);border:none;padding:13px;border-radius:12px;font-weight:700;font-size:13.5px;margin-top:10px;}
 
   /* ===== Home redesign (Victor-AI-style hero) ===== */
-  .home-hero{position:relative;border-radius:20px;overflow:hidden;height:270px;margin-bottom:16px;background:linear-gradient(160deg,#1a2f4a,#0d1420);}
-  .home-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .home-hero{position:relative;border-radius:20px;overflow:hidden;height:300px;margin-bottom:16px;background:linear-gradient(160deg,#1a2f4a,#0d1420);}
+  .home-hero img{position:absolute;top:0;left:0;width:100%;height:auto;display:block;will-change:transform;}
   .home-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.78) 100%);}
   .home-hero-loc{position:absolute;top:14px;left:16px;color:#fff;font-weight:700;font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,.6);z-index:2;max-width:65%;}
   .home-flag-badge{position:absolute;top:12px;right:12px;z-index:2;width:42px;height:42px;border-radius:50%;background:var(--vermillion);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 2px 8px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.3);}
@@ -579,7 +579,7 @@
     <section class="view active" id="view-home">
 
       <!-- HERO -->
-      <div class="home-hero">
+      <div class="home-hero" id="homeHero">
         <img id="homeHeroImg" src="images/home-hero.jpg" alt="" onerror="this.style.display='none';">
         <div class="home-hero-shade"></div>
         <div class="home-hero-loc" id="homeHeroLoc">Mũi Né Sand Dunes</div>
@@ -840,10 +840,6 @@
     <button class="tab-btn" data-view="frequency" onclick="switchView('frequency')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.6 6.6L22 10l-5.5 4.6L18 22l-6-3.6L6 22l1.5-7.4L2 10l7.4-1.4z"/></svg>
       WORDS
-    </button>
-    <button class="tab-btn" data-view="profile" onclick="switchView('profile')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
-      PROFILE
     </button>
   </nav>
 </div>
@@ -4815,6 +4811,38 @@ function resetProgress(){
 
 /* ========================= INIT ========================= */
 loadState();
+
+/* ========================= HOME HERO SCROLL REVEAL =========================
+   The hero image is much taller than its 300px container (natural aspect,
+   width:100%/height:auto — see CSS). By default only the top of the image
+   shows. As the person scrolls the Home tab, we shift the image upward
+   inside that fixed window, revealing more of it, until the full image has
+   been shown — then it stops (no overscroll past the bottom of the image). */
+function initHeroParallax(){
+  const main = document.querySelector('main');
+  const hero = document.getElementById('homeHero');
+  const img = document.getElementById('homeHeroImg');
+  if(!main || !hero || !img) return;
+  const PARALLAX_FACTOR = 0.5; // <1 = image moves slower than the scroll (smoother reveal)
+  let ticking = false;
+  function update(){
+    ticking = false;
+    const containerH = hero.offsetHeight;
+    const imgH = img.offsetHeight;
+    const maxShift = Math.max(0, imgH - containerH);
+    if(maxShift <= 0) return;
+    const shift = Math.min(maxShift, main.scrollTop * PARALLAX_FACTOR);
+    img.style.transform = `translateY(-${shift}px)`;
+  }
+  function onScroll(){
+    if(!ticking){ ticking = true; requestAnimationFrame(update); }
+  }
+  main.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', update);
+  if(img.complete) update();
+  else img.addEventListener('load', update);
+}
+initHeroParallax();
 </script>
 </body>
 </html>
