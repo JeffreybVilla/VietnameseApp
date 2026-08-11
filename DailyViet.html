@@ -290,6 +290,41 @@
   .profile-field input{width:100%;background:var(--surface);border:1px solid rgba(36,28,19,0.1);color:var(--rice);padding:12px 14px;border-radius:12px;font-size:14px;font-family:inherit;}
   .danger-btn{width:100%;background:var(--vermillion-dim);color:var(--rice);border:none;padding:13px;border-radius:12px;font-weight:700;font-size:13.5px;margin-top:10px;}
 
+  /* ===== Home redesign (Victor-AI-style hero) ===== */
+  .home-hero{position:relative;border-radius:20px;overflow:hidden;height:270px;margin-bottom:16px;background:linear-gradient(160deg,#1a2f4a,#0d1420);}
+  .home-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .home-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.78) 100%);}
+  .home-hero-loc{position:absolute;top:14px;left:16px;color:#fff;font-weight:700;font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,.6);z-index:2;max-width:65%;}
+  .home-flag-badge{position:absolute;top:12px;right:12px;z-index:2;width:42px;height:42px;border-radius:50%;background:var(--vermillion);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 2px 8px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.3);}
+  .home-hero-bottomrow{position:absolute;bottom:14px;left:14px;right:14px;display:flex;justify-content:space-between;gap:8px;z-index:2;}
+  .home-pill{background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;border:1px solid rgba(255,255,255,0.18);padding:9px 15px;border-radius:999px;font-weight:700;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;}
+  .home-pill.icon-only{padding:9px;width:36px;height:36px;justify-content:center;}
+
+  .lesson-card{background:linear-gradient(135deg,#1c2b3d,#0e1620);border:1px solid rgba(120,170,220,0.28);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;}
+  .lesson-card .lc-eyebrow{color:var(--sky);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;}
+  .lesson-card h2{color:#fff;font-size:15.5px;margin:0;font-weight:800;}
+  .lesson-card-thumb{width:44px;height:44px;border-radius:50%;background:var(--surface-2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;position:relative;}
+  .lesson-card-thumb .dot{position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;background:var(--sky);border-radius:50%;border:2px solid #0e1620;}
+
+  .challenge-banner{position:relative;overflow:hidden;background:#0c0c0c;border:1px solid rgba(225,75,42,.5);border-radius:18px;padding:20px 18px;margin-bottom:16px;display:block;text-align:left;width:100%;}
+  .challenge-banner .ch-bignum{position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:104px;font-weight:900;color:var(--vermillion);opacity:.92;line-height:1;pointer-events:none;}
+  .challenge-banner .ch-eyebrow2{color:var(--vermillion);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px;position:relative;z-index:1;}
+  .challenge-banner h2{color:#fff;font-size:19px;font-weight:800;margin:0 0 10px;line-height:1.18;max-width:68%;position:relative;z-index:1;}
+  .challenge-banner .ch-copy{color:rgba(255,255,255,.68);font-size:12.5px;line-height:1.65;margin:0 0 16px;max-width:68%;position:relative;z-index:1;}
+  .challenge-banner .ch-copy b{color:var(--vermillion);font-weight:700;}
+  .challenge-cta{display:block;width:100%;background:#fff;color:#111;border:none;padding:13px;border-radius:10px;font-weight:800;font-size:13px;letter-spacing:.03em;text-align:center;position:relative;z-index:1;}
+
+  .streak-strip-card{background:var(--surface);border-radius:16px;padding:14px;margin-bottom:22px;border:1px solid rgba(36,28,19,0.07);}
+  .streak-strip-top{display:flex;gap:10px;margin-bottom:14px;}
+  .streak-pill-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:12px;padding:10px 12px;}
+  .streak-pill-box .num{font-size:17px;font-weight:800;}
+  .streak-pill-box .lbl{font-size:10.5px;color:var(--muted);font-weight:700;line-height:1.2;}
+  .streak-days-row{display:flex;justify-content:space-between;}
+  .streak-day-col{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;color:var(--muted);font-weight:700;}
+  .streak-day-col .flame{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--surface-2);opacity:.35;}
+  .streak-day-col.lit .flame{opacity:1;background:rgba(240,169,59,.22);}
+  .streak-day-col.today .flame{box-shadow:0 0 0 2px var(--vermillion);}
+
   /* ===== 60-Day Challenge ===== */
   .ch-back{background:none;border:none;color:var(--muted);font-weight:700;font-size:13px;padding:0 0 14px;display:flex;align-items:center;gap:6px;}
   .ch-hero{background:linear-gradient(135deg,#4A1810,#241009);border:1px solid rgba(225,75,42,0.45);border-radius:var(--radius);padding:22px 18px;margin-bottom:20px;text-align:center;}
@@ -542,10 +577,44 @@
   <main>
     <!-- HOME -->
     <section class="view active" id="view-home">
-      <div class="banner" id="homeBanner">
-        <h2>Welcome back</h2>
-        <p>Pick up where you left off, or dive into a Survival pack.</p>
-        <button onclick="goToNextLesson()">CONTINUE LEARNING</button>
+
+      <!-- HERO -->
+      <div class="home-hero">
+        <img id="homeHeroImg" src="images/home-hero.jpg" alt="" onerror="this.style.display='none';">
+        <div class="home-hero-shade"></div>
+        <div class="home-hero-loc" id="homeHeroLoc">Mũi Né Sand Dunes</div>
+        <div class="home-flag-badge">🇻🇳</div>
+        <div class="home-hero-bottomrow">
+          <button class="home-pill" onclick="switchView('profile')" id="homeNamePill">Set your name</button>
+          <button class="home-pill icon-only" onclick="switchView('profile')" title="Settings">⚙️</button>
+        </div>
+      </div>
+
+      <!-- YOUR NEXT LESSON (moved from the old welcome-back banner, restyled) -->
+      <button class="lesson-card" id="homeBanner" onclick="goToNextLesson()">
+        <div>
+          <p class="lc-eyebrow" id="homeBannerEyebrow">Your Next Lesson</p>
+          <h2 id="homeBannerTitle">Welcome back</h2>
+        </div>
+        <div class="lesson-card-thumb">📘<span class="dot"></span></div>
+      </button>
+
+      <!-- 60-DAY CHALLENGE (restyled, same feature/data as before) -->
+      <button class="challenge-banner" id="challengeHomeCard" onclick="switchView('challenge')">
+        <div class="ch-bignum">60</div>
+        <p class="ch-eyebrow2">The 60 Day Speaking Challenge</p>
+        <h2 id="challengeHomeTitle">A streak you can actually lose</h2>
+        <p class="ch-copy" id="challengeHomeSub">Two missions a day. Learn + Review. <b>Miss more than 2 days and it resets.</b></p>
+        <span class="challenge-cta" id="challengeHomeCta">ACCEPT CHALLENGE</span>
+      </button>
+
+      <!-- STREAK STRIP -->
+      <div class="streak-strip-card">
+        <div class="streak-strip-top">
+          <div class="streak-pill-box">🔥<div><div class="num" id="homeDailyStreakNum">0</div><div class="lbl">Daily<br>Streak</div></div></div>
+          <div class="streak-pill-box">🏆<div><div class="num" id="homeBestStreakNum">0</div><div class="lbl">Best<br>Streak</div></div></div>
+        </div>
+        <div class="streak-days-row" id="homeStreakDaysRow"></div>
       </div>
 
       <button class="core-banner" onclick="startCoreSwipe()">
@@ -555,12 +624,6 @@
           <p class="cb-sub" id="coreDueSub">Learn these first — they cover most of what you'll actually say.</p>
         </div>
         <span class="cb-arrow">→</span>
-      </button>
-
-      <button class="challenge-banner" id="challengeHomeCard" onclick="switchView('challenge')">
-        <div class="cb-eyebrow" style="opacity:.85;">🏆 60-Day Challenge</div>
-        <div id="challengeHomeTitle" class="cb-title">A streak you can actually lose</div>
-        <div id="challengeHomeSub" class="cb-sub">Two missions a day. Learn + Review. Miss more than 2 days and it resets.</div>
       </button>
 
       <p class="eyebrow">Quick tools</p>
@@ -2814,7 +2877,7 @@ const CHAT_PERSONAS = {
 const DEFAULT_STATE = {
   name:'', dailyGoal:10,
   completedLessons:[], savedPhrases:[], completedChats:[],
-  xp:0, streak:0, lastStudyDate:null, studyDates:[],
+  xp:0, streak:0, bestStreak:0, lastStudyDate:null, studyDates:[],
   srs:{}, // srsId -> {interval, ease, reps, due, lapses}
   chatEnglishVisible:false,
   wordDailyGoal:500, wordStudyLog:{ date:null, count:0 }, // resets automatically each new calendar day
@@ -3127,13 +3190,48 @@ function totalLessonsForLevel(lv){ return LESSONS.filter(l=>l.level===lv).length
 function completedForLevel(lv){ return LESSONS.filter(l=>l.level===lv && state.completedLessons.includes(l.id)).length; }
 
 function renderHome(){
-  const banner = document.getElementById('homeBanner');
-  const greeting = state.name ? `Chào, ${state.name}!` : 'Chào bạn!';
+  // --- Hero ---
+  const namePill = document.getElementById('homeNamePill');
+  if(namePill) namePill.textContent = state.name ? state.name : 'Set your name';
+
+  // --- Your Next Lesson card (same goToNextLesson() action as before, restyled) ---
+  const nextLesson = LESSONS.find(l=>!state.completedLessons.includes(l.id));
+  const bannerTitle = document.getElementById('homeBannerTitle');
+  const bannerEyebrow = document.getElementById('homeBannerEyebrow');
   const doneCount = state.completedLessons.length;
-  banner.querySelector('h2').textContent = doneCount===0 ? greeting : `${greeting} ${doneCount} lessons down.`;
-  banner.querySelector('p').textContent = doneCount===0
-    ? 'Start with Foundations to learn sounds and core phrases, then explore Survival packs.'
-    : 'Pick up where you left off, or dive into a Survival pack.';
+  if(bannerTitle){
+    bannerTitle.textContent = nextLesson ? nextLesson.title : (doneCount===0 ? 'Start your first lesson' : 'Explore a Survival pack');
+  }
+  if(bannerEyebrow){
+    bannerEyebrow.textContent = nextLesson ? 'Your Next Lesson' : 'Keep going';
+  }
+
+  // --- 60-Day Challenge CTA text on the home card ---
+  const ctaEl = document.getElementById('challengeHomeCta');
+  if(ctaEl){
+    if(!state.challenge.active) ctaEl.textContent = 'ACCEPT CHALLENGE';
+    else if(state.challenge.completed) ctaEl.textContent = 'SEE YOUR RECAP';
+    else ctaEl.textContent = `DAY ${challengeDayNumber()} — CONTINUE`;
+  }
+
+  // --- Streak strip ---
+  const dailyNumEl = document.getElementById('homeDailyStreakNum');
+  const bestNumEl = document.getElementById('homeBestStreakNum');
+  if(dailyNumEl) dailyNumEl.textContent = state.streak;
+  if(bestNumEl) bestNumEl.textContent = state.bestStreak||0;
+  const daysRow = document.getElementById('homeStreakDaysRow');
+  if(daysRow){
+    const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let html = '';
+    for(let i=6;i>=0;i--){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      const dk = d.toISOString().slice(0,10);
+      const lit = state.studyDates.includes(dk);
+      const isToday = i===0;
+      html += `<div class="streak-day-col ${lit?'lit':''} ${isToday?'today':''}"><div class="flame">🔥</div>${dayLabels[d.getDay()]}</div>`;
+    }
+    daysRow.innerHTML = html;
+  }
 
   const coreDue = countDue(CORE_PHRASES.map(c=>({srsId:`core_${c.rank}`})));
   const coreSub = document.getElementById('coreDueSub');
@@ -4468,6 +4566,7 @@ function bumpStreak(){
   else if(state.lastStudyDate === yKey){ state.streak += 1; }
   else{ state.streak = 1; }
   state.lastStudyDate = todayKey;
+  state.bestStreak = Math.max(state.bestStreak||0, state.streak);
 }
 
 /* ========================= 60-DAY CHALLENGE =========================
