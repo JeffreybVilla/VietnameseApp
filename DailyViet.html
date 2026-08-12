@@ -306,24 +306,67 @@
   .lesson-card-thumb{width:44px;height:44px;border-radius:50%;background:var(--surface-2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;position:relative;}
   .lesson-card-thumb .dot{position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;background:var(--sky);border-radius:50%;border:2px solid #0e1620;}
 
-  .challenge-banner{position:relative;overflow:hidden;background:#0c0c0c;border:1px solid rgba(225,75,42,.5);border-radius:18px;padding:20px 18px;margin-bottom:16px;display:block;text-align:left;width:100%;}
-  .challenge-banner .ch-bignum{position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:104px;font-weight:900;color:var(--vermillion);opacity:.92;line-height:1;pointer-events:none;}
-  .challenge-banner .ch-eyebrow2{color:var(--vermillion);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px;position:relative;z-index:1;}
-  .challenge-banner h2{color:#fff;font-size:19px;font-weight:800;margin:0 0 10px;line-height:1.18;max-width:68%;position:relative;z-index:1;}
-  .challenge-banner .ch-copy{color:rgba(255,255,255,.68);font-size:12.5px;line-height:1.65;margin:0 0 16px;max-width:68%;position:relative;z-index:1;}
+  .challenge-banner{position:relative;overflow:hidden;background:linear-gradient(160deg,#1a1a1a 0%,#0a0a0a 65%);border:1px solid rgba(225,75,42,.55);border-radius:20px;padding:22px 18px;margin-bottom:16px;display:block;text-align:left;width:100%;
+    box-shadow:0 0 0 1px rgba(225,75,42,.12), 0 14px 34px rgba(225,75,42,.28), 0 0 46px rgba(225,75,42,.16);
+    animation:chGlow 3.2s ease-in-out infinite;}
+  @keyframes chGlow{
+    0%,100%{box-shadow:0 0 0 1px rgba(225,75,42,.12), 0 14px 34px rgba(225,75,42,.28), 0 0 46px rgba(225,75,42,.16);}
+    50%{box-shadow:0 0 0 1px rgba(225,75,42,.22), 0 14px 38px rgba(225,75,42,.4), 0 0 60px rgba(225,75,42,.3);}
+  }
+  .challenge-banner .ch-bignum{position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:112px;font-weight:900;color:var(--vermillion);opacity:.95;line-height:1;pointer-events:none;-webkit-text-stroke:2px rgba(255,255,255,.14);text-shadow:0 0 30px rgba(225,75,42,.5);}
+  .challenge-banner .ch-eyebrow2{color:var(--vermillion);font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;position:relative;z-index:1;}
+  .challenge-banner h2{color:#fff;font-size:21px;font-weight:900;margin:0 0 10px;line-height:1.15;max-width:68%;position:relative;z-index:1;}
+  .challenge-banner .ch-copy{color:rgba(255,255,255,.7);font-size:12.5px;line-height:1.65;margin:0 0 18px;max-width:68%;position:relative;z-index:1;}
   .challenge-banner .ch-copy b{color:var(--vermillion);font-weight:700;}
-  .challenge-cta{display:block;width:100%;background:#fff;color:#111;border:none;padding:13px;border-radius:10px;font-weight:800;font-size:13px;letter-spacing:.03em;text-align:center;position:relative;z-index:1;}
+  .challenge-cta{display:block;width:100%;background:#fff;color:#111;border:none;padding:15px;border-radius:12px;font-weight:900;font-size:13.5px;letter-spacing:.04em;text-align:center;position:relative;z-index:1;box-shadow:0 6px 18px rgba(0,0,0,.35);}
 
-  .streak-strip-card{background:var(--surface);border-radius:16px;padding:14px;margin-bottom:22px;border:1px solid rgba(36,28,19,0.07);}
-  .streak-strip-top{display:flex;gap:10px;margin-bottom:14px;}
-  .streak-pill-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:12px;padding:10px 12px;}
-  .streak-pill-box .num{font-size:17px;font-weight:800;}
-  .streak-pill-box .lbl{font-size:10.5px;color:var(--muted);font-weight:700;line-height:1.2;}
+  .streak-strip-card{background:linear-gradient(150deg,#2a1c0f 0%,#1a1108 100%);border-radius:18px;padding:16px;margin-bottom:22px;border:1px solid rgba(240,169,59,.3);
+    box-shadow:0 0 0 1px rgba(240,169,59,.08), 0 10px 28px rgba(240,169,59,.14), 0 0 36px rgba(240,169,59,.08);}
+  .streak-strip-top{display:flex;gap:10px;margin-bottom:16px;}
+  .streak-pill-box{flex:1;display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 14px;}
+  .streak-pill-box .icon-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .streak-pill-box.daily .icon-badge{background:rgba(225,75,42,.22);}
+  .streak-pill-box.best .icon-badge{background:rgba(62,142,90,.22);}
+  .streak-pill-box .num{font-size:22px;font-weight:900;color:#fff;line-height:1;}
+  .streak-pill-box .lbl{font-size:10.5px;color:rgba(255,255,255,.55);font-weight:700;line-height:1.25;text-transform:uppercase;letter-spacing:.03em;}
   .streak-days-row{display:flex;justify-content:space-between;}
-  .streak-day-col{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;color:var(--muted);font-weight:700;}
-  .streak-day-col .flame{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--surface-2);opacity:.35;}
-  .streak-day-col.lit .flame{opacity:1;background:rgba(240,169,59,.22);}
-  .streak-day-col.today .flame{box-shadow:0 0 0 2px var(--vermillion);}
+  .streak-day-col{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;color:rgba(255,255,255,.45);font-weight:700;background:none;border:none;padding:0;font-family:inherit;}
+  .streak-day-col .flame{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(255,255,255,.06);opacity:.4;}
+  .streak-day-col.lit{color:rgba(255,255,255,.85);}
+  .streak-day-col.lit .flame{opacity:1;background:rgba(240,169,59,.28);box-shadow:0 0 12px rgba(240,169,59,.35);}
+  .streak-day-col.today .flame{box-shadow:0 0 0 2px var(--vermillion), 0 0 14px rgba(225,75,42,.5);}
+
+  /* ===== Time Tracker card ===== */
+  .tt-card{background:linear-gradient(150deg,#0f1f16 0%,#0a1610 100%);border:1px solid rgba(62,142,90,.3);border-radius:18px;padding:16px;margin-bottom:22px;
+    box-shadow:0 0 0 1px rgba(62,142,90,.08), 0 10px 26px rgba(62,142,90,.12);}
+  .tt-head{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;text-align:left;padding:0;}
+  .tt-head .tt-icon{width:34px;height:34px;border-radius:50%;background:rgba(62,142,90,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--herb);}
+  .tt-head h3{color:#fff;font-size:15.5px;font-weight:800;margin:0;flex:1;}
+  .tt-head .tt-chevron{color:rgba(255,255,255,.5);font-size:13px;transition:transform .2s;}
+  .tt-card.expanded .tt-head .tt-chevron{transform:rotate(180deg);}
+  .tt-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .tt-card.expanded .tt-body{max-height:600px;}
+  .tt-stat-row{display:flex;gap:20px;margin:16px 0 14px;}
+  .tt-stat{flex:1;}
+  .tt-stat .lab{font-size:10.5px;color:rgba(255,255,255,.45);font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;}
+  .tt-stat .val{color:#fff;font-size:26px;font-weight:900;line-height:1;}
+  .tt-stat .val span{font-size:13px;font-weight:700;color:rgba(255,255,255,.5);margin-left:3px;}
+  .tt-stat .bar{height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:10px;overflow:hidden;}
+  .tt-stat .bar i{display:block;height:100%;background:var(--herb);border-radius:2px;}
+  .tt-chart{margin:14px 0 6px;}
+  .tt-see-details{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;border-top:1px solid rgba(255,255,255,.08);padding:12px 0;color:rgba(255,255,255,.6);font-size:13px;font-weight:700;}
+  .tt-details-body{max-height:0;overflow:hidden;transition:max-height .2s ease;}
+  .tt-details-body.open{max-height:300px;}
+  .tt-activity-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;color:rgba(255,255,255,.75);}
+  .tt-add-btn{display:block;width:100%;background:none;border:1.5px solid var(--herb);color:var(--herb);padding:13px;border-radius:12px;font-weight:800;font-size:13.5px;margin-top:12px;}
+
+  /* ===== Level card ===== */
+  .lvl-card{background:var(--surface);border-radius:18px;padding:16px;margin-bottom:22px;border:1px solid rgba(36,28,19,0.07);}
+  .lvl-card h3{font-size:15.5px;font-weight:800;margin:0 0 12px;}
+  .lvl-track{height:6px;border-radius:3px;background:var(--surface-2);position:relative;overflow:hidden;}
+  .lvl-track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--vermillion));border-radius:3px;}
+  .lvl-nums{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;font-weight:700;color:var(--muted);}
+  .lvl-nums .cur{color:var(--gold);}
 
   /* ===== 60-Day Challenge ===== */
   .ch-back{background:none;border:none;color:var(--muted);font-weight:700;font-size:13px;padding:0 0 14px;display:flex;align-items:center;gap:6px;}
@@ -385,6 +428,125 @@
   .ch-confirm-btns button{flex:1;padding:14px;border-radius:12px;font-weight:800;font-size:14px;border:none;}
   .ch-confirm-cancel{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);}
   .ch-confirm-start{background:var(--vermillion);color:#fff;}
+
+  /* ===== Lessons tab (Victor-AI-style redesign) ===== */
+  .lsn-reminder{display:flex;align-items:center;gap:10px;width:100%;background:var(--surface);border:1px solid var(--sky);border-radius:14px;padding:14px;margin-bottom:16px;text-align:left;}
+  .lsn-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--sky);flex-shrink:0;}
+  .lsn-reminder-text{flex:1;font-size:13.5px;color:var(--muted);}
+  .lsn-reminder-text b{color:var(--ink);font-weight:800;display:block;font-size:14.5px;margin-top:2px;}
+  .lsn-reminder-arrow{color:var(--sky);font-size:18px;}
+
+  .lsn-stat-card{background:var(--surface);border-radius:18px;padding:18px;margin-bottom:16px;border:1px solid rgba(36,28,19,0.07);}
+  .lsn-stat-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;margin:0 0 12px;}
+  .lsn-stat-big{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;}
+  .lsn-stat-big span:first-child{font-size:38px;font-weight:900;color:var(--ink);}
+  .lsn-stat-unit{font-size:14px;color:var(--muted);font-weight:600;}
+  .lsn-stat-line{font-size:12.5px;color:var(--muted);margin:2px 0;}
+  .lsn-stat-line b{color:var(--ink);}
+
+  .lsn-free-talk{display:flex;align-items:center;gap:14px;width:100%;background:var(--surface);border:1px solid rgba(36,28,19,0.07);border-radius:16px;padding:16px;margin-bottom:16px;text-align:left;}
+  .lsn-free-talk-icon{width:40px;height:40px;border-radius:50%;background:rgba(240,169,59,.15);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .lsn-free-talk-title{font-weight:800;font-size:14px;margin:0 0 2px;}
+  .lsn-free-talk-sub{font-size:11.5px;color:var(--muted);margin:0;line-height:1.4;}
+
+  .lsn-level{background:var(--surface);border-radius:16px;margin-bottom:10px;border:1px solid rgba(36,28,19,0.07);overflow:hidden;}
+  .lsn-level-head{display:flex;align-items:center;gap:12px;width:100%;padding:14px;text-align:left;background:none;border:none;}
+  .lsn-level-badge{border:1.5px solid var(--gold);color:var(--gold);border-radius:8px;padding:3px 8px;font-weight:800;font-size:12px;flex-shrink:0;}
+  .lsn-level-name{flex:1;font-weight:800;font-size:14.5px;}
+  .lsn-level-count{background:var(--surface-2);color:var(--muted);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;white-space:nowrap;}
+  .lsn-level-chevron{color:var(--muted);font-size:13px;transition:transform .2s;}
+  .lsn-level.open .lsn-level-chevron{transform:rotate(180deg);}
+  .lsn-level-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .lsn-level.open .lsn-level-body{max-height:2000px;}
+  .lsn-level-rows{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px;}
+  .lsn-level-row{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:10px;padding:10px 12px;text-align:left;border:none;}
+  .lsn-level-row .dot{width:18px;height:18px;border-radius:50%;background:var(--bg-elev);color:var(--muted);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .lsn-level-row.done .dot{background:var(--herb);color:#fff;}
+  .lsn-level-row span{font-size:12.5px;font-weight:600;}
+
+  .lsn-section-divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin:20px 0 12px;}
+  .lsn-section-divider::after{content:'';flex:1;height:1px;background:rgba(36,28,19,0.1);}
+  .lsn-feature-row{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin-bottom:8px;}
+  .lsn-feature-card{position:relative;flex-shrink:0;width:260px;height:170px;border-radius:16px;overflow:hidden;border:1px solid rgba(36,28,19,0.07);padding:0;text-align:left;}
+  .lsn-feature-card img{width:100%;height:100%;object-fit:cover;display:block;}
+  .lsn-feature-card .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 40%,rgba(0,0,0,.75) 100%);}
+  .lsn-feature-card .play{position:absolute;top:10px;left:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .lsn-feature-card .tag{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px;letter-spacing:.03em;}
+  .lsn-feature-card .title{position:absolute;bottom:10px;left:10px;right:10px;color:#fff;font-weight:800;font-size:13.5px;line-height:1.25;text-shadow:0 1px 4px rgba(0,0,0,.6);}
+
+  /* ===== Day detail popup (tap a day in the streak strip) ===== */
+  .dd-modal{background:#161616;border-radius:22px;max-width:400px;width:100%;padding:22px 20px;margin:10px 0 40px;border:1px solid rgba(255,255,255,.1);}
+  .dd-date{color:rgba(255,255,255,.45);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px;}
+  .dd-banner{border-radius:16px;padding:16px;margin-bottom:16px;}
+  .dd-banner.secured{background:linear-gradient(160deg,#2f9e5b,#1f7a45);}
+  .dd-banner.studied{background:linear-gradient(160deg,#2a2a2a,#1a1a1a);border:1px solid rgba(255,255,255,.1);}
+  .dd-banner.empty{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);}
+  .dd-banner .dd-status{color:#fff;font-size:19px;font-weight:900;margin:0 0 4px;}
+  .dd-banner.empty .dd-status{color:rgba(255,255,255,.55);}
+  .dd-banner .dd-sub{color:rgba(255,255,255,.75);font-size:12.5px;margin:0;}
+  .dd-banner.empty .dd-sub{color:rgba(255,255,255,.4);}
+  .dd-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+  .dd-row{display:flex;align-items:center;gap:12px;}
+  .dd-row .chk{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:rgba(255,255,255,.08);color:transparent;}
+  .dd-row.done .chk{background:var(--herb);color:#fff;}
+  .dd-row span{color:rgba(255,255,255,.8);font-size:13.5px;font-weight:600;}
+  .dd-row.done span{color:#fff;}
+  .dd-close{display:block;width:100%;padding:13px;border-radius:12px;border:none;background:rgba(255,255,255,.1);color:#fff;font-weight:800;font-size:13.5px;}
+
+  /* ===== Challenge "Ready" (Day intro) modal ===== */
+  .chr-modal{text-align:center;}
+  .chr-icon-ring{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:#0c0c0c;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;box-shadow:0 0 24px rgba(240,169,59,.35);}
+  .chr-day{color:#fff;font-size:34px;font-weight:900;margin:0 0 6px;}
+  .chr-remaining{color:rgba(255,255,255,.55);font-size:13px;margin:0 0 18px;}
+  .chr-progress-track{height:5px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:10px;}
+  .chr-progress-fill{height:100%;background:var(--gold);border-radius:3px;}
+  .chr-of{color:rgba(255,255,255,.4);font-size:11.5px;margin:0 0 22px;}
+  .chr-ready-btn{display:block;width:100%;background:none;border:1.5px solid var(--gold);color:var(--gold);padding:14px;border-radius:12px;font-weight:800;font-size:14px;margin-bottom:14px;}
+  .chr-abandon{display:block;width:100%;background:none;border:none;color:rgba(255,255,255,.4);font-size:12.5px;font-weight:600;padding:4px;}
+
+  /* ===== Today's Tasks modal ===== */
+  .ctt-title{color:#fff;font-size:22px;font-weight:900;margin:0 0 6px;}
+  .ctt-sub{color:rgba(255,255,255,.5);font-size:12.5px;margin:0 0 18px;}
+  .ctt-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+  .ctt-skips{text-align:center;color:rgba(255,255,255,.45);font-size:12px;margin:0 0 16px;}
+  .ctt-go-btn{display:block;width:100%;background:linear-gradient(135deg,var(--gold),#C9861F);color:#1a1206;border:none;padding:15px;border-radius:12px;font-weight:900;font-size:14px;}
+
+  /* Shared task-row style, used in the Today's Tasks modal AND the inline
+     expandable list on the active Home card */
+  .ch-task-row{display:flex;align-items:center;gap:12px;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 14px;text-align:left;}
+  .ch-task-row.done{border-color:rgba(62,142,90,.4);background:rgba(62,142,90,.1);}
+  .ch-task-icon{width:38px;height:38px;border-radius:10px;background:rgba(240,169,59,.18);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .ch-task-body{flex:1;}
+  .ch-task-body h4{color:#fff;font-size:13px;font-weight:700;margin:0 0 2px;}
+  .ch-task-body p{color:rgba(255,255,255,.45);font-size:11px;margin:0;}
+  .ch-task-check{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;flex-shrink:0;}
+  .ch-task-row.done .ch-task-check{background:var(--herb);border-color:var(--herb);color:#fff;}
+
+  /* ===== Active-state Home challenge card ===== */
+  .ch-active-card{position:relative;background:linear-gradient(160deg,#1a1a1a 0%,#0a0a0a 65%);border:1px solid rgba(240,169,59,.4);border-radius:20px;padding:18px;margin-bottom:16px;
+    box-shadow:0 0 0 1px rgba(240,169,59,.1), 0 12px 30px rgba(240,169,59,.18);}
+  .ch-active-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .ch-active-top .ch-eyebrow2{margin:0;}
+  .ch-skip-pill{background:rgba(240,169,59,.14);border:1px solid rgba(240,169,59,.35);color:var(--gold);font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;white-space:nowrap;}
+  .ch-active-mid{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .ch-active-day{color:#fff;font-size:26px;font-weight:900;margin:0 0 2px;}
+  .ch-active-sub{color:rgba(255,255,255,.5);font-size:12px;margin:0;}
+  .ch-active-ring{position:relative;width:46px;height:46px;flex-shrink:0;}
+  .ch-active-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .ch-active-ring circle{fill:none;stroke-width:4;}
+  .ch-active-ring circle.track{stroke:rgba(255,255,255,.1);}
+  .ch-active-ring circle.fill{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset .3s ease;}
+  .ch-active-ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10.5px;font-weight:800;}
+  .ch-active-divider{border-top:1px solid rgba(255,255,255,.1);margin-bottom:12px;}
+  .ch-tasks-toggle{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:0;text-align:left;}
+  .ch-tasks-icons{display:flex;gap:2px;}
+  .ch-tasks-icons span{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:13px;margin-left:-6px;}
+  .ch-tasks-icons span:first-child{margin-left:0;}
+  .ch-tasks-label{flex:1;color:#fff;font-weight:700;font-size:13px;}
+  .ch-tasks-chevron{color:rgba(255,255,255,.5);font-size:13px;transition:transform .2s;}
+  .ch-tasks-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .ch-tasks-body.open{max-height:400px;}
+  .ch-tasks-rows{display:flex;flex-direction:column;gap:10px;padding-top:12px;}
 
   .hero-card{
     background:linear-gradient(135deg, var(--gold), #C9861F);
@@ -617,22 +779,89 @@
         <div class="lesson-card-thumb">📘<span class="dot"></span></div>
       </button>
 
-      <!-- 60-DAY CHALLENGE (restyled, same feature/data as before) -->
-      <button class="challenge-banner" id="challengeHomeCard" onclick="handleChallengeCardClick()">
+      <!-- 60-DAY CHALLENGE — two states: not-started (big "60" card) vs active (compact status card) -->
+      <button class="challenge-banner" id="challengeHomeCardInactive" onclick="handleChallengeCardClick()">
         <div class="ch-bignum">60</div>
         <p class="ch-eyebrow2">The 60 Day Speaking Challenge</p>
-        <h2 id="challengeHomeTitle">A streak you can actually lose</h2>
-        <p class="ch-copy" id="challengeHomeSub">Two missions a day. Learn + Review. <b>Miss more than 2 days and it resets.</b></p>
-        <span class="challenge-cta" id="challengeHomeCta">ACCEPT CHALLENGE</span>
+        <h2>A streak you can actually lose</h2>
+        <p class="ch-copy">Two missions a day. Learn + Review. <b>Miss more than 2 days and it resets.</b></p>
+        <span class="challenge-cta">ACCEPT CHALLENGE</span>
       </button>
+
+      <div class="ch-active-card" id="challengeHomeCardActive" style="display:none;">
+        <div class="ch-active-top">
+          <p class="ch-eyebrow2" style="margin:0;">⭐ SPEAKING CHALLENGE</p>
+          <div class="ch-skip-pill" id="chaSkipPill">⏩ 8/8 skips</div>
+        </div>
+        <div class="ch-active-mid">
+          <div>
+            <h2 class="ch-active-day" id="chaDayNum">DAY 1</h2>
+            <p class="ch-active-sub" id="chaDaysRemaining">59 days remaining</p>
+          </div>
+          <div class="ch-active-ring">
+            <svg viewBox="0 0 40 40">
+              <circle class="track" cx="20" cy="20" r="17"/>
+              <circle class="fill" id="chaRingFill" cx="20" cy="20" r="17"/>
+            </svg>
+            <span id="chaRingLabel">0/2</span>
+          </div>
+        </div>
+        <div class="ch-active-divider"></div>
+        <button class="ch-tasks-toggle" onclick="toggleHomeChallengeTasks()">
+          <div class="ch-tasks-icons"><span>📖</span><span>✅</span></div>
+          <span class="ch-tasks-label" id="chaTasksLabel">2 tasks today</span>
+          <span class="ch-tasks-chevron" id="chaTasksChevron">▾</span>
+        </button>
+        <div class="ch-tasks-body" id="chaTasksBody">
+          <div class="ch-tasks-rows" id="chaTasksRows"></div>
+        </div>
+      </div>
 
       <!-- STREAK STRIP -->
       <div class="streak-strip-card">
         <div class="streak-strip-top">
-          <div class="streak-pill-box">🔥<div><div class="num" id="homeDailyStreakNum">0</div><div class="lbl">Daily<br>Streak</div></div></div>
-          <div class="streak-pill-box">🏆<div><div class="num" id="homeBestStreakNum">0</div><div class="lbl">Best<br>Streak</div></div></div>
+          <div class="streak-pill-box daily"><div class="icon-badge">🔥</div><div><div class="num" id="homeDailyStreakNum">0</div><div class="lbl">Daily<br>Streak</div></div></div>
+          <div class="streak-pill-box best"><div class="icon-badge">🏆</div><div><div class="num" id="homeBestStreakNum">0</div><div class="lbl">Best<br>Streak</div></div></div>
         </div>
         <div class="streak-days-row" id="homeStreakDaysRow"></div>
+      </div>
+
+      <!-- TIME TRACKER -->
+      <div class="tt-card expanded" id="ttCard">
+        <button class="tt-head" onclick="toggleHomeTimeTracker()">
+          <div class="tt-icon">⏱️</div>
+          <h3>Time Tracker</h3>
+          <span class="tt-chevron">▾</span>
+        </button>
+        <div class="tt-body" id="ttBody">
+          <div class="tt-stat-row">
+            <div class="tt-stat">
+              <p class="lab">Total</p>
+              <div class="val" id="ttTotalVal">0<span>sec</span></div>
+              <div class="bar"><i style="width:100%;"></i></div>
+            </div>
+            <div class="tt-stat">
+              <p class="lab">Average</p>
+              <div class="val" id="ttAvgVal">0<span>sec/day</span></div>
+              <div class="bar"><i id="ttAvgBar" style="width:0%;"></i></div>
+            </div>
+          </div>
+          <div class="tt-chart" id="ttChart"></div>
+          <button class="tt-see-details" onclick="toggleTimeTrackerDetails()">
+            <span>See details</span><span id="ttDetailsChevron">▾</span>
+          </button>
+          <div class="tt-details-body" id="ttDetailsBody">
+            <div id="ttActivityList"></div>
+          </div>
+          <button class="tt-add-btn" onclick="addTimeManually()">+ Add time manually</button>
+        </div>
+      </div>
+
+      <!-- LEVEL -->
+      <div class="lvl-card">
+        <h3 id="lvlTitle">Level 1 - Novice</h3>
+        <div class="lvl-track"><i id="lvlBarFill" style="width:0%;"></i></div>
+        <div class="lvl-nums"><span id="lvlMin">0</span><span class="cur" id="lvlXp">0</span><span id="lvlMax">100</span></div>
       </div>
 
       <button class="core-banner" onclick="startCoreSwipe()">
@@ -665,6 +894,35 @@
     </section>
 
     <!-- FOUNDATIONS -->
+    <!-- LESSONS -->
+    <section class="view" id="view-lessons">
+      <button class="lsn-reminder" id="lsnReminder" onclick="goToNextLesson()">
+        <span class="lsn-check"></span>
+        <span class="lsn-reminder-text">Continue <b id="lsnReminderTitle">your next lesson</b></span>
+        <span class="lsn-reminder-arrow">→</span>
+      </button>
+
+      <div class="lsn-stat-card">
+        <p class="lsn-stat-title">Learn Vietnamese <span>🇻🇳</span></p>
+        <div class="lsn-stat-big"><span id="lsnWordsTotal">0</span><span class="lsn-stat-unit">words to master</span></div>
+        <p class="lsn-stat-line"><b id="lsnDialogueTotal">0</b> dialogues · <b id="lsnPhraseTotal">0</b> phrases</p>
+        <p class="lsn-stat-line"><b id="lsnExampleTotal">0</b> example sentences</p>
+      </div>
+
+      <button class="lsn-free-talk" onclick="switchView('worlds')">
+        <div class="lsn-free-talk-icon">💬</div>
+        <div>
+          <p class="lsn-free-talk-title">Free Talking</p>
+          <p class="lsn-free-talk-sub">Pick a world and chat with a persona — tap a word to learn it.</p>
+        </div>
+      </button>
+
+      <div id="lsnLevelAccordion"></div>
+
+      <p class="lsn-section-divider"><span>Survival Basics</span></p>
+      <div class="lsn-feature-row" id="lsnFeatureRow"></div>
+    </section>
+
     <section class="view" id="view-foundations">
       <div class="banner" id="foundBanner" style="background:linear-gradient(135deg, var(--gold), #C9861F);">
         <h2 id="foundBannerTitle">Keep going</h2>
@@ -676,71 +934,79 @@
       <div class="route" id="lessonRoute"></div>
     </section>
 
-    <!-- FLASHCARDS -->
-    <section class="view" id="view-flashcards">
-      <p class="eyebrow">Study</p>
-      <p class="section-title" style="margin-top:0;" id="cardsTabTitle">Word flashcards</p>
-      <p class="section-sub" id="cardsTabSub">Spaced repetition through every word in your frequency list — same engine as Swipe Learn, just word-by-word.</p>
-
-      <div class="chip-row" id="cardsModeToggle">
-        <button class="chip active" data-mode="words" onclick="setCardsMode('words')">Words</button>
-        <button class="chip" data-mode="phrases" onclick="setCardsMode('phrases')">Phrases</button>
-      </div>
-
-      <div class="wc-hero">
-        <div class="wc-hero-num" id="wcMasteredPct">0%</div>
-        <p class="wc-hero-label">of your deck mastered</p>
-        <div class="wc-progress-track"><div class="wc-progress-fill" id="wcProgressFill" style="width:0%"></div></div>
-      </div>
-
-      <div class="wc-stat-row">
-        <div class="wc-stat"><div class="num" id="wcDue">0</div><div class="lab" id="wcDueLabel">Left today</div></div>
-        <div class="wc-stat"><div class="num" id="wcNew">0</div><div class="lab">New</div></div>
-        <div class="wc-stat"><div class="num" id="wcTotal">0</div><div class="lab">Total</div></div>
-      </div>
-
-      <button class="core-banner" onclick="startActiveStudy()" style="width:100%;">
-        <div class="core-banner-text">
-          <p class="cb-eyebrow">🔥 Start studying</p>
-          <p class="cb-title" id="wcStartTitle">Study words</p>
-          <p class="cb-sub">Anki-style — grade yourself Again / Hard / Good / Easy.</p>
-        </div>
-        <span class="cb-arrow">→</span>
-      </button>
-
-      <div class="wc-special-row">
-        <div class="wc-special-card" onclick="startActiveDifficultStudy()">
-          <p class="wc-special-icon">🎯</p>
-          <p class="wc-special-num" id="wcDifficultCount">0</p>
-          <p class="wc-special-label" id="wcDifficultLabel">Difficult words</p>
-        </div>
-        <div class="wc-special-card" onclick="viewActiveMastered()">
-          <p class="wc-special-icon">🏆</p>
-          <p class="wc-special-num" id="wcMasteredCount">0</p>
-          <p class="wc-special-label" id="wcMasteredLabel">Mastered words</p>
-        </div>
-      </div>
-
-      <p class="section-title" id="wcBreakdownTitle">Progress by frequency</p>
-      <p class="section-sub" id="wcBreakdownSub">How far you've gotten through each tier of common words.</p>
-      <div id="wcTierBreakdown"></div>
-    </section>
-
-    <!-- FREQUENCY -->
-    <section class="view" id="view-frequency">
+    <!-- CARDS (merged Study + Browse — was two separate tabs: Cards/flashcards and Words/frequency) -->
+    <section class="view" id="view-cards">
       <p class="eyebrow">Vocabulary</p>
-      <p class="section-title" style="margin-top:0;" id="freqTabTitle">Word frequency</p>
-      <p class="section-sub" id="freqTabSub">Every word used across the app, rated by how common it actually is in spoken Vietnamese — most essential first.</p>
-      <div class="chip-row" id="wordsModeToggle">
-        <button class="chip active" data-mode="words" onclick="setWordsTabMode('words')">Words</button>
-        <button class="chip" data-mode="phrases" onclick="setWordsTabMode('phrases')">Phrases</button>
+      <p class="section-title" style="margin-top:0;">Cards</p>
+      <div class="chip-row" id="cardsSubTabToggle">
+        <button class="chip active" data-subtab="study" onclick="setCardsSubTab('study')">📚 Study</button>
+        <button class="chip" data-subtab="browse" onclick="setCardsSubTab('browse')">🔍 Browse</button>
       </div>
-      <input type="text" id="freqSearch" class="freq-search" placeholder="Search a word (accents optional)..." oninput="onFreqSearch(this.value)" />
-      <div class="chip-row scroll" id="freqFilters">
-        <button class="chip active" data-bucket="all">All</button>
+
+      <!-- STUDY panel (was view-flashcards) -->
+      <div id="cardsStudyPanel">
+        <p class="section-title" style="margin-top:0;" id="cardsTabTitle">Word flashcards</p>
+        <p class="section-sub" id="cardsTabSub">Spaced repetition through every word in your frequency list — same engine as Swipe Learn, just word-by-word.</p>
+
+        <div class="chip-row" id="cardsModeToggle">
+          <button class="chip active" data-mode="words" onclick="setCardsMode('words')">Words</button>
+          <button class="chip" data-mode="phrases" onclick="setCardsMode('phrases')">Phrases</button>
+        </div>
+
+        <div class="wc-hero">
+          <div class="wc-hero-num" id="wcMasteredPct">0%</div>
+          <p class="wc-hero-label">of your deck mastered</p>
+          <div class="wc-progress-track"><div class="wc-progress-fill" id="wcProgressFill" style="width:0%"></div></div>
+        </div>
+
+        <div class="wc-stat-row">
+          <div class="wc-stat"><div class="num" id="wcDue">0</div><div class="lab" id="wcDueLabel">Left today</div></div>
+          <div class="wc-stat"><div class="num" id="wcNew">0</div><div class="lab">New</div></div>
+          <div class="wc-stat"><div class="num" id="wcTotal">0</div><div class="lab">Total</div></div>
+        </div>
+
+        <button class="core-banner" onclick="startActiveStudy()" style="width:100%;">
+          <div class="core-banner-text">
+            <p class="cb-eyebrow">🔥 Start studying</p>
+            <p class="cb-title" id="wcStartTitle">Study words</p>
+            <p class="cb-sub">Anki-style — grade yourself Again / Hard / Good / Easy.</p>
+          </div>
+          <span class="cb-arrow">→</span>
+        </button>
+
+        <div class="wc-special-row">
+          <div class="wc-special-card" onclick="startActiveDifficultStudy()">
+            <p class="wc-special-icon">🎯</p>
+            <p class="wc-special-num" id="wcDifficultCount">0</p>
+            <p class="wc-special-label" id="wcDifficultLabel">Difficult words</p>
+          </div>
+          <div class="wc-special-card" onclick="viewActiveMastered()">
+            <p class="wc-special-icon">🏆</p>
+            <p class="wc-special-num" id="wcMasteredCount">0</p>
+            <p class="wc-special-label" id="wcMasteredLabel">Mastered words</p>
+          </div>
+        </div>
+
+        <p class="section-title" id="wcBreakdownTitle">Progress by frequency</p>
+        <p class="section-sub" id="wcBreakdownSub">How far you've gotten through each tier of common words.</p>
+        <div id="wcTierBreakdown"></div>
       </div>
-      <p class="section-sub" id="freqCount"></p>
-      <div id="freqList"></div>
+
+      <!-- BROWSE panel (was view-frequency) -->
+      <div id="cardsBrowsePanel" style="display:none;">
+        <p class="section-title" style="margin-top:0;" id="freqTabTitle">Word frequency</p>
+        <p class="section-sub" id="freqTabSub">Every word used across the app, rated by how common it actually is in spoken Vietnamese — most essential first.</p>
+        <div class="chip-row" id="wordsModeToggle">
+          <button class="chip active" data-mode="words" onclick="setWordsTabMode('words')">Words</button>
+          <button class="chip" data-mode="phrases" onclick="setWordsTabMode('phrases')">Phrases</button>
+        </div>
+        <input type="text" id="freqSearch" class="freq-search" placeholder="Search a word (accents optional)..." oninput="onFreqSearch(this.value)" />
+        <div class="chip-row scroll" id="freqFilters">
+          <button class="chip active" data-bucket="all">All</button>
+        </div>
+        <p class="section-sub" id="freqCount"></p>
+        <div id="freqList"></div>
+      </div>
     </section>
 
     <!-- WORLDS -->
@@ -843,21 +1109,21 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
       HOME
     </button>
-    <button class="tab-btn" data-view="foundations" onclick="switchView('foundations')">
+    <button class="tab-btn" data-view="lessons" onclick="switchView('lessons')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V6a2 2 0 012-2h5v16"/><path d="M20 19V6a2 2 0 00-2-2h-5v16"/></svg>
+      LESSONS
+    </button>
+    <button class="tab-btn" data-view="foundations" onclick="switchView('foundations')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-6"/></svg>
       FOUNDATIONS
     </button>
     <button class="tab-btn" data-view="worlds" onclick="switchView('worlds')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z"/></svg>
       WORLDS
     </button>
-    <button class="tab-btn" data-view="flashcards" onclick="switchView('flashcards')">
+    <button class="tab-btn" data-view="cards" onclick="switchView('cards')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 6V4a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2h-2"/></svg>
       CARDS
-    </button>
-    <button class="tab-btn" data-view="frequency" onclick="switchView('frequency')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.6 6.6L22 10l-5.5 4.6L18 22l-6-3.6L6 22l1.5-7.4L2 10l7.4-1.4z"/></svg>
-      WORDS
     </button>
   </nav>
 </div>
@@ -908,6 +1174,11 @@
   </div>
 </div>
 
+<!-- DAY DETAIL (tap a day in the streak strip) -->
+<div class="modal-backdrop" id="dayDetailBackdrop" onclick="if(event.target===this) closeDayDetail();">
+  <div class="dd-modal" id="dayDetailContent"></div>
+</div>
+
 <!-- 60-DAY CHALLENGE START CONFIRMATION -->
 <div class="modal-backdrop" id="challengeConfirmBackdrop">
   <div class="ch-confirm">
@@ -936,6 +1207,31 @@
       <button class="ch-confirm-cancel" onclick="closeChallengeConfirm()">Cancel</button>
       <button class="ch-confirm-start" onclick="confirmStartChallenge()">Start Challenge</button>
     </div>
+  </div>
+</div>
+
+<!-- CHALLENGE READY (Day intro, shown right after Start Challenge) -->
+<div class="modal-backdrop" id="challengeReadyBackdrop">
+  <div class="ch-confirm chr-modal">
+    <div class="chr-icon-ring"><span>⭐</span></div>
+    <p class="ch-confirm-eyebrow" style="justify-content:center;">SPEAKING CHALLENGE</p>
+    <h2 class="chr-day" id="chrDayNum">DAY 1</h2>
+    <p class="chr-remaining" id="chrRemaining">60 days remaining</p>
+    <div class="chr-progress-track"><div class="chr-progress-fill" id="chrProgressFill" style="width:0%"></div></div>
+    <p class="chr-of" id="chrOf">Day 1 of 60</p>
+    <button class="chr-ready-btn" onclick="closeChallengeReadyThenTasks()">I'm ready</button>
+    <button class="chr-abandon" onclick="abandonChallenge()">Abandon Challenge</button>
+  </div>
+</div>
+
+<!-- TODAY'S TASKS -->
+<div class="modal-backdrop" id="challengeTasksBackdrop">
+  <div class="ch-confirm">
+    <h2 class="ctt-title">Today's Tasks</h2>
+    <p class="ctt-sub" id="cttSub">Complete both to secure Day 1</p>
+    <div class="ctt-rows" id="cttRows"></div>
+    <p class="ctt-skips" id="cttSkips">8 skips remaining</p>
+    <button class="ctt-go-btn" onclick="closeChallengeTasksModal()">Let's go</button>
   </div>
 </div>
 
@@ -3227,7 +3523,7 @@ function switchView(v){
 
 /* ========================= RENDER ========================= */
 function renderAll(){
-  renderHeader(); renderHome(); renderFoundations(); renderPocket(); renderFrequency(); renderProfile(); renderWorlds(); renderFlashcardsHub(); renderChallenge();
+  renderHeader(); renderHome(); renderFoundations(); renderPocket(); renderFrequency(); renderProfile(); renderWorlds(); renderFlashcardsHub(); renderChallenge(); renderHomeTimeTracker(); renderHomeLevel(); renderLessonsTab();
 }
 function renderHeader(){ document.getElementById('streakPill').textContent = '🌀 ' + state.streak; }
 
@@ -3251,13 +3547,8 @@ function renderHome(){
     bannerEyebrow.textContent = nextLesson ? 'Your Next Lesson' : 'Keep going';
   }
 
-  // --- 60-Day Challenge CTA text on the home card ---
-  const ctaEl = document.getElementById('challengeHomeCta');
-  if(ctaEl){
-    if(!state.challenge.active) ctaEl.textContent = 'ACCEPT CHALLENGE';
-    else if(state.challenge.completed) ctaEl.textContent = 'SEE YOUR RECAP';
-    else ctaEl.textContent = `DAY ${challengeDayNumber()} — CONTINUE`;
-  }
+  // --- 60-Day Challenge card (inactive vs active state) ---
+  renderHomeChallengeCard();
 
   // --- Streak strip ---
   const dailyNumEl = document.getElementById('homeDailyStreakNum');
@@ -3273,7 +3564,7 @@ function renderHome(){
       const dk = d.toISOString().slice(0,10);
       const lit = state.studyDates.includes(dk);
       const isToday = i===0;
-      html += `<div class="streak-day-col ${lit?'lit':''} ${isToday?'today':''}"><div class="flame">🔥</div>${dayLabels[d.getDay()]}</div>`;
+      html += `<button class="streak-day-col ${lit?'lit':''} ${isToday?'today':''}" onclick="openDayDetail('${dk}')"><div class="flame">🔥</div>${dayLabels[d.getDay()]}</button>`;
     }
     daysRow.innerHTML = html;
   }
@@ -3325,6 +3616,9 @@ function renderHome(){
   if(filtered.length===0){
     grid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="big">🧭</div>Nothing here yet.</div>`;
   }
+
+  renderHomeTimeTracker();
+  renderHomeLevel();
 }
 
 document.getElementById('packFilters').addEventListener('click', (e)=>{
@@ -3445,6 +3739,15 @@ function isDifficultWord(srsId){
   return (s.lapses||0) > 0 || s.ease < 2.3;
 }
 let cardsTabMode = 'words'; // 'words' | 'phrases'
+let cardsSubTab = 'study'; // 'study' | 'browse' — Cards tab now merges the old Cards (study) and Words (browse) tabs
+function setCardsSubTab(tab){
+  cardsSubTab = tab;
+  document.querySelectorAll('#cardsSubTabToggle .chip').forEach(c=>c.classList.toggle('active', c.dataset.subtab===tab));
+  const studyPanel = document.getElementById('cardsStudyPanel');
+  const browsePanel = document.getElementById('cardsBrowsePanel');
+  if(studyPanel) studyPanel.style.display = tab==='study' ? '' : 'none';
+  if(browsePanel) browsePanel.style.display = tab==='browse' ? '' : 'none';
+}
 function setCardsMode(mode){
   cardsTabMode = mode;
   document.querySelectorAll('#cardsModeToggle .chip').forEach(c=>c.classList.toggle('active', c.dataset.mode===mode));
@@ -3639,7 +3942,124 @@ function formatDuration(seconds){
   const m = Math.round((seconds%3600)/60);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
-const ACTIVITY_LABELS = { word:'Words', cphrase:'Common Phrases', phrase:'Phrases', lesson:'Lessons', pack:'Survival Packs', chat:'Chat Boss' };
+const ACTIVITY_LABELS = { word:'Words', cphrase:'Common Phrases', phrase:'Phrases', lesson:'Lessons', pack:'Survival Packs', chat:'Chat Boss', manual:'Added manually' };
+
+/* ========================= HOME: TIME TRACKER + LEVEL =========================
+   Both reuse existing data (state.studyTime, state.xp) rather than tracking
+   anything new — this is purely a Home-tab presentation layer on top of the
+   Profile tab's "Study time" system. */
+let ttExpanded = true;
+function toggleHomeTimeTracker(){
+  ttExpanded = !ttExpanded;
+  const card = document.getElementById('ttCard');
+  if(card) card.classList.toggle('expanded', ttExpanded);
+}
+let ttDetailsOpen = false;
+function toggleTimeTrackerDetails(){
+  ttDetailsOpen = !ttDetailsOpen;
+  const body = document.getElementById('ttDetailsBody');
+  const chevron = document.getElementById('ttDetailsChevron');
+  if(body) body.classList.toggle('open', ttDetailsOpen);
+  if(chevron) chevron.textContent = ttDetailsOpen ? '▴' : '▾';
+}
+// Returns {value, unit} scaled to whatever unit reads best — seconds for
+// small amounts, minutes once past a minute, hours once past an hour.
+function formatSecondsShort(seconds){
+  seconds = Math.round(seconds||0);
+  if(seconds < 60) return {value:seconds, unit:'sec'};
+  const minutes = seconds/60;
+  if(minutes < 60) return {value:Math.round(minutes), unit:'min'};
+  const hours = minutes/60;
+  return {value:Math.round(hours*10)/10, unit:'hr'};
+}
+function addTimeManually(){
+  const input = prompt('Add study time — how many minutes?');
+  if(input === null) return;
+  const minutes = parseFloat(input);
+  if(!minutes || minutes <= 0) return;
+  const seconds = Math.round(minutes*60);
+  if(!state.studyTime) state.studyTime = { totalSeconds:0, byActivity:{}, daily:{} };
+  const tk = todayStr();
+  state.studyTime.totalSeconds += seconds;
+  state.studyTime.byActivity.manual = (state.studyTime.byActivity.manual||0) + seconds;
+  state.studyTime.daily[tk] = (state.studyTime.daily[tk]||0) + seconds;
+  saveState();
+  renderHomeTimeTracker();
+  renderStudyStats(); // keep Profile's own stats in sync too
+}
+function renderHomeTimeTracker(){
+  const totalEl = document.getElementById('ttTotalVal');
+  if(!totalEl) return; // Home not in DOM yet, harmless no-op
+  const st = state.studyTime || { totalSeconds:0, byActivity:{}, daily:{} };
+
+  const total = formatSecondsShort(st.totalSeconds);
+  totalEl.innerHTML = `${total.value}<span>${total.unit}</span>`;
+
+  const daily = st.daily || {};
+  const daysWithData = Object.keys(daily).filter(k=>daily[k]>0).length;
+  const avgSeconds = daysWithData ? st.totalSeconds / daysWithData : 0;
+  const avg = formatSecondsShort(avgSeconds);
+  document.getElementById('ttAvgVal').innerHTML = `${avg.value}<span>${avg.unit}/day</span>`;
+  const avgBar = document.getElementById('ttAvgBar');
+  if(avgBar) avgBar.style.width = (st.totalSeconds>0 ? Math.min(100, (avgSeconds/st.totalSeconds)*100) : 0) + '%';
+
+  // Last 7 days, small bar chart
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const key = d.toISOString().slice(0,10);
+    days.push({ label:`${d.getMonth()+1}/${d.getDate()}`, seconds: daily[key]||0 });
+  }
+  const maxSec = Math.max(...days.map(d=>d.seconds), 60);
+  const bars = days.map(d => {
+    const h = Math.max(2, Math.round((d.seconds/maxSec)*60));
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+      <div style="width:60%;height:60px;display:flex;align-items:flex-end;">
+        <div style="width:100%;height:${h}px;background:var(--herb);border-radius:3px 3px 0 0;opacity:${d.seconds>0?1:.25};"></div>
+      </div>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);">${d.label}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('ttChart').innerHTML = `<div style="display:flex;align-items:flex-end;gap:4px;">${bars}</div>`;
+
+  const activities = Object.entries(st.byActivity || {}).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('ttActivityList').innerHTML = activities.length
+    ? activities.map(([k,v]) => `<div class="tt-activity-row"><span>${ACTIVITY_LABELS[k]||k}</span><span>${formatDuration(v)}</span></div>`).join('')
+    : `<div class="tt-activity-row"><span>No study time recorded yet</span></div>`;
+}
+
+// Simple XP-based level ladder (distinct from the CEFR LEVELS array used in
+// Foundations) — purely cosmetic, doesn't gate any content.
+const XP_LEVELS = [
+  {name:'Novice', min:0, max:100},
+  {name:'Beginner', min:100, max:300},
+  {name:'Learner', min:300, max:600},
+  {name:'Explorer', min:600, max:1000},
+  {name:'Chat Warrior', min:1000, max:1600},
+  {name:'Adept', min:1600, max:2500},
+  {name:'Fluent Voice', min:2500, max:4000},
+  {name:'Master', min:4000, max:6000},
+  {name:'Legend', min:6000, max:10000},
+];
+function getLevelInfo(xp){
+  xp = xp || 0;
+  let idx = XP_LEVELS.findIndex(l => xp < l.max);
+  if(idx === -1) idx = XP_LEVELS.length - 1;
+  const lvl = XP_LEVELS[idx];
+  const pct = Math.max(0, Math.min(100, ((xp - lvl.min) / (lvl.max - lvl.min)) * 100));
+  return { number: idx+1, name: lvl.name, min: lvl.min, max: lvl.max, pct };
+}
+function renderHomeLevel(){
+  const titleEl = document.getElementById('lvlTitle');
+  if(!titleEl) return; // Home not in DOM yet, harmless no-op
+  const info = getLevelInfo(state.xp || 0);
+  titleEl.textContent = `Level ${info.number} - ${info.name}`;
+  document.getElementById('lvlBarFill').style.width = info.pct + '%';
+  document.getElementById('lvlMin').textContent = info.min;
+  document.getElementById('lvlXp').textContent = state.xp || 0;
+  document.getElementById('lvlMax').textContent = info.max;
+}
+
 function renderStudyStats(){
   const totalEl = document.getElementById('stTotalTime');
   if(!totalEl) return; // Profile not in DOM yet, harmless no-op
@@ -4661,17 +5081,247 @@ function openChallengeConfirm(){
 function closeChallengeConfirm(){
   document.getElementById('challengeConfirmBackdrop').classList.remove('open');
 }
+// Post-start flow: Start Challenge → "I'm ready" (Day intro) → "Today's Tasks"
+// (checklist) → back to Home, which now shows the active-state card.
 function confirmStartChallenge(){
   startChallenge();
   closeChallengeConfirm();
-  switchView('challenge');
+  openChallengeReady();
 }
-// Home card routes to the confirm modal before a run is active, and straight
-// into the dashboard/recap once a run exists.
+function openChallengeReady(){
+  const dayNum = challengeDayNumber();
+  const remaining = 61 - dayNum; // "60 days remaining" on Day 1, counting today
+  document.getElementById('chrDayNum').textContent = `DAY ${dayNum}`;
+  document.getElementById('chrRemaining').textContent = `${remaining} days remaining`;
+  document.getElementById('chrOf').textContent = `Day ${dayNum} of 60`;
+  document.getElementById('chrProgressFill').style.width = ((dayNum-1)/60*100) + '%';
+  document.getElementById('challengeReadyBackdrop').classList.add('open');
+}
+function closeChallengeReadyThenTasks(){
+  document.getElementById('challengeReadyBackdrop').classList.remove('open');
+  openChallengeTasksModal();
+}
+function abandonChallenge(){
+  if(!confirm('Abandon this 60-day challenge? Your progress on this run will be lost.')) return;
+  const keepStats = state.challenge.stats;
+  state.challenge = structuredClone(DEFAULT_STATE.challenge);
+  state.challenge.stats = keepStats; // lifetime stats survive, matching the auto-reset behavior
+  saveState();
+  document.getElementById('challengeReadyBackdrop').classList.remove('open');
+  document.getElementById('challengeTasksBackdrop').classList.remove('open');
+  renderAll();
+}
+// Builds the two-row task checklist — shared by the "Today's Tasks" modal and
+// the inline expandable section on the active Home card.
+function buildChallengeTaskRowsHtml(){
+  const c = state.challenge;
+  const log = c.dailyLog[chTodayKey()] || {learn:false, reviewCount:0};
+  const learnDone = !!log.learn;
+  const reviewDone = log.reviewCount >= CHALLENGE_DAILY_REVIEW_TARGET;
+  return `
+    <button class="ch-task-row ${learnDone?'done':''}" onclick="switchView('lessons')">
+      <div class="ch-task-icon">📖</div>
+      <div class="ch-task-body"><h4>Complete a dialogue lesson</h4><p>${c.stats.dialoguesLearned} of 60 done so far</p></div>
+      <div class="ch-task-check">${learnDone?'✓':''}</div>
+    </button>
+    <button class="ch-task-row ${reviewDone?'done':''}" onclick="switchView('cards')">
+      <div class="ch-task-icon">⏱️</div>
+      <div class="ch-task-body"><h4>Review ${CHALLENGE_DAILY_REVIEW_TARGET} vocab items</h4><p>${c.stats.wordsReviewed} total reviews this challenge</p></div>
+      <div class="ch-task-check">${reviewDone?'✓':''}</div>
+    </button>`;
+}
+function openChallengeTasksModal(){
+  const dayNum = challengeDayNumber();
+  document.getElementById('cttSub').textContent = `Complete both to secure Day ${dayNum}`;
+  document.getElementById('cttRows').innerHTML = buildChallengeTaskRowsHtml();
+  document.getElementById('cttSkips').textContent = `${state.challenge.skipTokens} skips remaining`;
+  document.getElementById('challengeTasksBackdrop').classList.add('open');
+}
+function closeChallengeTasksModal(){
+  document.getElementById('challengeTasksBackdrop').classList.remove('open');
+  renderAll();
+}
+let chaTasksExpanded = false;
+function toggleHomeChallengeTasks(){
+  chaTasksExpanded = !chaTasksExpanded;
+  const body = document.getElementById('chaTasksBody');
+  const chevron = document.getElementById('chaTasksChevron');
+  if(body) body.classList.toggle('open', chaTasksExpanded);
+  if(chevron) chevron.textContent = chaTasksExpanded ? '▴' : '▾';
+  if(chaTasksExpanded){
+    const rowsEl = document.getElementById('chaTasksRows');
+    if(rowsEl) rowsEl.innerHTML = buildChallengeTaskRowsHtml();
+  }
+}
+// Toggles the Home card between its two states and, when active, populates
+// the compact status card (day number, skips, ring progress, tasks).
+function renderHomeChallengeCard(){
+  const inactiveEl = document.getElementById('challengeHomeCardInactive');
+  const activeEl = document.getElementById('challengeHomeCardActive');
+  if(!inactiveEl || !activeEl) return;
+  const c = state.challenge;
+  if(!c.active){
+    inactiveEl.style.display = '';
+    activeEl.style.display = 'none';
+    return;
+  }
+  inactiveEl.style.display = 'none';
+  activeEl.style.display = '';
+
+  const dayNum = challengeDayNumber();
+  const log = c.dailyLog[chTodayKey()] || {learn:false, reviewCount:0};
+  const doneCount = (log.learn?1:0) + (log.reviewCount>=CHALLENGE_DAILY_REVIEW_TARGET?1:0);
+
+  document.getElementById('chaSkipPill').textContent = `⏩ ${c.skipTokens}/${DEFAULT_STATE.challenge.skipTokens} skips`;
+  document.getElementById('chaDayNum').textContent = c.completed ? 'DAY 60' : `DAY ${dayNum}`;
+  document.getElementById('chaDaysRemaining').textContent = c.completed ? 'Challenge complete! 🏆' : `${60-dayNum} days remaining`;
+  document.getElementById('chaRingLabel').textContent = `${doneCount}/2`;
+  const ringFill = document.getElementById('chaRingFill');
+  if(ringFill){
+    const circumference = 2 * Math.PI * 17;
+    ringFill.style.strokeDasharray = `${circumference}`;
+    ringFill.style.strokeDashoffset = `${circumference * (1 - doneCount/2)}`;
+  }
+  document.getElementById('chaTasksLabel').textContent = doneCount>=2 ? 'Both tasks done today' : `${2-doneCount} task${2-doneCount===1?'':'s'} left today`;
+  if(chaTasksExpanded){
+    const rowsEl = document.getElementById('chaTasksRows');
+    if(rowsEl) rowsEl.innerHTML = buildChallengeTaskRowsHtml();
+  }
+}
+// Home card routes to the confirm modal before a run is active, and toggles
+// the inline task list once a run exists (the card itself is no longer a
+// single button once active — see challengeHomeCardActive's own controls).
 function handleChallengeCardClick(){
-  if(!state.challenge.active) openChallengeConfirm();
-  else switchView('challenge');
+  openChallengeConfirm();
 }
+
+/* ========================= LESSONS TAB (Victor-AI-style redesign) =========================
+   Reuses real data throughout — no invented stats. "Grammar notes" from the
+   reference design doesn't have an equivalent in this app, so that row shows
+   example-sentence count (WORD_EXAMPLES) instead. "Free Talking" routes to
+   Worlds since Chat Boss personas are tied to a world/character, not a
+   single generic free-talk mode. */
+let lsnOpenLevels = {}; // { 'A0': true, ... } — which level accordions are expanded
+function renderLessonsTab(){
+  const totalEl = document.getElementById('lsnWordsTotal');
+  if(!totalEl) return; // view not in DOM yet, harmless no-op
+
+  const nextLesson = LESSONS.find(l=>!state.completedLessons.includes(l.id));
+  document.getElementById('lsnReminderTitle').textContent = nextLesson ? nextLesson.title : 'Review a completed lesson';
+
+  totalEl.textContent = wordStudyPool().length;
+  document.getElementById('lsnDialogueTotal').textContent = LESSONS.length;
+  document.getElementById('lsnPhraseTotal').textContent = phraseStudyPool().length;
+  document.getElementById('lsnExampleTotal').textContent = Object.keys(WORD_EXAMPLES).length;
+
+  const accEl = document.getElementById('lsnLevelAccordion');
+  if(accEl){
+    accEl.innerHTML = LEVELS.map(lv=>{
+      const levelLessons = LESSONS.filter(l=>l.level===lv.id);
+      const doneCount = levelLessons.filter(l=>state.completedLessons.includes(l.id)).length;
+      const isOpen = !!lsnOpenLevels[lv.id];
+      const rows = levelLessons.map(l=>{
+        const done = state.completedLessons.includes(l.id);
+        return `<button class="lsn-level-row ${done?'done':''}" onclick="openLessonModal('lesson','${l.id}')">
+          <div class="dot">${done?'✓':''}</div><span>${l.title}</span>
+        </button>`;
+      }).join('');
+      return `<div class="lsn-level ${isOpen?'open':''}" id="lsnLevel_${lv.id}">
+        <button class="lsn-level-head" onclick="toggleLsnLevel('${lv.id}')">
+          <div class="lsn-level-badge">${lv.id}</div>
+          <div class="lsn-level-name">${lv.name}</div>
+          <div class="lsn-level-count">${doneCount}/${levelLessons.length} Dialogues</div>
+          <div class="lsn-level-chevron">▾</div>
+        </button>
+        <div class="lsn-level-body"><div class="lsn-level-rows">${rows || '<p class="section-sub" style="margin:0;">No lessons in this level yet.</p>'}</div></div>
+      </div>`;
+    }).join('');
+  }
+
+  const rowEl = document.getElementById('lsnFeatureRow');
+  if(rowEl){
+    rowEl.innerHTML = PACKS.slice(0, 10).map(p=>`
+      <button class="lsn-feature-card" onclick="openLessonModal('pack','${p.id}')">
+        ${p.img ? `<img src="${p.img}" alt="" onerror="this.style.display='none';">` : ''}
+        <div class="shade"></div>
+        <div class="play">▶</div>
+        <div class="tag">${p.tag}</div>
+        <div class="title">${p.title}</div>
+      </button>`).join('');
+  }
+}
+function toggleLsnLevel(id){
+  lsnOpenLevels[id] = !lsnOpenLevels[id];
+  const el = document.getElementById('lsnLevel_'+id);
+  if(el) el.classList.toggle('open', lsnOpenLevels[id]);
+}
+
+// Tapping a day in the streak strip — shows what was actually done that day,
+// pulling from state.studyTime.daily (always tracked) plus, when available,
+// the Challenge feature's per-day mission log for a Victor-AI-style "secured"
+// breakdown.
+function openDayDetail(dateKey){
+  const el = document.getElementById('dayDetailContent');
+  if(!el) return;
+  const d = new Date(dateKey+'T00:00:00');
+  const dateLabel = d.toLocaleDateString(undefined, {weekday:'long', month:'long', day:'numeric'});
+  const isToday = dateKey === new Date().toISOString().slice(0,10);
+
+  const c = state.challenge || {};
+  const log = (c.dailyLog || {})[dateKey];
+  const learnDone = !!(log && log.learn);
+  const reviewCount = (log && log.reviewCount) || 0;
+  const reviewTarget = CHALLENGE_DAILY_REVIEW_TARGET;
+  const reviewDone = reviewCount >= reviewTarget;
+  // For past days, trust the already-evaluated securedDates list. For today,
+  // evaluateChallengeDays() hasn't run yet, so compute it live instead.
+  const secured = (c.securedDates||[]).includes(dateKey) || (isToday && learnDone && reviewDone);
+  const skipped = (c.skippedDates||[]).includes(dateKey);
+
+  const seconds = (state.studyTime && state.studyTime.daily && state.studyTime.daily[dateKey]) || 0;
+  const timeLabel = seconds > 0 ? formatDuration(seconds) : null;
+  const studiedAtAll = state.studyDates.includes(dateKey) || learnDone || reviewCount>0 || seconds>0;
+
+  let bannerClass, statusText, subText;
+  if(secured){
+    bannerClass = 'secured'; statusText = 'Day secured';
+    subText = 'Both missions completed.';
+  } else if(skipped){
+    bannerClass = 'studied'; statusText = 'Skip used';
+    subText = 'A skip token protected this day.';
+  } else if(studiedAtAll){
+    bannerClass = 'studied'; statusText = 'Some activity';
+    subText = timeLabel ? `${timeLabel} studied` : 'Partial progress this day.';
+  } else {
+    bannerClass = 'empty'; statusText = 'No activity';
+    subText = 'Nothing recorded for this day.';
+  }
+
+  const rowsHtml = c.active || c.startDate ? `
+    <div class="dd-rows">
+      <div class="dd-row ${learnDone?'done':''}"><div class="chk">✓</div><span>Dialogue lesson learned</span></div>
+      <div class="dd-row ${reviewDone?'done':''}"><div class="chk">✓</div><span>${Math.min(reviewCount,reviewTarget)}/${reviewTarget} vocab words reviewed</span></div>
+      ${timeLabel ? `<div class="dd-row done"><div class="chk">✓</div><span>${timeLabel} studied</span></div>` : ''}
+    </div>` : (timeLabel ? `
+    <div class="dd-rows">
+      <div class="dd-row done"><div class="chk">✓</div><span>${timeLabel} studied</span></div>
+    </div>` : '');
+
+  el.innerHTML = `
+    <p class="dd-date">${dateLabel}</p>
+    <div class="dd-banner ${bannerClass}">
+      <p class="dd-status">${statusText}</p>
+      <p class="dd-sub">${subText}</p>
+    </div>
+    ${rowsHtml}
+    <button class="dd-close" onclick="closeDayDetail()">Close</button>
+  `;
+  document.getElementById('dayDetailBackdrop').classList.add('open');
+}
+function closeDayDetail(){
+  document.getElementById('dayDetailBackdrop').classList.remove('open');
+}
+
 function chEnsureTodayLog(){
   const tk = chTodayKey();
   if(!state.challenge.dailyLog[tk]) state.challenge.dailyLog[tk] = {learn:false, reviewCount:0};
@@ -4743,23 +5393,6 @@ function renderChallenge(){
   evaluateChallengeDays();
   const c = state.challenge;
 
-  const hTitle = document.getElementById('challengeHomeTitle');
-  const hSub = document.getElementById('challengeHomeSub');
-  if(hTitle && hSub){
-    if(!c.active){
-      hTitle.textContent = 'A streak you can actually lose';
-      hSub.textContent = 'Two missions a day. Learn + Review. Miss more than 2 days and it resets.';
-    } else if(c.completed){
-      hTitle.textContent = '🏆 Challenge complete!';
-      hSub.textContent = `${c.securedDates.length} days secured. Tap to start a new run.`;
-    } else {
-      const log = c.dailyLog[chTodayKey()];
-      const secured = !!(log && log.learn && log.reviewCount>=CHALLENGE_DAILY_REVIEW_TARGET);
-      hTitle.textContent = `Day ${challengeDayNumber()} / 60`;
-      hSub.textContent = secured ? 'Today is secured. Nice work.' : 'Both missions still open today.';
-    }
-  }
-
   if(!c.active){
     el.innerHTML = `
       <div class="ch-hero">
@@ -4817,7 +5450,7 @@ function renderChallenge(){
         <div class="ch-check">✓</div>
         <div class="ch-mission-body"><h4>Learn</h4><p>Finish one dialogue lesson</p></div>
       </button>
-      <button class="ch-mission ${reviewDone?'done':''}" onclick="switchView('flashcards')">
+      <button class="ch-mission ${reviewDone?'done':''}" onclick="switchView('cards')">
         <div class="ch-check">✓</div>
         <div class="ch-mission-body"><h4>Review</h4><p>${Math.min(log.reviewCount,CHALLENGE_DAILY_REVIEW_TARGET)}/${CHALLENGE_DAILY_REVIEW_TARGET} vocab words reviewed today</p></div>
       </button>
