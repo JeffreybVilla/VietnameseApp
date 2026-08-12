@@ -5072,7 +5072,25 @@ function speakFallback(text, accent, onComplete){ speakQueue([text], accent, onC
 // onEnded fires once playback genuinely finishes, whether that was the real mp3 or
 // the browser-TTS fallback — lets callers chain multiple messages (e.g. Chat Boss
 // playing your reply, then their response) without guessing which path was taken.
+// iOS Safari only allows speechSynthesis.speak() to fire when it's still
+// directly inside a user-gesture call stack — once you're in an async
+// callback (like an audio 'error' event, which is how the TTS fallback
+// below gets triggered), iOS silently drops it. The fix is to "unlock" the
+// speech engine with one direct, synchronous speak() call as early as
+// possible in a real tap handler; once unlocked, later async calls in the
+// same session keep working.
+let _ttsUnlockedIOS = false;
+function unlockSpeechSynthesisForIOS(){
+  if(_ttsUnlockedIOS || !('speechSynthesis' in window)) return;
+  try{
+    const u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    speechSynthesis.speak(u);
+    _ttsUnlockedIOS = true;
+  }catch(e){}
+}
 function playAudio(cardId, text, accent, onEnded){
+  unlockSpeechSynthesisForIOS();
   if(currentAudioEl){ try{ currentAudioEl.pause(); }catch(e){} }
   lastPlayedAudio = { id: cardId, text };
   const el = new Audio(AUDIO_BASE_PATH + cardId + '.mp3');
@@ -5382,22 +5400,51 @@ function submitPracticeType(){
   input.value = '';
   handlePracticeAttempt(val);
 }
+// iOS Safari exposes webkitSpeechRecognition as an object, so feature
+// detection alone says "supported" — but in real-world use on iOS the mic
+// listens and then the result callback never reliably fires (long-standing
+// WebKit issue, not something fixable from here). Detect iOS specifically
+// and skip straight to typed input rather than showing a mic that silently
+// does nothing.
+function isIOSDevice(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
 function startPracticeMic(){
   const ps = practiceState;
   if(!ps || ps.lineIdx >= ps.lesson.dialogue.length) return;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const micBtn = document.getElementById('prMicBtn');
-  if(!SR){ togglePracticeType(true); return; }
+  if(!SR || isIOSDevice()){
+    togglePracticeType(true);
+    const row = document.getElementById('prTypeRow');
+    if(row && isIOSDevice() && !row.dataset.iosNoted){
+      row.dataset.iosNoted = '1';
+      document.getElementById('prTypeInput').placeholder = "Speech recognition isn't reliable on iPhone yet — type it instead";
+    }
+    return;
+  }
   try{
     micBtn.classList.add('listening');
     if(recognitionInstance){ try{ recognitionInstance.abort(); }catch(e){} }
     recognitionInstance = new SR();
     recognitionInstance.lang = 'vi-VN';
+    let gotResult = false;
+    // Safety net: if nothing fires within 6s (the exact failure mode
+    // reported on iOS — mic listens, callback never comes), stop waiting
+    // and drop to typed input instead of leaving the mic stuck "listening".
+    const stuckTimer = setTimeout(()=>{
+      if(gotResult) return;
+      try{ recognitionInstance.abort(); }catch(e){}
+      micBtn.classList.remove('listening');
+      togglePracticeType(true);
+    }, 6000);
     recognitionInstance.onresult = (e)=>{
+      gotResult = true;
+      clearTimeout(stuckTimer);
       micBtn.classList.remove('listening');
       handlePracticeAttempt(e.results[0][0].transcript);
     };
-    recognitionInstance.onerror = ()=>{ micBtn.classList.remove('listening'); };
+    recognitionInstance.onerror = ()=>{ clearTimeout(stuckTimer); micBtn.classList.remove('listening'); };
     recognitionInstance.onend = ()=>{ micBtn.classList.remove('listening'); };
     recognitionInstance.start();
   }catch(e){ micBtn.classList.remove('listening'); }
