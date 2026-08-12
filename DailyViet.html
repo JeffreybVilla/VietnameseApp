@@ -5459,24 +5459,66 @@ async function startPracticeAudioRecording(){
     const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
     const mimeType = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
       : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
-    mediaRecorderInstance = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    try{
+      mediaRecorderInstance = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    }catch(constructErr){
+      // Some iOS versions report a mimeType as supported via isTypeSupported
+      // but then throw when actually constructing with it — retry with no
+      // mimeType at all and let the browser pick its own default.
+      mediaRecorderInstance = new MediaRecorder(stream);
+    }
     practiceRecordedChunks = [];
     mediaRecorderInstance.ondataavailable = e=>{ if(e.data.size>0) practiceRecordedChunks.push(e.data); };
-    mediaRecorderInstance.onstop = ()=>{
+    mediaRecorderInstance.onerror = ()=>{
       micBtn.classList.remove('listening');
       stream.getTracks().forEach(t=>t.stop());
+      showPracticeRecordingError("Recording failed partway through — try again, or type your answer below.");
+    };
+    mediaRecorderInstance.onstop = ()=>{
+      micBtn.classList.remove('listening');
+      document.getElementById('prRecordStatus')?.remove();
+      stream.getTracks().forEach(t=>t.stop());
       const blob = new Blob(practiceRecordedChunks, { type: mediaRecorderInstance.mimeType || 'audio/mp4' });
+      if(blob.size < 500){
+        // Suspiciously tiny/empty — almost certainly no real audio got
+        // captured (common iOS quirk), rather than silently sending nothing
+        // to Gemini, tell the person directly.
+        showPracticeRecordingError("No audio was captured — check that Safari has microphone access (Settings → Safari → Microphone), then try again.");
+        return;
+      }
       handlePracticeAudioAttempt(blob);
     };
     mediaRecorderInstance.start();
     micBtn.classList.add('listening');
-    // Auto-stop so nobody has to remember to tap again — 5s covers any
-    // single dialogue line comfortably.
-    setTimeout(()=>{ if(mediaRecorderInstance && mediaRecorderInstance.state==='recording') mediaRecorderInstance.stop(); }, 5000);
+    showPracticeRecordingStatus();
+    // Auto-stop as a safety cap so nobody's stuck recording forever, but
+    // tapping the mic again stops it immediately — that's the primary way
+    // to end a short line without waiting out the full timer.
+    setTimeout(()=>{ if(mediaRecorderInstance && mediaRecorderInstance.state==='recording') mediaRecorderInstance.stop(); }, 8000);
   }catch(e){
-    // Mic permission denied, or getUserMedia unsupported — fall back to typing.
+    // Mic permission denied, or getUserMedia unsupported entirely.
+    const denied = e && (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError');
+    showPracticeRecordingError(denied
+      ? "Microphone access is blocked — enable it in Settings → Safari → Microphone, then try again. Typing works too:"
+      : "Couldn't start the microphone on this device — type your answer instead:");
     togglePracticeType(true);
   }
+}
+function showPracticeRecordingStatus(){
+  const area = document.getElementById('prPracticeArea');
+  if(!area || document.getElementById('prRecordStatus')) return;
+  const el = document.createElement('p');
+  el.id = 'prRecordStatus';
+  el.className = 'pr-feedback';
+  el.textContent = '🔴 Recording — tap the mic again when you\'re done, or it\'ll stop on its own in a few seconds.';
+  area.appendChild(el);
+}
+function showPracticeRecordingError(msg){
+  const ps = practiceState;
+  if(!ps) return;
+  document.getElementById('prRecordStatus')?.remove();
+  ps.lastAttempt = { correct:false, highlighted:'', feedback: msg, aiPending:false, isError:true };
+  renderPractice();
 }
 function blobToBase64(blob){
   return new Promise((resolve, reject)=>{
@@ -5499,18 +5541,19 @@ async function handlePracticeAudioAttempt(blob){
   ps.attemptToken = (ps.attemptToken||0) + 1;
   const myToken = ps.attemptToken;
 
-  ps.lastAttempt = { correct:false, highlighted:'(listening to your recording…)', feedback:'', aiPending:true };
+  ps.lastAttempt = { correct:false, highlighted:'(checking your pronunciation…)', feedback:'', aiPending:true };
   renderPractice();
 
   const base64 = await blobToBase64(blob);
   const result = await fetchAiPronunciationCheck({ target: line.v, meaning: line.e, audioBase64: base64, mimeType: blob.type || 'audio/mp4' });
   if(!practiceState || practiceState.attemptToken !== myToken) return; // a newer attempt already happened
 
-  if(!result){
-    // The Gemini call itself failed (network, quota, etc.) — don't strand
-    // the person on a "listening" message, drop them into typed input.
-    ps.lastAttempt = null;
-    renderPractice();
+  if(!result || result.error){
+    // Visible now instead of silently clearing — this is exactly the "mic
+    // was active but nothing happened" symptom if left quiet.
+    showPracticeRecordingError(
+      `Couldn't reach the pronunciation checker${result && result.error ? ' (' + result.error + ')' : ''} — try again, or type your answer below.`
+    );
     togglePracticeType(true);
     return;
   }
@@ -5519,7 +5562,7 @@ async function handlePracticeAudioAttempt(blob){
   if(correct) ps.corrects++; else ps.mistakes++;
   ps.lastAttempt = {
     correct,
-    highlighted: result.transcript ? escapePracticeHtml(result.transcript) : '(no speech detected)',
+    highlighted: result.transcript ? escapePracticeHtml(result.transcript) : '(no speech detected in the recording)',
     feedback: result.feedback || (correct ? 'Nice work!' : `Try again: ${line.v}`),
     aiPending: false,
   };
