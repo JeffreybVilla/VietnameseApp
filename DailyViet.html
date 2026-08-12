@@ -5636,11 +5636,12 @@ async function handlePracticeAudioAttempt(blob){
     return;
   }
 
-  const correct = !!result.correct;
+  const graded = result.transcript ? gradePracticeAttempt(line.v, result.transcript) : null;
+  const correct = graded ? graded.correct : false;
   if(correct) ps.corrects++; else ps.mistakes++;
   ps.lastAttempt = {
     correct,
-    highlighted: result.transcript ? escapePracticeHtml(result.transcript) : '(no speech detected in the recording)',
+    highlighted: graded ? graded.highlighted : '(no speech detected in the recording)',
     feedback: result.feedback || (correct ? 'Nice work!' : `Try again: ${line.v}`),
     aiPending: false,
   };
@@ -5675,6 +5676,41 @@ async function fetchAiPronunciationCheck(payload){
 function normalizePracticeWord(s){
   return stripDiacritics(s.toLowerCase()).replace(/[^\w]/g,'');
 }
+// Shared, deliberately lenient grading used by both the typed/native-mic
+// path and the Gemini-audio path: counts how many target words show up
+// anywhere in what was said (not strict word-order/position matching), and
+// only requires ~70% to count as correct. This is intentionally forgiving —
+// close enough to keep momentum, not a pronunciation-perfection gate.
+function gradePracticeAttempt(targetPhrase, saidText){
+  const targetWords = targetPhrase.replace(/[.?!,]/g,'').split(/\s+/).filter(Boolean);
+  const saidWords = (saidText||'').replace(/[.?!,]/g,'').trim().split(/\s+/).filter(Boolean);
+  const targetNorm = targetWords.map(normalizePracticeWord);
+  const saidNorm = saidWords.map(normalizePracticeWord);
+
+  const usedSaidIdx = new Set();
+  const matchFlags = saidWords.map(()=>false);
+  let matchCount = 0;
+  targetNorm.forEach(tw=>{
+    for(let i=0;i<saidNorm.length;i++){
+      if(!usedSaidIdx.has(i) && saidNorm[i]===tw){ usedSaidIdx.add(i); matchFlags[i]=true; matchCount++; break; }
+    }
+  });
+  const ratio = targetWords.length ? matchCount/targetWords.length : 0;
+  const correct = saidWords.length>0 && ratio >= 0.7;
+  const highlighted = saidWords.length
+    ? saidWords.map((w,i)=>`<span class="${matchFlags[i]?'ok':'bad'}">${escapePracticeHtml(w)}</span>`).join(' ')
+    : '';
+  return { correct, highlighted, matchCount, total: targetWords.length };
+}
+// Escape hatch — if grading keeps saying no for a line you're confident you
+// said correctly (or a transcription bug is stuck misfiring), this lets you
+// move on rather than being trapped. Always visible after a failed attempt.
+function forcePracticeLineComplete(){
+  const ps = practiceState;
+  if(!ps) return;
+  ps.corrects++;
+  advancePracticeLine();
+}
 function handlePracticeAttempt(said){
   const ps = practiceState;
   if(!ps || ps.lineIdx >= ps.lesson.dialogue.length) return;
@@ -5683,25 +5719,13 @@ function handlePracticeAttempt(said){
   ps.attemptToken = (ps.attemptToken||0) + 1;
   const myToken = ps.attemptToken;
 
-  const targetWords = line.v.replace(/[.?!,]/g,'').split(/\s+/).filter(Boolean);
-  const saidWords = said.replace(/[.?!,]/g,'').trim().split(/\s+/).filter(Boolean);
-  const targetNorm = targetWords.map(normalizePracticeWord);
-  const saidNorm = saidWords.map(normalizePracticeWord);
-
-  let mismatchIdx = -1;
-  const maxLen = Math.max(targetNorm.length, saidNorm.length);
-  for(let i=0;i<maxLen;i++){ if(targetNorm[i] !== saidNorm[i]){ mismatchIdx = i; break; } }
-  const correct = mismatchIdx === -1;
-
-  const highlighted = saidWords.length
-    ? saidWords.map((w,i)=> `<span class="${i===mismatchIdx?'bad':'ok'}">${w}</span>`).join(' ')
-    : '(no speech detected)';
+  const graded = gradePracticeAttempt(line.v, said);
+  const correct = graded.correct;
+  const highlighted = graded.highlighted || '(no speech detected)';
 
   // Rule-based feedback — always computed first as the instant, zero-cost
   // fallback. AI feedback (if it arrives in time) replaces this afterward;
   // if the API call fails or is slow, this is what the person sees.
-  const expectedWord = targetWords[mismatchIdx];
-  const saidWord = saidWords[mismatchIdx];
   let feedback;
   if(correct){
     ps.corrects++;
@@ -5709,9 +5733,7 @@ function handlePracticeAttempt(said){
     feedback = isLast ? "Perfect! You've completed this dialogue." : 'Perfect! Nice work — get ready for the next line.';
   } else {
     ps.mistakes++;
-    feedback = expectedWord && saidWord
-      ? `You said "${saidWord}" instead of "${expectedWord}". Try again: ${line.v}`
-      : (expectedWord ? `Looks like a word got cut off — try again: ${line.v}` : `Try again: ${line.v}`);
+    feedback = `That's close, but a word or two was off (${graded.matchCount}/${graded.total} matched). Try again: ${line.v}`;
   }
 
   ps.lastAttempt = { correct, highlighted, feedback, aiPending:true };
@@ -5721,7 +5743,7 @@ function handlePracticeAttempt(said){
   // text (free Gemini tier via a Supabase Edge Function). If it fails, is
   // slow, or isn't configured, the rule-based text above just stays put —
   // the person never sees a broken or stuck UI either way.
-  fetchAiCoachFeedback({ target: line.v, meaning: line.e, said, correct, expectedWord, saidWord })
+  fetchAiCoachFeedback({ target: line.v, meaning: line.e, said, correct })
     .then(aiText=>{
       if(!aiText) return;
       const cur = practiceState;
@@ -5816,7 +5838,8 @@ function renderPractice(){
     attemptHtml = `
       <div class="pr-attempt">${a.highlighted}</div>
       <div class="pr-attempt-badge"><span class="pill ${a.correct?'ok':'bad'}">${a.correct?'✓':'✗'} ${a.correct?ps.corrects:ps.mistakes}</span></div>
-      <p class="pr-feedback">${a.feedback}${a.aiPending?' <span style="opacity:.4;">· thinking…</span>':''}</p>`;
+      <p class="pr-feedback">${a.feedback}${a.aiPending?' <span style="opacity:.4;">· thinking…</span>':''}</p>
+      ${!a.correct ? `<button onclick="forcePracticeLineComplete()" style="background:none;border:none;color:var(--sky);font-size:12.5px;font-weight:700;padding:4px 0;">Sure you said it right? Mark as done and continue →</button>` : ''}`;
   }
   practiceArea.innerHTML = `
     <p class="pr-prompt">Repeat after me: ${line.v}</p>
