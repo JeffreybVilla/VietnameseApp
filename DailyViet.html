@@ -5412,17 +5412,10 @@ function isIOSDevice(){
 function startPracticeMic(){
   const ps = practiceState;
   if(!ps || ps.lineIdx >= ps.lesson.dialogue.length) return;
+  if(isIOSDevice()){ startPracticeAudioRecording(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const micBtn = document.getElementById('prMicBtn');
-  if(!SR || isIOSDevice()){
-    togglePracticeType(true);
-    const row = document.getElementById('prTypeRow');
-    if(row && isIOSDevice() && !row.dataset.iosNoted){
-      row.dataset.iosNoted = '1';
-      document.getElementById('prTypeInput').placeholder = "Speech recognition isn't reliable on iPhone yet — type it instead";
-    }
-    return;
-  }
+  if(!SR){ togglePracticeType(true); return; }
   try{
     micBtn.classList.add('listening');
     if(recognitionInstance){ try{ recognitionInstance.abort(); }catch(e){} }
@@ -5448,6 +5441,107 @@ function startPracticeMic(){
     recognitionInstance.onend = ()=>{ micBtn.classList.remove('listening'); };
     recognitionInstance.start();
   }catch(e){ micBtn.classList.remove('listening'); }
+}
+
+// ---- iOS path: record real audio (MediaRecorder, well-supported on iOS
+// since 14.5) and send it to Gemini for transcription + correctness +
+// coaching, all in one call — this sidesteps WebKit's broken
+// SpeechRecognition entirely instead of trying to patch it. ----
+let mediaRecorderInstance = null;
+let practiceRecordedChunks = [];
+async function startPracticeAudioRecording(){
+  const micBtn = document.getElementById('prMicBtn');
+  if(mediaRecorderInstance && mediaRecorderInstance.state === 'recording'){
+    mediaRecorderInstance.stop(); // tap again to stop early
+    return;
+  }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    const mimeType = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+      : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
+    mediaRecorderInstance = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    practiceRecordedChunks = [];
+    mediaRecorderInstance.ondataavailable = e=>{ if(e.data.size>0) practiceRecordedChunks.push(e.data); };
+    mediaRecorderInstance.onstop = ()=>{
+      micBtn.classList.remove('listening');
+      stream.getTracks().forEach(t=>t.stop());
+      const blob = new Blob(practiceRecordedChunks, { type: mediaRecorderInstance.mimeType || 'audio/mp4' });
+      handlePracticeAudioAttempt(blob);
+    };
+    mediaRecorderInstance.start();
+    micBtn.classList.add('listening');
+    // Auto-stop so nobody has to remember to tap again — 5s covers any
+    // single dialogue line comfortably.
+    setTimeout(()=>{ if(mediaRecorderInstance && mediaRecorderInstance.state==='recording') mediaRecorderInstance.stop(); }, 5000);
+  }catch(e){
+    // Mic permission denied, or getUserMedia unsupported — fall back to typing.
+    togglePracticeType(true);
+  }
+}
+function blobToBase64(blob){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onloadend = ()=>resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+function escapePracticeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+async function handlePracticeAudioAttempt(blob){
+  const ps = practiceState;
+  if(!ps || ps.lineIdx >= ps.lesson.dialogue.length) return;
+  const line = ps.lesson.dialogue[ps.lineIdx];
+  ps.repeatCount++;
+  ps.attemptToken = (ps.attemptToken||0) + 1;
+  const myToken = ps.attemptToken;
+
+  ps.lastAttempt = { correct:false, highlighted:'(listening to your recording…)', feedback:'', aiPending:true };
+  renderPractice();
+
+  const base64 = await blobToBase64(blob);
+  const result = await fetchAiPronunciationCheck({ target: line.v, meaning: line.e, audioBase64: base64, mimeType: blob.type || 'audio/mp4' });
+  if(!practiceState || practiceState.attemptToken !== myToken) return; // a newer attempt already happened
+
+  if(!result){
+    // The Gemini call itself failed (network, quota, etc.) — don't strand
+    // the person on a "listening" message, drop them into typed input.
+    ps.lastAttempt = null;
+    renderPractice();
+    togglePracticeType(true);
+    return;
+  }
+
+  const correct = !!result.correct;
+  if(correct) ps.corrects++; else ps.mistakes++;
+  ps.lastAttempt = {
+    correct,
+    highlighted: result.transcript ? escapePracticeHtml(result.transcript) : '(no speech detected)',
+    feedback: result.feedback || (correct ? 'Nice work!' : `Try again: ${line.v}`),
+    aiPending: false,
+  };
+  renderPractice();
+  if(correct) setTimeout(()=>{ if(practiceState && practiceState.attemptToken===myToken) advancePracticeLine(); }, 2200);
+}
+async function fetchAiPronunciationCheck(payload){
+  try{
+    const ctrl = new AbortController();
+    const timeout = setTimeout(()=>ctrl.abort(), 12000); // audio upload + Gemini takes longer than text-only coaching calls
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/coach-feedback`, {
+      method:'POST',
+      headers:{'content-type':'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`},
+      body: JSON.stringify(payload),
+      signal: ctrl.signal,
+    });
+    clearTimeout(timeout);
+    if(!res.ok) return null;
+    return await res.json();
+  }catch(e){
+    return null;
+  }
 }
 function normalizePracticeWord(s){
   return stripDiacritics(s.toLowerCase()).replace(/[^\w]/g,'');
