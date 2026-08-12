@@ -5642,7 +5642,10 @@ async function handlePracticeAudioAttempt(blob){
   ps.lastAttempt = {
     correct,
     highlighted: graded ? graded.highlighted : '(no speech detected in the recording)',
-    feedback: result.feedback || (correct ? 'Nice work!' : `Try again: ${line.v}`),
+    // Temporary — surfaces exactly what Gemini's raw response looked like
+    // when transcription came back empty, so we can see what's actually
+    // happening instead of guessing. Remove this line once resolved.
+    feedback: (result.feedback || (correct ? 'Nice work!' : `Try again: ${line.v}`)) + (result._debugRaw ? ` [debug: ${result._debugRaw}]` : ''),
     aiPending: false,
   };
   renderPractice();
