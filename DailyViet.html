@@ -5490,14 +5490,25 @@ async function startPracticeAudioRecording(){
       // notably NOT the audio/mp4 container iOS's MediaRecorder actually
       // produces, which gets rejected outright. Decode and re-encode as WAV
       // client-side so Gemini always gets a format it genuinely supports.
-      let wavBlob;
+      let converted;
       try{
-        wavBlob = await convertBlobToWav(rawBlob);
+        converted = await convertBlobToWav(rawBlob);
       }catch(convertErr){
         showPracticeRecordingError("Couldn't process that recording — try again, or type your answer below.");
         return;
       }
-      handlePracticeAudioAttempt(wavBlob);
+      // A near-zero peak means real audio never made it into the recording
+      // (mic muted, wrong input routed, permission granted but silent) —
+      // catching this here saves a wasted Gemini call and tells you
+      // specifically what's wrong instead of a vague "no speech detected"
+      // after the fact. The numbers stay in the message for now while
+      // we're still diagnosing this on your device — safe to remove once
+      // it's reliably working.
+      if(converted.peak < 0.02){
+        showPracticeRecordingError(`Recording captured but seems silent (${converted.durationSec.toFixed(1)}s, peak ${converted.peak.toFixed(3)}) — check the mic isn't muted/covered, and try speaking right after tapping.`);
+        return;
+      }
+      handlePracticeAudioAttempt(converted.blob);
     };
     mediaRecorderInstance.start();
     micBtn.classList.add('listening');
@@ -5556,10 +5567,13 @@ async function convertBlobToWav(blob){
   const channelData = [];
   for(let c=0; c<audioBuffer.numberOfChannels; c++) channelData.push(audioBuffer.getChannelData(c));
   const mono = new Float32Array(numFrames);
+  let peak = 0;
   for(let i=0; i<numFrames; i++){
     let sum = 0;
     for(let c=0; c<channelData.length; c++) sum += channelData[c][i];
     mono[i] = sum / channelData.length;
+    const abs = Math.abs(mono[i]);
+    if(abs > peak) peak = abs;
   }
   const sampleRate = audioBuffer.sampleRate;
   const bytesPerSample = 2;
@@ -5586,7 +5600,11 @@ async function convertBlobToWav(blob){
     view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
     offset += 2;
   }
-  return new Blob([view], { type: 'audio/wav' });
+  return {
+    blob: new Blob([view], { type: 'audio/wav' }),
+    durationSec: audioBuffer.duration,
+    peak, // 0 = dead silence, ~0.05-1.0 = real captured sound
+  };
 }
 function escapePracticeHtml(s){
   const d = document.createElement('div');
