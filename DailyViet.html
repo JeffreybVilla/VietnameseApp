@@ -5640,10 +5640,18 @@ async function fetchAiPronunciationCheck(payload){
       signal: ctrl.signal,
     });
     clearTimeout(timeout);
-    if(!res.ok) return null;
+    if(!res.ok){
+      // Capture the actual HTTP status/body instead of discarding it — a
+      // generic "couldn't reach" message with no detail is exactly what
+      // was making this impossible to debug from a screenshot alone.
+      let bodyText = '';
+      try{ bodyText = (await res.text()).slice(0, 200); }catch(e){}
+      return { error: `HTTP ${res.status}${bodyText ? ': ' + bodyText : ''}` };
+    }
     return await res.json();
   }catch(e){
-    return null;
+    const reason = e && e.name === 'AbortError' ? 'timed out after 12s' : (e && e.message ? e.message : String(e));
+    return { error: reason };
   }
 }
 function normalizePracticeWord(s){
