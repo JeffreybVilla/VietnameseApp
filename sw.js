@@ -44,6 +44,17 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
+  // Only GET requests are cacheable at all — the Cache API's match()/put()
+  // both throw on anything else. Without this guard, the catch-all branch
+  // at the bottom was calling cache.put() on POST requests (like the
+  // coach-feedback call to Supabase), which threw a TypeError and
+  // surfaced as "FetchEvent.respondWith received an error: Load failed" —
+  // the exact bug that made pronunciation checking fail on iOS. Anything
+  // non-GET just passes straight through to the network, untouched.
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   // Audio files: cache-first. Once a clip has been played (or bulk
   // downloaded), it's served instantly from cache forever after, with no
   // network dependency at all.
