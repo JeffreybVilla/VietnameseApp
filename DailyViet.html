@@ -5654,7 +5654,7 @@ async function handlePracticeAudioAttempt(blob){
 async function fetchAiPronunciationCheck(payload){
   try{
     const ctrl = new AbortController();
-    const timeout = setTimeout(()=>ctrl.abort(), 12000); // audio upload + Gemini takes longer than text-only coaching calls
+    const timeout = setTimeout(()=>ctrl.abort(), 20000); // audio upload + Gemini + up to 2 server-side retries on transient 429/503 errors
     const res = await fetch(`${SUPABASE_URL}/functions/v1/coach-feedback`, {
       method:'POST',
       headers:{'content-type':'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`},
