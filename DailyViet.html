@@ -3981,22 +3981,20 @@ function renderFoundations(){
   let firstIncompleteFound = false;
   levelLessons.forEach((l, idx)=>{
     const done = state.completedLessons.includes(l.id);
-    const prevDone = idx===0 ? true : state.completedLessons.includes(levelLessons[idx-1].id);
-    const locked = !done && !prevDone;
-    const isCurrent = !done && prevDone && !firstIncompleteFound;
+    const isCurrent = !done && !firstIncompleteFound;
     if(isCurrent) firstIncompleteFound = true;
 
     const node = document.createElement('div');
     node.className = 'lesson-node' + (done?' done':'') + (isCurrent?' current':'');
     node.innerHTML = `
       <div class="dot">${done?'✓':idx+1}</div>
-      <div class="lesson-card ${locked?'locked':''}">
+      <div class="lesson-card">
         <div>
           <p class="lname">${l.title}</p>
           ${l.vietTitle ? `<p class="lviet">${l.vietTitle}</p>` : ''}
           <p class="ldesc">${l.tag}</p>
         </div>
-        <button class="go" ${locked?'disabled':''} onclick="${locked?'':`openLessonDetail('${l.id}')`}">${done?'↻':'▶'}</button>
+        <button class="go" onclick="openLessonDetail('${l.id}')">${done?'↻':'▶'}</button>
       </div>`;
     route.appendChild(node);
   });
@@ -6328,12 +6326,10 @@ function renderLessonsTab(){
         lastSection = l.section;
       }
       const done = state.completedLessons.includes(l.id);
-      const prevDone = idx===0 ? true : state.completedLessons.includes(LESSONS[idx-1].id);
-      const locked = !done && !prevDone;
-      const isCurrent = !done && prevDone && !firstIncompleteFound;
+      const isCurrent = !done && !firstIncompleteFound;
       if(isCurrent) firstIncompleteFound = true;
-      const badge = done ? `<div class="check">✓</div>` : (locked ? `<div class="lock">🔒</div>` : `<div class="play">▶</div>`);
-      html += `<button class="lsn-lesson-card ${isCurrent?'current':''} ${locked?'locked':''}" ${locked?'disabled':''} onclick="${locked?'':`openLessonDetail('${l.id}')`}">
+      const badge = done ? `<div class="check">✓</div>` : `<div class="play">▶</div>`;
+      html += `<button class="lsn-lesson-card ${isCurrent?'current':''}" onclick="openLessonDetail('${l.id}')">
         <img src="${l.img}" alt="" onerror="this.style.display='none';">
         <div class="shade"></div>
         ${badge}
