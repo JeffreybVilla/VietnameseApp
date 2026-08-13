@@ -533,6 +533,7 @@
   .pr-note{background:#12203a;border-radius:14px;padding:14px;margin-bottom:14px;color:rgba(255,255,255,.75);font-size:13px;line-height:1.55;}
   .pr-prompt{color:rgba(255,255,255,.85);font-size:14px;font-weight:600;margin:16px 0 8px;}
   .pr-prompt-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .pr-next-btn{display:block;width:100%;background:var(--sky);color:#fff;border:none;padding:14px;border-radius:14px;font-weight:800;font-size:14.5px;margin-top:6px;}
   .pr-prompt-play{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:var(--sky);font-size:10px;}
   .pr-listen-count{color:rgba(255,255,255,.4);font-size:11.5px;}
   .pr-attempt{align-self:flex-end;background:#132540;border-radius:12px;padding:12px 14px;margin:0 0 8px auto;max-width:88%;font-size:15px;font-style:italic;}
@@ -1376,14 +1377,10 @@
   <div class="pr-bottombar">
     <div class="pr-controls">
       <button class="pr-ctrl-btn" id="prSpeedBtn" onclick="cyclePracticeSpeed()"><span class="ic">🐢</span>1x</button>
-      <button class="pr-ctrl-btn" id="prTypeBtn" onclick="togglePracticeType()"><span class="ic">⌨️</span>Type</button>
-      <button class="pr-mic-btn" id="prMicBtn" onclick="startPracticeMic()">🎙️</button>
       <button class="pr-ctrl-btn" id="prHintBtn" onclick="togglePracticeHint()"><span class="ic">💡</span>Hint</button>
+      <button class="pr-mic-btn" id="prPlayBtn" onclick="playPracticeAudio(practiceState.lineIdx)">🔊</button>
+      <button class="pr-ctrl-btn" onclick="advancePracticeLine()"><span class="ic">→</span>Next</button>
       <button class="pr-ctrl-btn" onclick="closePractice()"><span class="ic">☰</span>Menu</button>
-    </div>
-    <div class="pr-type-row" id="prTypeRow" style="display:none;">
-      <input type="text" class="pr-type-input" id="prTypeInput" placeholder="Type what you'd say..." onkeydown="if(event.key==='Enter')submitPracticeType();">
-      <button class="pr-type-send" onclick="submitPracticeType()">Send</button>
     </div>
   </div>
 </div>
@@ -5329,18 +5326,14 @@ function openPractice(lessonId){
     return;
   }
   practiceState = {
-    lesson:l, lineIdx:0, listenCount:0, repeatCount:0,
-    speedRate:1, mistakes:0, corrects:0, lastAttempt:null, hintOpen:false,
+    lesson:l, lineIdx:0, listenCount:0,
+    speedRate:1, hintOpen:false,
   };
   document.getElementById('prTitle').textContent = l.title;
   document.getElementById('prLevelBadge').textContent = l.level || 'A1';
   document.getElementById('prHeroImg').src = l.img || '';
   document.getElementById('prSpeedBtn').lastChild.textContent = '1x';
-  document.getElementById('prTypeRow').style.display = 'none';
   document.getElementById('practiceOverlay').classList.add('open');
-  if(!state.tutorModeChosen){
-    document.getElementById('tutorModeBackdrop').classList.add('open');
-  }
   renderPractice();
 }
 function closePractice(){
@@ -5362,7 +5355,7 @@ function jumpToPracticeLine(i){
   const ps = practiceState;
   if(!ps) return;
   ps.lineIdx = i;
-  ps.listenCount = 0; ps.repeatCount = 0; ps.lastAttempt = null; ps.hintOpen = false;
+  ps.listenCount = 0; ps.hintOpen = false;
   renderPractice();
 }
 function playPracticeAudio(idx){
@@ -5816,7 +5809,7 @@ function advancePracticeLine(){
   const ps = practiceState;
   if(!ps) return;
   ps.lineIdx++;
-  ps.listenCount = 0; ps.repeatCount = 0; ps.lastAttempt = null; ps.hintOpen = false;
+  ps.listenCount = 0; ps.hintOpen = false;
   if(ps.lineIdx >= ps.lesson.dialogue.length) completePracticeLesson();
   renderPractice();
 }
@@ -5860,30 +5853,21 @@ function renderPractice(){
     practiceArea.innerHTML = '';
     doneWrap.innerHTML = `<div class="pr-done-banner">
       <h3>🎉 Lesson complete!</h3>
-      <p>${ps.corrects} line${ps.corrects===1?'':'s'} nailed, ${ps.mistakes} retr${ps.mistakes===1?'y':'ies'}.</p>
+      <p>You practiced all ${dialogue.length} line${dialogue.length===1?'':'s'} out loud.</p>
       <button onclick="finishPractice()">Finish</button>
     </div>`;
     return;
   }
   doneWrap.innerHTML = '';
   const line = dialogue[ps.lineIdx];
-  let attemptHtml = '';
-  if(ps.lastAttempt){
-    const a = ps.lastAttempt;
-    attemptHtml = `
-      <div class="pr-attempt">${a.highlighted}</div>
-      <div class="pr-attempt-badge"><span class="pill ${a.correct?'ok':'bad'}">${a.correct?'✓':'✗'} ${a.correct?ps.corrects:ps.mistakes}</span></div>
-      <p class="pr-feedback">${a.feedback}${a.aiPending?' <span style="opacity:.4;">· thinking… (<span id="prPendingElapsed">0s</span>)</span>':''}</p>
-      ${!a.correct ? `<button onclick="forcePracticeLineComplete()" style="background:none;border:none;color:var(--sky);font-size:12.5px;font-weight:700;padding:4px 0;">Sure you said it right? Mark as done and continue →</button>` : ''}`;
-  }
   practiceArea.innerHTML = `
     <p class="pr-prompt">Repeat after me: ${line.v}</p>
     <div class="pr-prompt-row">
       <button class="pr-prompt-play" onclick="playPracticeAudio(${ps.lineIdx})">▶</button>
-      <span class="pr-listen-count">Listened ${ps.listenCount} · Repeated ${ps.repeatCount}</span>
+      <span class="pr-listen-count">Listened ${ps.listenCount}</span>
     </div>
     ${ps.hintOpen ? `<p class="pr-feedback">💡 ${line.e}</p>` : ''}
-    ${attemptHtml}
+    <button class="pr-next-btn" onclick="advancePracticeLine()">I said it — Next →</button>
   `;
 }
 
