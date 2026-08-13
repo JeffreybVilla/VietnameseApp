@@ -5686,7 +5686,7 @@ async function handlePracticeAudioAttempt(blob){
 async function fetchAiPronunciationCheck(payload){
   try{
     const ctrl = new AbortController();
-    const timeout = setTimeout(()=>ctrl.abort(), 20000); // audio upload + Gemini + up to 2 server-side retries on transient 429/503 errors
+    const timeout = setTimeout(()=>ctrl.abort(), 35000); // confirmed via Edge Function logs (EarlyDrop) that Gemini's free-tier audio endpoint can genuinely take longer than 20s right now — this isn't a bug, it's real current latency
     const res = await fetch(`${SUPABASE_URL}/functions/v1/coach-feedback`, {
       method:'POST',
       headers:{'content-type':'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`},
@@ -5704,7 +5704,7 @@ async function fetchAiPronunciationCheck(payload){
     }
     return await res.json();
   }catch(e){
-    const reason = e && e.name === 'AbortError' ? 'timed out after 20s' : (e && e.message ? e.message : String(e));
+    const reason = e && e.name === 'AbortError' ? 'timed out after 35s' : (e && e.message ? e.message : String(e));
     return { error: reason };
   }
 }
