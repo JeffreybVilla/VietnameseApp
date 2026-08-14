@@ -464,6 +464,17 @@
   .lsn-group.open .lsn-group-body{max-height:6000px;}
   .lsn-group-cards{display:flex;flex-direction:column;gap:14px;padding:2px 0 4px;}
   .lsn-lesson-list{display:flex;flex-direction:column;gap:0;}
+
+  /* Slim topic-card row — By Topic mode, no hero image yet, just an emoji
+     and a one-line description. Much lighter than .lsn-lesson-card since
+     there are 75 of these to scroll through. */
+  .lsn-topic-card{display:flex;align-items:center;gap:12px;width:100%;background:var(--surface);border:1px solid rgba(36,28,19,0.07);border-radius:14px;padding:10px 12px;text-align:left;margin-bottom:8px;}
+  .lsn-topic-card .emoji{width:38px;height:38px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .lsn-topic-card .info{flex:1;min-width:0;}
+  .lsn-topic-card .info .title{font-weight:800;font-size:13px;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lsn-topic-card .info .desc{font-size:11px;color:var(--muted);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lsn-topic-card .status{flex-shrink:0;color:var(--muted);font-size:12px;width:22px;height:22px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;}
+  .lsn-topic-card.done .status{color:#fff;background:var(--herb);}
   .lsn-lesson-card{position:relative;width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;border:1px solid rgba(36,28,19,0.07);padding:0;text-align:left;background:var(--surface-2);}
   .lsn-lesson-card.current{border:2px solid var(--sky);}
   .lsn-lesson-card.locked{opacity:.55;}
@@ -1037,7 +1048,7 @@
         <p class="lsn-stat-title">Learn Vietnamese <span>🇻🇳</span></p>
         <div class="lsn-stat-big"><span id="lsnWordsTotal">0</span><span class="lsn-stat-unit">words to master</span></div>
         <p class="lsn-stat-line"><b id="lsnDialogueTotal">0</b> dialogues · <b id="lsnPhraseTotal">0</b> phrases</p>
-        <p class="lsn-stat-line"><b id="lsnExampleTotal">0</b> example sentences</p>
+        <p class="lsn-stat-line"><b id="lsnGrammarTotal">0</b> grammar notes</p>
       </div>
 
       <button class="lsn-free-talk" onclick="switchView('worlds')">
@@ -1291,7 +1302,7 @@
   <button class="ld-close" onclick="closeLessonDetail()">✕</button>
   <div class="ld-scroll">
     <h1 class="ld-title" id="ldTitle">Lesson</h1>
-    <div class="ld-hero"><img id="ldHeroImg" src="" alt="" onerror="this.style.display='none';"></div>
+    <div class="ld-hero" id="ldHero"><img id="ldHeroImg" src="" alt="" onerror="document.getElementById('ldHero').style.display='none';"></div>
     <p class="ld-desc" id="ldDesc"></p>
     <p class="ld-duration" id="ldDuration">3 min</p>
 
@@ -3409,6 +3420,2046 @@ const LESSONS = [
       {v:'Thứ Sáu hết chỗ rồi ạ. Thứ Bảy được không?', p:'tuh sow het choh roy aa. tuh bai duh-uhk khom', e:'Friday is fully booked. Is Saturday okay?'},
       {v:'Được, vậy tôi đặt thứ Bảy nhé.', p:'duh-uhk, vay toy dat tuh bai nyeh', e:'Okay, then I\'ll book Saturday.'},
     ] },
+];
+
+// TOPIC_LESSONS — the "By Topic" toggle's flat, numbered topic list, the
+// exact 75 topics transcribed in order from the reference app's screenshots.
+// Each topic has full AI-generated lesson content (dialogue, vocab, grammar,
+// phonetic practice cards) in the same shape as LESSONS, plus an `emoji` field
+// used for the slim topic-card row icon instead of a hero image (these are
+// original teaching content written for this app, not transcribed from the
+// reference app, which only exposed topic titles/descriptions on screen).
+// Tapping one opens the normal lesson-detail overlay via openLessonDetail()/
+// openPractice() (both check TOPIC_LESSONS as a fallback after LESSONS). Kept
+// separate from LESSONS on purpose, so the Lessons tab's headline stats
+// (dialogues/words/phrases/grammar) stay scoped to the real 62-day
+// curriculum and are not inflated by this list.
+const TOPIC_LESSONS = [
+  { id:'t1', level:'A1', title:"BBQ Restaurant", emoji:'🍖',
+    desc:"Order BBQ and grilled food at a restaurant.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh, quán mình có nhiều món nướng lắm ạ. Anh muốn ăn gì ạ?", p:'', e:"Hello, our restaurant has lots of grilled dishes. What would you like to eat?"},
+      {speaker:'B', v:"Cho tôi một phần bò nướng và một phần tôm nướng nhé.", p:'', e:"Give me one order of grilled beef and one order of grilled shrimp."},
+      {speaker:'A', v:"Dạ được. Anh có muốn uống bia không ạ?", p:'', e:"Sure. Would you like to drink beer?"},
+      {speaker:'B', v:"Có, cho tôi một chai bia nữa.", p:'', e:"Yes, give me a bottle of beer too."},
+    ],
+    vocab:[
+      {v:"nướng", e:"to grill"}, {v:"bò", e:"beef"},
+      {v:"tôm", e:"shrimp"}, {v:"phần", e:"portion / order"},
+      {v:"bia", e:"beer"}, {v:"chai", e:"bottle"},
+      {v:"quán", e:"restaurant / shop"}, {v:"món", e:"dish"},
+    ],
+    grammar:[
+      {title:"Muốn + verb + gì?", body:"To ask what someone wants to do, place \"gì\" (what) after the verb, as in \"muốn ăn gì\" (want to eat what). \"Muốn\" means \"to want\" and comes right before the action verb."},
+      {title:"Cho tôi... / nữa", body:"\"Cho tôi\" (give me) is the standard way to order food or drinks, followed by the item, like \"Cho tôi một phần bò nướng\". Adding \"nữa\" at the end of a sentence means \"more/also\", as in \"cho tôi một chai bia nữa\" (give me one more bottle of beer)."},
+    ],
+    cards:[
+      {v:"Chào anh, quán mình có nhiều món nướng lắm ạ. Anh muốn ăn gì ạ?", p:"chow aan, kwaan ming co nyew mon nuh-uhng lam aa. aan moo-uhn an zee aa", e:"Hello, our restaurant has lots of grilled dishes. What would you like to eat?"},
+      {v:"Cho tôi một phần bò nướng và một phần tôm nướng nhé.", p:"cho toy mot fun bo nuh-uhng vaa mot fun tom nuh-uhng nyeh", e:"Give me one order of grilled beef and one order of grilled shrimp."},
+      {v:"Dạ được. Anh có muốn uống bia không ạ?", p:"zaa duh-uhk. aan co moo-uhn oo-ong bee-a khom aa", e:"Sure. Would you like to drink beer?"},
+      {v:"Có, cho tôi một chai bia nữa.", p:"co, cho toy mot chai bee-a nuh-a", e:"Yes, give me a bottle of beer too."},
+    ],
+  },
+  { id:'t2', level:'A1', title:"Ordering Drinks", emoji:'🍹',
+    desc:"Order drinks at a bar or restaurant.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, chị muốn uống gì ạ?", p:'', e:"Hello, what would you like to drink?"},
+      {speaker:'B', v:"Cho tôi một ly cà phê sữa đá nhé.", p:'', e:"Give me a glass of iced milk coffee."},
+      {speaker:'A', v:"Dạ, chị có muốn thêm đường không ạ?", p:'', e:"Sure, would you like extra sugar?"},
+      {speaker:'B', v:"Không, cảm ơn. Vậy đủ rồi.", p:'', e:"No, thank you. That's enough."},
+    ],
+    vocab:[
+      {v:"uống", e:"to drink"}, {v:"ly", e:"glass / cup"},
+      {v:"cà phê", e:"coffee"}, {v:"sữa", e:"milk"},
+      {v:"đá", e:"ice"}, {v:"đường", e:"sugar"},
+      {v:"thêm", e:"to add / more"}, {v:"đủ", e:"enough"},
+    ],
+    grammar:[
+      {title:"Uống + gì?", body:"Just like \"ăn gì\" (eat what), \"uống gì\" (drink what) places the question word \"gì\" after the verb to ask what someone wants to drink. This is the standard word order for asking \"what\" questions about actions in Vietnamese."},
+      {title:"Có... không? question frame", body:"To form a yes/no question, wrap the verb phrase between \"có\" and \"không\", as in \"có muốn thêm đường không?\" (do you want extra sugar?). Answer with \"có\" (yes) or \"không\" (no), as the customer does with \"Không, cảm ơn\"."},
+    ],
+    cards:[
+      {v:"Chào chị, chị muốn uống gì ạ?", p:"chow chi, chi moo-uhn oo-ong zee aa", e:"Hello, what would you like to drink?"},
+      {v:"Cho tôi một ly cà phê sữa đá nhé.", p:"cho toy mot lee gaa feh suh-a daa nyeh", e:"Give me a glass of iced milk coffee."},
+      {v:"Dạ, chị có muốn thêm đường không ạ?", p:"zaa, chi co moo-uhn them duh-uhng khom aa", e:"Sure, would you like extra sugar?"},
+      {v:"Không, cảm ơn. Vậy đủ rồi.", p:"khom, gam uhn. vay doo roy", e:"No, thank you. That's enough."},
+    ],
+  },
+  { id:'t3', level:'A1', title:"Street Food", emoji:'🍢',
+    desc:"Order food from a street vendor or food cart.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chị ơi, bánh mì nóng nè, chị mua không?", p:'', e:"Hey, hot bánh mì here, would you like to buy some?"},
+      {speaker:'B', v:"Dạ có, cho em một ổ bánh mì thịt nhé.", p:'', e:"Yes, give me one bánh mì with meat."},
+      {speaker:'A', v:"Em có ăn cay không?", p:'', e:"Do you eat spicy food?"},
+      {speaker:'B', v:"Dạ có, cho em nhiều ớt một chút.", p:'', e:"Yes, give me a bit more chili."},
+    ],
+    vocab:[
+      {v:"bánh mì", e:"Vietnamese baguette sandwich"}, {v:"mua", e:"to buy"},
+      {v:"ổ", e:"loaf (classifier for bread)"}, {v:"thịt", e:"meat"},
+      {v:"cay", e:"spicy"}, {v:"ớt", e:"chili"},
+      {v:"nóng", e:"hot"}, {v:"một chút", e:"a little / a bit"},
+    ],
+    grammar:[
+      {title:"Classifier \"ổ\"", body:"Vietnamese nouns often need a classifier word between the number and the noun, like \"ổ\" for loaf-shaped items: \"một ổ bánh mì\" (one loaf of bánh mì). The classifier changes depending on the shape or type of the item being counted."},
+      {title:"\"Ơi\" as a vocative particle", body:"\"Ơi\" is added after a person's title or name to call out and get their attention, as in \"Chị ơi\" (Hey, miss/ma'am). It's very common when hailing street vendors, waitstaff, or strangers politely."},
+    ],
+    cards:[
+      {v:"Chị ơi, bánh mì nóng nè, chị mua không?", p:"chi uh-ee, baan mee nom neh, chi moo-a khom", e:"Hey, hot bánh mì here, would you like to buy some?"},
+      {v:"Dạ có, cho em một ổ bánh mì thịt nhé.", p:"zaa co, cho em mot oh baan mee tit nyeh", e:"Yes, give me one bánh mì with meat."},
+      {v:"Em có ăn cay không?", p:"em co an kai khom", e:"Do you eat spicy food?"},
+      {v:"Dạ có, cho em nhiều ớt một chút.", p:"zaa co, cho em nyew uht mot choot", e:"Yes, give me a bit more chili."},
+    ],
+  },
+  { id:'t4', level:'A1', title:"Restaurant Reservation", emoji:'🍽️',
+    desc:"Make a reservation at a restaurant.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Alo, tôi muốn đặt bàn cho tối nay ạ.", p:'', e:"Hello, I'd like to reserve a table for tonight."},
+      {speaker:'B', v:"Dạ được, anh muốn đặt cho mấy giờ ạ?", p:'', e:"Sure, what time would you like to reserve for?"},
+      {speaker:'A', v:"Cho tôi bàn lúc bảy giờ, khoảng bốn người.", p:'', e:"A table at seven o'clock, about four people."},
+      {speaker:'B', v:"Dạ, em đã đặt bàn cho anh rồi ạ.", p:'', e:"Okay, I've reserved the table for you."},
+    ],
+    vocab:[
+      {v:"đặt bàn", e:"to reserve a table"}, {v:"tối nay", e:"tonight"},
+      {v:"giờ", e:"hour / o'clock"}, {v:"lúc", e:"at (a time)"},
+      {v:"khoảng", e:"about / approximately"}, {v:"bàn", e:"table"},
+      {v:"tối", e:"evening"}, {v:"đã", e:"past tense marker"},
+    ],
+    grammar:[
+      {title:"Lúc + time", body:"\"Lúc\" is placed before a specific time to mean \"at [time]\", as in \"lúc bảy giờ\" (at seven o'clock). It's used to pinpoint exactly when an action happens or should happen."},
+      {title:"Đã as a past marker", body:"\"Đã\" goes before the verb to show an action is already completed, as in \"đã đặt bàn\" (have already reserved the table). This contrasts with \"chưa\" (not yet) or the plain verb for present/future actions."},
+    ],
+    cards:[
+      {v:"Alo, tôi muốn đặt bàn cho tối nay ạ.", p:"a-lo, toy moo-uhn dat baan cho toy nai aa", e:"Hello, I'd like to reserve a table for tonight."},
+      {v:"Dạ được, anh muốn đặt cho mấy giờ ạ?", p:"zaa duh-uhk, aan moo-uhn dat cho may zuh aa", e:"Sure, what time would you like to reserve for?"},
+      {v:"Cho tôi bàn lúc bảy giờ, khoảng bốn người.", p:"cho toy baan loot bai zuh, khwaang bon nguh-uh-ee", e:"A table at seven o'clock, about four people."},
+      {v:"Dạ, em đã đặt bàn cho anh rồi ạ.", p:"zaa, em daa dat baan cho aan roy aa", e:"Okay, I've reserved the table for you."},
+    ],
+  },
+  { id:'t5', level:'A1', title:"Menu Recommendations", emoji:'📋',
+    desc:"Ask about menu items and get recommendations.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Anh đã biết ăn món gì chưa ạ?", p:'', e:"Have you decided what to eat yet?"},
+      {speaker:'B', v:"Chưa, quán mình có món gì ngon không?", p:'', e:"Not yet, does this restaurant have anything delicious?"},
+      {speaker:'A', v:"Dạ, phở bò ở đây rất nổi tiếng, anh nên thử.", p:'', e:"Yes, the beef pho here is very famous, you should try it."},
+      {speaker:'B', v:"Vậy cho tôi một tô phở bò nhé.", p:'', e:"Then give me a bowl of beef pho."},
+    ],
+    vocab:[
+      {v:"món ngon", e:"delicious dish"}, {v:"nổi tiếng", e:"famous"},
+      {v:"nên", e:"should"}, {v:"thử", e:"to try"},
+      {v:"tô", e:"bowl"}, {v:"phở", e:"pho noodle soup"},
+      {v:"chưa", e:"not yet"}, {v:"biết", e:"to know"},
+    ],
+    grammar:[
+      {title:"Chưa as \"not yet\"", body:"\"Chưa\" is used in the question pattern \"đã... chưa?\" to ask if something has happened yet, as in \"đã biết ăn món gì chưa\" (have you decided what to eat yet). It's also used alone as the answer \"Chưa\" meaning \"not yet\"."},
+      {title:"Nên + verb for suggestions", body:"\"Nên\" goes before a verb to softly suggest an action, as in \"anh nên thử\" (you should try it). It's a gentle way to recommend something without being pushy, commonly used by waitstaff giving menu advice."},
+    ],
+    cards:[
+      {v:"Anh đã biết ăn món gì chưa ạ?", p:"aan daa bee-et an mon zee chuh-a aa", e:"Have you decided what to eat yet?"},
+      {v:"Chưa, quán mình có món gì ngon không?", p:"chuh-a, kwaan ming co mon zee ngon khom", e:"Not yet, does this restaurant have anything delicious?"},
+      {v:"Dạ, phở bò ở đây rất nổi tiếng, anh nên thử.", p:"zaa, fuh bo uh day zut noy tee-eng, aan nen tuh", e:"Yes, the beef pho here is very famous, you should try it."},
+      {v:"Vậy cho tôi một tô phở bò nhé.", p:"vay cho toy mot to fuh bo nyeh", e:"Then give me a bowl of beef pho."},
+    ],
+  },
+  { id:'t6', level:'A1', title:"Dietary Restrictions", emoji:'🥗',
+    desc:"Communicate food allergies and dietary needs.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bạn, bạn muốn ăn gì?", p:'', e:"Hi, what do you want to eat?"},
+      {speaker:'B', v:"Mình bị dị ứng với hải sản, bạn có món nào không có hải sản không?", p:'', e:"I'm allergic to seafood, do you have any dish without seafood?"},
+      {speaker:'A', v:"Dạ có, mình có món chay và món gà ạ.", p:'', e:"Yes, we have vegetarian dishes and chicken dishes."},
+      {speaker:'B', v:"Vậy cho mình một phần gà nhé, cảm ơn bạn.", p:'', e:"Then give me one order of chicken, thank you."},
+    ],
+    vocab:[
+      {v:"dị ứng", e:"allergy"}, {v:"hải sản", e:"seafood"},
+      {v:"món chay", e:"vegetarian dish"}, {v:"gà", e:"chicken"},
+      {v:"ăn chay", e:"to eat vegetarian"}, {v:"không có", e:"to not have / without"},
+      {v:"món ăn", e:"dish / food"}, {v:"kiêng", e:"to avoid (a food)"},
+    ],
+    grammar:[
+      {title:"Bị + [condition]", body:"\"Bị\" marks something negative happening to you, so \"bị dị ứng với hải sản\" literally means \"suffer an allergy with seafood,\" i.e. \"be allergic to seafood.\" This pattern is used for illnesses and unwanted conditions in general."},
+      {title:"Có ... không? questions", body:"\"Có món nào không có hải sản không?\" wraps the whole clause in \"có ... không\" to form a yes/no question, meaning \"Is there any dish that doesn't have seafood?\" Note the second \"không\" inside the clause simply means \"without/no,\" while the final \"không\" makes it a question."},
+    ],
+    cards:[
+      {v:"Chào bạn, bạn muốn ăn gì?", p:"chow ban, ban moo-uhn an zee", e:"Hi, what do you want to eat?"},
+      {v:"Mình bị dị ứng với hải sản, bạn có món nào không có hải sản không?", p:"ming bee zee ung vuh-ee hai san, ban co mon now khom co hai san khom", e:"I'm allergic to seafood, do you have any dish without seafood?"},
+      {v:"Dạ có, mình có món chay và món gà ạ.", p:"zaa co, ming co mon chai vaa mon gaa aa", e:"Yes, we have vegetarian dishes and chicken dishes."},
+      {v:"Vậy cho mình một phần gà nhé, cảm ơn bạn.", p:"vay cho ming mot fun gaa nyeh, gam uhn ban", e:"Then give me one order of chicken, thank you."},
+    ],
+  },
+  { id:'t7', level:'A1', title:"Where are you going?", emoji:'🚶',
+    desc:"Tell someone where you are going.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bạn, bạn đi đâu vậy?", p:'', e:"Hi, where are you going?"},
+      {speaker:'B', v:"Mình đi đến chợ để mua rau.", p:'', e:"I'm going to the market to buy vegetables."},
+      {speaker:'A', v:"Vậy à, mình cũng đang đi chợ nè, đi chung không?", p:'', e:"Oh really, I'm also going to the market, want to go together?"},
+      {speaker:'B', v:"Được, đi chung cho vui!", p:'', e:"Sure, let's go together for fun!"},
+    ],
+    vocab:[
+      {v:"đi đâu", e:"where are you going"}, {v:"chợ", e:"market"},
+      {v:"mua", e:"to buy"}, {v:"rau", e:"vegetables"},
+      {v:"đi chung", e:"to go together"}, {v:"đến", e:"to arrive / to go to"},
+      {v:"cũng", e:"also"}, {v:"vui", e:"fun / happy"},
+    ],
+    grammar:[
+      {title:"Đi đâu? (where are you going)", body:"\"Đi\" (go) plus \"đâu\" (where) forms the common question \"bạn đi đâu vậy?\" — \"where are you going?\" You answer by replacing \"đâu\" with the destination, as in \"mình đi đến chợ\" (I'm going to the market)."},
+      {title:"Để + verb (purpose)", body:"\"Để\" before a verb expresses purpose, similar to \"in order to.\" In \"đi đến chợ để mua rau,\" the phrase after \"để\" (mua rau, to buy vegetables) explains why the person is going to the market."},
+    ],
+    cards:[
+      {v:"Chào bạn, bạn đi đâu vậy?", p:"chow ban, ban dee doh vay", e:"Hi, where are you going?"},
+      {v:"Mình đi đến chợ để mua rau.", p:"ming dee den chuh deh moo-uh rao", e:"I'm going to the market to buy vegetables."},
+      {v:"Vậy à, mình cũng đang đi chợ nè, đi chung không?", p:"vay aa, ming coong dang dee chuh neh, dee choong khom", e:"Oh really, I'm also going to the market, want to go together?"},
+      {v:"Được, đi chung cho vui!", p:"duh-uhk, dee choong cho voo-ee", e:"Sure, let's go together for fun!"},
+    ],
+  },
+  { id:'t8', level:'A1', title:"Likes", emoji:'❤️',
+    desc:"Tell someone what you like.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn thích ăn món gì nhất?", p:'', e:"What dish do you like to eat the most?"},
+      {speaker:'B', v:"Mình thích ăn phở, còn bạn thích gì?", p:'', e:"I like eating pho, and what do you like?"},
+      {speaker:'A', v:"Mình thích uống cà phê sữa đá lắm.", p:'', e:"I really like drinking iced milk coffee."},
+      {speaker:'B', v:"Ồ, mình cũng thích cà phê nữa!", p:'', e:"Oh, I also like coffee too!"},
+    ],
+    vocab:[
+      {v:"thích", e:"to like"}, {v:"món ăn", e:"dish"},
+      {v:"phở", e:"pho noodle soup"}, {v:"cà phê sữa đá", e:"iced milk coffee"},
+      {v:"nhất", e:"most"}, {v:"nữa", e:"also / more"},
+      {v:"lắm", e:"very much"}, {v:"còn", e:"as for / and"},
+    ],
+    grammar:[
+      {title:"Thích + verb/noun", body:"\"Thích\" (to like) is followed directly by a verb or noun, as in \"thích ăn phở\" (like eating pho) or \"thích cà phê\" (like coffee). Add \"lắm\" after the phrase, like \"thích uống cà phê sữa đá lắm,\" to intensify it to \"really like.\""},
+      {title:"Còn bạn? (redirecting a question)", body:"\"Còn\" placed before a pronoun turns the question back on the listener, so \"còn bạn thích gì?\" means \"and what do you like?\" This is a quick, natural way to ask \"what about you?\" after answering."},
+    ],
+    cards:[
+      {v:"Bạn thích ăn món gì nhất?", p:"ban tik an mon zee nyut", e:"What dish do you like to eat the most?"},
+      {v:"Mình thích ăn phở, còn bạn thích gì?", p:"ming tik an fuh, con ban tik zee", e:"I like eating pho, and what do you like?"},
+      {v:"Mình thích uống cà phê sữa đá lắm.", p:"ming tik oo-ong gaa feh suh-a daa lam", e:"I really like drinking iced milk coffee."},
+      {v:"Ồ, mình cũng thích cà phê nữa!", p:"oh, ming coong tik gaa feh nuh-a", e:"Oh, I also like coffee too!"},
+    ],
+  },
+  { id:'t9', level:'A1', title:"Buying Tea from a Small Store", emoji:'🍵',
+    desc:"Buy tea from a small store.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào cô, cô bán trà gì ạ?", p:'', e:"Hello ma'am, what tea do you sell?"},
+      {speaker:'B', v:"Cô có trà đá, trà chanh với trà sữa nè con.", p:'', e:"I have iced tea, lemon tea, and milk tea, dear."},
+      {speaker:'A', v:"Cho con một ly trà chanh, bao nhiêu tiền vậy cô?", p:'', e:"Give me one cup of lemon tea, how much is it?"},
+      {speaker:'B', v:"Mười lăm ngàn con nhé.", p:'', e:"Fifteen thousand dong, dear."},
+    ],
+    vocab:[
+      {v:"trà", e:"tea"}, {v:"trà đá", e:"iced tea"},
+      {v:"trà chanh", e:"lemon tea"}, {v:"trà sữa", e:"milk tea"},
+      {v:"ly", e:"cup / glass"}, {v:"bao nhiêu tiền", e:"how much money"},
+      {v:"ngàn", e:"thousand"}, {v:"bán", e:"to sell"},
+    ],
+    grammar:[
+      {title:"Bao nhiêu tiền? (asking price)", body:"\"Bao nhiêu\" means \"how much/how many,\" and adding \"tiền\" (money) after it, as in \"bao nhiêu tiền vậy cô?\", specifically asks the price of something. The seller answers with just the number plus \"ngàn\" (thousand dong)."},
+      {title:"Kinship terms as pronouns (cô / con)", body:"Instead of formal \"tôi\" and \"anh/chị,\" small vendors and customers often use kinship terms based on relative age, like \"cô\" (auntie, for an older woman) and \"con\" (child, for a younger speaker). This reflects the warm, family-like way Vietnamese address strangers."},
+    ],
+    cards:[
+      {v:"Chào cô, cô bán trà gì ạ?", p:"chow co, co ban chaa zee aa", e:"Hello ma'am, what tea do you sell?"},
+      {v:"Cô có trà đá, trà chanh với trà sữa nè con.", p:"co co chaa daa, chaa chan vuh-ee chaa suh-a neh con", e:"I have iced tea, lemon tea, and milk tea, dear."},
+      {v:"Cho con một ly trà chanh, bao nhiêu tiền vậy cô?", p:"cho con mot lee chaa chan, bow nyew tee-en vay co", e:"Give me one cup of lemon tea, how much is it?"},
+      {v:"Mười lăm ngàn con nhé.", p:"muh-uh-ee lam ngaan con nyeh", e:"Fifteen thousand dong, dear."},
+    ],
+  },
+  { id:'t10', level:'A1', title:"Self Introduction", emoji:'👋',
+    desc:"Introduce yourself to someone.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Xin chào, tôi tên là Minh. Còn bạn tên gì?", p:'', e:"Hello, my name is Minh. And what's your name?"},
+      {speaker:'B', v:"Chào Minh, tôi tên là Lan. Rất vui được gặp bạn.", p:'', e:"Hi Minh, my name is Lan. Very nice to meet you."},
+      {speaker:'A', v:"Bạn đến từ đâu vậy?", p:'', e:"Where are you from?"},
+      {speaker:'B', v:"Tôi đến từ Hà Nội, còn bạn?", p:'', e:"I'm from Hanoi, and you?"},
+    ],
+    vocab:[
+      {v:"tên", e:"name"}, {v:"rất vui được gặp bạn", e:"nice to meet you"},
+      {v:"đến từ", e:"to come from"}, {v:"quê", e:"hometown"},
+      {v:"giới thiệu", e:"to introduce"}, {v:"là", e:"to be"},
+      {v:"bạn", e:"you / friend"}, {v:"xin chào", e:"hello (polite)"},
+    ],
+    grammar:[
+      {title:"Tên là (my name is)", body:"\"Tên\" (name) plus \"là\" (to be) plus a name forms the basic self-introduction pattern: \"tôi tên là Minh\" means \"I am named Minh.\" You can ask it back with \"bạn tên là gì?\" or the shorter \"bạn tên gì?\"."},
+      {title:"Đến từ đâu? (asking origin)", body:"\"Đến\" (to come) plus \"từ\" (from) plus \"đâu\" (where) asks where someone is from, as in \"bạn đến từ đâu vậy?\" To answer, replace \"đâu\" with the place name, like \"tôi đến từ Hà Nội\" (I'm from Hanoi)."},
+    ],
+    cards:[
+      {v:"Xin chào, tôi tên là Minh. Còn bạn tên gì?", p:"sin chow, toy ten laa Minh, con ban ten zee", e:"Hello, my name is Minh. And what's your name?"},
+      {v:"Chào Minh, tôi tên là Lan. Rất vui được gặp bạn.", p:"chow Minh, toy ten laa Lan, rut voo-ee duh-uhk gap ban", e:"Hi Minh, my name is Lan. Very nice to meet you."},
+      {v:"Bạn đến từ đâu vậy?", p:"ban den tuh doh vay", e:"Where are you from?"},
+      {v:"Tôi đến từ Hà Nội, còn bạn?", p:"toy den tuh Haa Noy, con ban", e:"I'm from Hanoi, and you?"},
+    ],
+  },
+  { id:'t11', level:'A1', title:"Paying the Bill", emoji:'🧾',
+    desc:"Ask for the bill at a restaurant.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Em ơi, cho anh tính tiền nha.", p:'', e:"Excuse me, can I get the bill please."},
+      {speaker:'B', v:"Dạ được ạ, anh chờ em một chút.", p:'', e:"Sure, please wait a moment."},
+      {speaker:'A', v:"Tổng cộng bao nhiêu tiền vậy em?", p:'', e:"How much is the total?"},
+      {speaker:'B', v:"Dạ, tổng cộng là ba trăm nghìn đồng ạ.", p:'', e:"The total is three hundred thousand dong."},
+    ],
+    vocab:[
+      {v:"tính tiền", e:"to calculate the bill / check please"}, {v:"tổng cộng", e:"total / altogether"},
+      {v:"tiền", e:"money"}, {v:"chờ", e:"to wait"},
+      {v:"một chút", e:"a moment / a little"}, {v:"đồng", e:"dong (Vietnamese currency)"},
+      {v:"bao nhiêu", e:"how much / how many"}, {v:"trăm nghìn", e:"hundred thousand"},
+    ],
+    grammar:[
+      {title:"Cho + [pronoun] + [request] + nha", body:"The pattern \"Cho anh tính tiền nha\" literally means \"give me the bill, okay?\" — a soft, common way to make a polite request. \"Cho\" introduces the request, the pronoun (anh) marks who is asking, and \"nha\" softens it into a friendly tone, similar to adding \"please\" or \"okay?\" in English."},
+      {title:"Asking amounts with bao nhiêu", body:"\"Bao nhiêu\" is used to ask about quantities that could be large or unknown, as in \"Tổng cộng bao nhiêu tiền vậy em?\" (How much is the total?). It goes in the position where the answer would go, so the reply \"ba trăm nghìn đồng\" simply replaces \"bao nhiêu\" with the actual number."},
+    ],
+    cards:[
+      {v:"Em ơi, cho anh tính tiền nha.", p:"em uh-ee, cho aan ting tee-en nyaa", e:"Excuse me, can I get the bill please."},
+      {v:"Dạ được ạ, anh chờ em một chút.", p:"zaa duh-uhk aa, aan chuh em mot choot", e:"Sure, please wait a moment."},
+      {v:"Tổng cộng bao nhiêu tiền vậy em?", p:"tong kong bow nyew tee-en vay em", e:"How much is the total?"},
+      {v:"Dạ, tổng cộng là ba trăm nghìn đồng ạ.", p:"zaa, tong kong laa baa cham ngeen dong aa", e:"The total is three hundred thousand dong."},
+    ],
+  },
+  { id:'t12', level:'A1', title:"Simple Sentences", emoji:'💬',
+    desc:"Make simple sentences in daily conversation.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bạn, bạn tên là gì?", p:'', e:"Hello, what is your name?"},
+      {speaker:'B', v:"Mình tên là Lan. Còn bạn?", p:'', e:"My name is Lan. And you?"},
+      {speaker:'A', v:"Mình là Minh. Mình là người Mỹ.", p:'', e:"I am Minh. I am American."},
+      {speaker:'B', v:"Rất vui được gặp bạn.", p:'', e:"Very nice to meet you."},
+    ],
+    vocab:[
+      {v:"tên", e:"name"}, {v:"là", e:"to be"},
+      {v:"người", e:"person"}, {v:"còn", e:"and / what about"},
+      {v:"vui", e:"happy / glad"}, {v:"gặp", e:"to meet"},
+      {v:"bạn", e:"friend / you"}, {v:"mình", e:"I / me (informal)"},
+    ],
+    grammar:[
+      {title:"Simple sentences with là", body:"\"Là\" works like the English \"to be\" and links a subject to a noun, as in \"Mình là Minh\" (I am Minh) and \"Mình là người Mỹ\" (I am American). Unlike English, \"là\" never changes form for tense or subject, making it very easy to build basic sentences."},
+      {title:"Asking back with Còn bạn?", body:"After answering a question, Vietnamese speakers often turn it back around with \"Còn bạn?\" meaning \"And you?\" or \"What about you?\". This is a quick, natural way to keep a simple conversation going without repeating the full question."},
+    ],
+    cards:[
+      {v:"Chào bạn, bạn tên là gì?", p:"chow ban, ban ten laa zee", e:"Hello, what is your name?"},
+      {v:"Mình tên là Lan. Còn bạn?", p:"ming ten laa Lan. kon ban", e:"My name is Lan. And you?"},
+      {v:"Mình là Minh. Mình là người Mỹ.", p:"ming laa Minh. ming laa nguh-uh-ee Mee", e:"I am Minh. I am American."},
+      {v:"Rất vui được gặp bạn.", p:"rut voo-ee duh-uhk gap ban", e:"Very nice to meet you."},
+    ],
+  },
+  { id:'t13', level:'A1', title:"Restaurant Seating", emoji:'🪑',
+    desc:"Ask for a seat at a restaurant.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh chị, mình có đặt bàn trước không ạ?", p:'', e:"Hello, do you have a table reservation?"},
+      {speaker:'B', v:"Dạ không, tụi em muốn ngồi bàn cho hai người.", p:'', e:"No, we would like a table for two."},
+      {speaker:'A', v:"Dạ được, anh chị muốn ngồi trong nhà hay ngoài trời ạ?", p:'', e:"Sure, would you like to sit inside or outside?"},
+      {speaker:'B', v:"Cho tụi em ngồi ngoài trời nha, gần cửa sổ.", p:'', e:"Let us sit outside, near the window please."},
+    ],
+    vocab:[
+      {v:"đặt bàn", e:"to reserve a table"}, {v:"ngồi", e:"to sit"},
+      {v:"bàn", e:"table"}, {v:"trong nhà", e:"inside"},
+      {v:"ngoài trời", e:"outside / outdoors"}, {v:"cửa sổ", e:"window"},
+      {v:"gần", e:"near"}, {v:"hai người", e:"two people"},
+    ],
+    grammar:[
+      {title:"Offering choices with hay", body:"\"Hay\" means \"or\" when offering a choice between two options, as in \"ngồi trong nhà hay ngoài trời\" (sit inside or outside). The listener simply repeats the option they prefer in their answer, which is why the reply picks out \"ngoài trời\" directly."},
+      {title:"Requests with Cho + [group] + [action] + nha", body:"Just like in ordering food, seating requests use \"Cho tụi em ngồi ngoài trời nha\" (let us sit outside, please), where \"cho\" starts the polite request, \"tụi em\" marks the group making it, and \"nha\" keeps the tone friendly and casual."},
+    ],
+    cards:[
+      {v:"Chào anh chị, mình có đặt bàn trước không ạ?", p:"chow aan chi, ming ko dat baan chuh-uk khom aa", e:"Hello, do you have a table reservation?"},
+      {v:"Dạ không, tụi em muốn ngồi bàn cho hai người.", p:"zaa khom, too-ee em moo-uhn ngoy baan cho hai nguh-uh-ee", e:"No, we would like a table for two."},
+      {v:"Dạ được, anh chị muốn ngồi trong nhà hay ngoài trời ạ?", p:"zaa duh-uhk, aan chi moo-uhn ngoy chom nyaa hai ngwai chuh-ee aa", e:"Sure, would you like to sit inside or outside?"},
+      {v:"Cho tụi em ngồi ngoài trời nha, gần cửa sổ.", p:"cho too-ee em ngoy ngwai chuh-ee nyaa, gun kuh-uh so", e:"Let us sit outside, near the window please."},
+    ],
+  },
+  { id:'t14', level:'A1', title:"Travel Plans", emoji:'✈️',
+    desc:"Discuss upcoming travel plans.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Tháng sau bạn có đi du lịch không?", p:'', e:"Are you traveling next month?"},
+      {speaker:'B', v:"Có, mình sẽ đi Đà Nẵng với gia đình.", p:'', e:"Yes, I will go to Da Nang with my family."},
+      {speaker:'A', v:"Bạn sẽ đi mấy ngày?", p:'', e:"How many days will you go for?"},
+      {speaker:'B', v:"Mình sẽ đi khoảng năm ngày.", p:'', e:"I will go for about five days."},
+    ],
+    vocab:[
+      {v:"du lịch", e:"to travel / travel"}, {v:"tháng sau", e:"next month"},
+      {v:"gia đình", e:"family"}, {v:"sẽ", e:"will (future marker)"},
+      {v:"ngày", e:"day"}, {v:"khoảng", e:"about / approximately"},
+      {v:"đi", e:"to go"}, {v:"chuyến đi", e:"trip"},
+    ],
+    grammar:[
+      {title:"Future tense with sẽ", body:"\"Sẽ\" is placed before a verb to mark the future, as in \"mình sẽ đi Đà Nẵng\" (I will go to Da Nang). It never changes form and works for any subject, making it the simplest way to talk about upcoming plans in Vietnamese."},
+      {title:"Asking duration with mấy ngày", body:"\"Mấy ngày\" (how many days) asks about a duration expected to be a small number, fitting the question \"Bạn sẽ đi mấy ngày?\" (How many days will you go for?). The answer slots a number plus \"ngày\" into the same spot, as in \"khoảng năm ngày\" (about five days)."},
+    ],
+    cards:[
+      {v:"Tháng sau bạn có đi du lịch không?", p:"taang sow ban ko dee zoo lik khom", e:"Are you traveling next month?"},
+      {v:"Có, mình sẽ đi Đà Nẵng với gia đình.", p:"ko, ming seh dee Daa Nang vuh-ee zaa ding", e:"Yes, I will go to Da Nang with my family."},
+      {v:"Bạn sẽ đi mấy ngày?", p:"ban seh dee may ngai", e:"How many days will you go for?"},
+      {v:"Mình sẽ đi khoảng năm ngày.", p:"ming seh dee khwaang nam ngai", e:"I will go for about five days."},
+    ],
+  },
+  { id:'t15', level:'A1', title:"Weekend Plans", emoji:'🗓️',
+    desc:"Talk about weekend plans.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Cuối tuần này bạn định làm gì?", p:'', e:"What are you planning to do this weekend?"},
+      {speaker:'B', v:"Mình định đi xem phim với bạn bè.", p:'', e:"I'm planning to go watch a movie with friends."},
+      {speaker:'A', v:"Nghe hay đó, mấy giờ bạn đi?", p:'', e:"Sounds fun, what time are you going?"},
+      {speaker:'B', v:"Khoảng bảy giờ tối, bạn muốn đi cùng không?", p:'', e:"Around seven in the evening, do you want to come along?"},
+    ],
+    vocab:[
+      {v:"cuối tuần", e:"weekend"}, {v:"định", e:"to plan / intend to"},
+      {v:"xem phim", e:"to watch a movie"}, {v:"bạn bè", e:"friends"},
+      {v:"mấy giờ", e:"what time"}, {v:"tối", e:"evening / night"},
+      {v:"đi cùng", e:"to go along / go together"}, {v:"hay", e:"interesting / fun"},
+    ],
+    grammar:[
+      {title:"Expressing plans with định", body:"\"Định\" placed before a verb shows intention, as in \"mình định đi xem phim\" (I'm planning to go watch a movie). It suggests the plan is decided but still somewhat flexible, which is why it fits casual weekend talk better than \"sẽ\" (will)."},
+      {title:"Asking time with mấy giờ", body:"\"Mấy giờ\" asks for a specific clock time, as in \"mấy giờ bạn đi?\" (what time are you going?). The answer replaces \"mấy\" with the actual number followed by \"giờ\", as seen in \"bảy giờ tối\" (seven in the evening)."},
+    ],
+    cards:[
+      {v:"Cuối tuần này bạn định làm gì?", p:"koo-ee twun nay ban ding laam zee", e:"What are you planning to do this weekend?"},
+      {v:"Mình định đi xem phim với bạn bè.", p:"ming ding dee sem fim vuh-ee ban beh", e:"I'm planning to go watch a movie with friends."},
+      {v:"Nghe hay đó, mấy giờ bạn đi?", p:"ngeh hai do, may zuh ban dee", e:"Sounds fun, what time are you going?"},
+      {v:"Khoảng bảy giờ tối, bạn muốn đi cùng không?", p:"khwaang bay zuh toy, ban moo-uhn dee koong khom", e:"Around seven in the evening, do you want to come along?"},
+    ],
+  },
+  { id:'t16', level:'A1', title:"Directions", emoji:'🧭',
+    desc:"Ask for directions to a place.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Xin lỗi, cho tôi hỏi đường đến chợ Bến Thành đi thế nào ạ?", p:'', e:"Excuse me, could you tell me how to get to Ben Thanh Market?"},
+      {speaker:'B', v:"Dạ, anh đi thẳng đường này, đến ngã tư thì rẽ trái.", p:'', e:"Sure, go straight down this street, and turn left at the intersection."},
+      {speaker:'A', v:"Rẽ trái rồi đi bao xa nữa ạ?", p:'', e:"After turning left, how much farther do I go?"},
+      {speaker:'B', v:"Đi khoảng năm trăm mét là tới nơi.", p:'', e:"Go about five hundred meters and you'll arrive."},
+    ],
+    vocab:[
+      {v:"đường", e:"street / way"}, {v:"đi thẳng", e:"go straight"},
+      {v:"rẽ trái", e:"turn left"}, {v:"rẽ phải", e:"turn right"},
+      {v:"ngã tư", e:"intersection"}, {v:"xa", e:"far"},
+      {v:"gần", e:"near"}, {v:"xin lỗi", e:"excuse me / sorry"},
+    ],
+    grammar:[
+      {title:"Xin lỗi, cho tôi hỏi...", body:"This is the standard polite opener for asking a stranger for information, literally \"Sorry, let me ask...\". It softens the request before you state your actual question, like \"đường đến chợ Bến Thành đi thế nào\" (how to get to Ben Thanh Market)."},
+      {title:"Direction verbs as commands", body:"Vietnamese gives directions with simple verb phrases like \"đi thẳng\" (go straight) and \"rẽ trái\" (turn left), used without a subject since the listener is obviously the one being addressed. Distance or landmarks often follow, as in \"đến ngã tư thì rẽ trái\" (when you reach the intersection, turn left)."},
+    ],
+    cards:[
+      {v:"Xin lỗi, cho tôi hỏi đường đến chợ Bến Thành đi thế nào ạ?", p:"sin loy, cho toy hoy duh-uhng den chuh Ben Tanaan dee teh now aa", e:"Excuse me, could you tell me how to get to Ben Thanh Market?"},
+      {v:"Dạ, anh đi thẳng đường này, đến ngã tư thì rẽ trái.", p:"zaa, aan dee tang duh-uhng nay, den ngaa tuh tee zeh chai", e:"Sure, go straight down this street, and turn left at the intersection."},
+      {v:"Rẽ trái rồi đi bao xa nữa ạ?", p:"zeh chai roy dee bow sa nuh-a aa", e:"After turning left, how much farther do I go?"},
+      {v:"Đi khoảng năm trăm mét là tới nơi.", p:"dee khwang nam cham met laa toy nuh-ee", e:"Go about five hundred meters and you'll arrive."},
+    ],
+  },
+  { id:'t17', level:'A1', title:"Learning Motivation", emoji:'🎯',
+    desc:"Talk about why you are learning a language.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Tại sao bạn học tiếng Việt vậy?", p:'', e:"Why are you learning Vietnamese?"},
+      {speaker:'B', v:"Vì mình muốn nói chuyện với bạn bè người Việt.", p:'', e:"Because I want to talk with Vietnamese friends."},
+      {speaker:'A', v:"Còn mình thì học vì mình thích văn hóa Việt Nam.", p:'', e:"As for me, I'm learning because I like Vietnamese culture."},
+      {speaker:'B', v:"Học tiếng Việt khó nhưng rất thú vị.", p:'', e:"Learning Vietnamese is hard but very interesting."},
+    ],
+    vocab:[
+      {v:"tại sao", e:"why"}, {v:"học", e:"to learn / study"},
+      {v:"tiếng Việt", e:"Vietnamese language"}, {v:"vì", e:"because"},
+      {v:"văn hóa", e:"culture"}, {v:"khó", e:"difficult"},
+      {v:"thú vị", e:"interesting"}, {v:"nói chuyện", e:"to talk / converse"},
+    ],
+    grammar:[
+      {title:"Tại sao ... vậy?", body:"\"Tại sao\" means \"why\" and starts the question, while the final \"vậy\" is a softening particle that makes the question sound more casual and conversational, as in \"Tại sao bạn học tiếng Việt vậy?\". Without \"vậy\" the question would feel more blunt."},
+      {title:"Vì + reason", body:"\"Vì\" introduces a reason clause, equivalent to \"because\" in English, as in \"Vì mình muốn nói chuyện với bạn bè người Việt\" (Because I want to talk with Vietnamese friends). It can also start a sentence answering an implied \"why\" question, like \"vì mình thích văn hóa Việt Nam\"."},
+    ],
+    cards:[
+      {v:"Tại sao bạn học tiếng Việt vậy?", p:"tai sow ban hop tieng viet vay", e:"Why are you learning Vietnamese?"},
+      {v:"Vì mình muốn nói chuyện với bạn bè người Việt.", p:"vee ming moo-uhn noy chwen vuh-ee ban beh nguh-uh-ee viet", e:"Because I want to talk with Vietnamese friends."},
+      {v:"Còn mình thì học vì mình thích văn hóa Việt Nam.", p:"kon ming tee hop vee ming tik van hwaa viet nam", e:"As for me, I'm learning because I like Vietnamese culture."},
+      {v:"Học tiếng Việt khó nhưng rất thú vị.", p:"hop tieng viet khaw nyung zut too vee", e:"Learning Vietnamese is hard but very interesting."},
+    ],
+  },
+  { id:'t18', level:'A1', title:"Favorite Foods", emoji:'😋',
+    desc:"Share your favorite foods.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn thích ăn món gì nhất?", p:'', e:"What dish do you like to eat the most?"},
+      {speaker:'B', v:"Mình thích ăn phở nhất. Còn bạn?", p:'', e:"I like pho the most. What about you?"},
+      {speaker:'A', v:"Mình thích bún chả và gỏi cuốn.", p:'', e:"I like bun cha and spring rolls."},
+      {speaker:'B', v:"Nghe ngon quá, mai đi ăn chung nhé!", p:'', e:"That sounds delicious, let's go eat together tomorrow!"},
+    ],
+    vocab:[
+      {v:"món ăn", e:"dish / food"}, {v:"phở", e:"pho (noodle soup)"},
+      {v:"bún chả", e:"bun cha (grilled pork with noodles)"}, {v:"gỏi cuốn", e:"fresh spring rolls"},
+      {v:"ngon", e:"delicious"}, {v:"thích", e:"to like"},
+      {v:"nhất", e:"most"}, {v:"ăn chung", e:"to eat together"},
+    ],
+    grammar:[
+      {title:"Superlative with nhất", body:"Placing \"nhất\" after a verb or adjective creates a superlative meaning \"the most\", as in \"thích ăn món gì nhất\" (like to eat what dish the most) and \"thích ăn phở nhất\" (like pho the most). It always comes at the end of the phrase it modifies."},
+      {title:"Còn bạn? — turning the question back", body:"\"Còn bạn?\" literally means \"and you?\" and is a quick way to redirect a question you were just asked back to the other person, seen after \"Mình thích ăn phở nhất\". It avoids repeating the whole question again."},
+    ],
+    cards:[
+      {v:"Bạn thích ăn món gì nhất?", p:"ban tik an mon zee nyut", e:"What dish do you like to eat the most?"},
+      {v:"Mình thích ăn phở nhất. Còn bạn?", p:"ming tik an fuh nyut. kon ban", e:"I like pho the most. What about you?"},
+      {v:"Mình thích bún chả và gỏi cuốn.", p:"ming tik boon chaa vaa goy koo-uhn", e:"I like bun cha and spring rolls."},
+      {v:"Nghe ngon quá, mai đi ăn chung nhé!", p:"ngeh ngon kwaa, mai dee an choong nyeh", e:"That sounds delicious, let's go eat together tomorrow!"},
+    ],
+  },
+  { id:'t19', level:'A1', title:"Family", emoji:'👨‍👩‍👧‍👦',
+    desc:"Talk about your family members.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Gia đình bạn có mấy người?", p:'', e:"How many people are in your family?"},
+      {speaker:'B', v:"Gia đình mình có bốn người: bố mẹ, mình và em gái.", p:'', e:"My family has four people: mom, dad, me, and my younger sister."},
+      {speaker:'A', v:"Bạn có anh chị em nào khác không?", p:'', e:"Do you have any other siblings?"},
+      {speaker:'B', v:"Không, mình chỉ có một em gái thôi.", p:'', e:"No, I only have one younger sister."},
+    ],
+    vocab:[
+      {v:"gia đình", e:"family"}, {v:"bố", e:"father / dad"},
+      {v:"mẹ", e:"mother / mom"}, {v:"anh chị em", e:"siblings"},
+      {v:"em gái", e:"younger sister"}, {v:"anh trai", e:"older brother"},
+      {v:"có", e:"to have"}, {v:"mấy người", e:"how many people"},
+    ],
+    grammar:[
+      {title:"Có mấy người?", body:"\"Mấy\" is used to ask about a small, guessable quantity, so \"có mấy người\" asks \"how many people (are there)\". The reply simply states the number plus \"người\", as in \"có bốn người\" (there are four people)."},
+      {title:"Chỉ ... thôi", body:"\"Chỉ\" before a verb/noun and \"thôi\" at the end of the sentence together mean \"only\", framing a limit on quantity. In \"mình chỉ có một em gái thôi\" (I only have one younger sister), \"chỉ\" and \"thôi\" sandwich the limited item for emphasis."},
+    ],
+    cards:[
+      {v:"Gia đình bạn có mấy người?", p:"zaa ding ban gaw may nguh-uh-ee", e:"How many people are in your family?"},
+      {v:"Gia đình mình có bốn người: bố mẹ, mình và em gái.", p:"zaa ding ming gaw bon nguh-uh-ee: bo meh, ming vaa em gai", e:"My family has four people: mom, dad, me, and my younger sister."},
+      {v:"Bạn có anh chị em nào khác không?", p:"ban gaw aan chi em now khaak khom", e:"Do you have any other siblings?"},
+      {v:"Không, mình chỉ có một em gái thôi.", p:"khom, ming chee gaw mot em gai toh-ee", e:"No, I only have one younger sister."},
+    ],
+  },
+  { id:'t20', level:'A1', title:"Café Orders", emoji:'☕',
+    desc:"Order drinks and food at a café.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, chị muốn uống gì ạ?", p:'', e:"Hello, what would you like to drink?"},
+      {speaker:'B', v:"Cho tôi một ly cà phê sữa đá.", p:'', e:"Give me an iced milk coffee."},
+      {speaker:'A', v:"Dạ, chị có muốn ăn thêm bánh ngọt không?", p:'', e:"Would you also like to eat a pastry?"},
+      {speaker:'B', v:"Có, cho tôi một cái bánh croissant nữa nhé.", p:'', e:"Yes, give me a croissant too."},
+    ],
+    vocab:[
+      {v:"cà phê sữa đá", e:"iced milk coffee"}, {v:"ly", e:"cup / glass"},
+      {v:"bánh ngọt", e:"pastry"}, {v:"gọi món", e:"to order (food)"},
+      {v:"thực đơn", e:"menu"}, {v:"nóng", e:"hot"},
+      {v:"đá", e:"ice"}, {v:"thêm", e:"more / additional"},
+    ],
+    grammar:[
+      {title:"Cho tôi + item", body:"\"Cho tôi\" literally means \"give me\" and is the standard polite pattern for ordering, as in \"Cho tôi một ly cà phê sữa đá\" (Give me an iced milk coffee). The item usually includes a classifier like \"ly\" (cup) or \"cái\" (a general classifier) before the noun."},
+      {title:"Có ... không? for offers", body:"The \"có ... không\" frame turns a statement into a yes/no question, here used to make an offer: \"chị có muốn ăn thêm bánh ngọt không?\" (Would you like to eat a pastry too?). Answering \"Có\" means yes, and \"Không\" means no."},
+    ],
+    cards:[
+      {v:"Chào chị, chị muốn uống gì ạ?", p:"chow chi, chi moo-uhn oo-ong zee aa", e:"Hello, what would you like to drink?"},
+      {v:"Cho tôi một ly cà phê sữa đá.", p:"cho toy mot lee gaa feh suh-a daa", e:"Give me an iced milk coffee."},
+      {v:"Dạ, chị có muốn ăn thêm bánh ngọt không?", p:"zaa, chi gaw moo-uhn an tem baan ngot khom", e:"Would you also like to eat a pastry?"},
+      {v:"Có, cho tôi một cái bánh croissant nữa nhé.", p:"gaw, cho toy mot kai baan kwa-sahn nuh-a nyeh", e:"Yes, give me a croissant too."},
+    ],
+  },
+  { id:'t21', level:'A1', title:"Hobbies", emoji:'🎨',
+    desc:"Describe what you like to do in your free time.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Cuối tuần bạn thường làm gì?", p:'', e:"What do you usually do on weekends?"},
+      {speaker:'B', v:"Mình thích đọc sách và nghe nhạc. Còn bạn?", p:'', e:"I like reading books and listening to music. And you?"},
+      {speaker:'A', v:"Mình thích chơi thể thao, nhất là đá bóng.", p:'', e:"I like playing sports, especially soccer."},
+      {speaker:'B', v:"Nghe hay đó! Khi nào rảnh mình đi chơi cùng nhé.", p:'', e:"That sounds fun! Let's hang out together sometime when we're free."},
+    ],
+    vocab:[
+      {v:"cuối tuần", e:"weekend"}, {v:"rảnh", e:"free (time)"},
+      {v:"thích", e:"to like"}, {v:"đọc sách", e:"to read books"},
+      {v:"nghe nhạc", e:"to listen to music"}, {v:"chơi thể thao", e:"to play sports"},
+      {v:"đá bóng", e:"soccer / football"}, {v:"sở thích", e:"hobby"},
+    ],
+    grammar:[
+      {title:"Thích + verb", body:"To say you like doing something, place \"thích\" directly before the verb, as in \"Mình thích đọc sách\" (I like reading books). No extra word for \"to\" is needed — the verb follows thích directly."},
+      {title:"Còn bạn? (reciprocal question)", body:"\"Còn bạn?\" is a short, common way to bounce a question back to the other speaker, meaning \"And you?\" or \"What about you?\". It saves you from repeating the whole question."},
+    ],
+    cards:[
+      {v:"Cuối tuần bạn thường làm gì?", p:"coo-oy twun ban tuh-uhng lam zee", e:"What do you usually do on weekends?"},
+      {v:"Mình thích đọc sách và nghe nhạc. Còn bạn?", p:"ming tik dawk sak vaa ngeh nyak. gon ban?", e:"I like reading books and listening to music. And you?"},
+      {v:"Mình thích chơi thể thao, nhất là đá bóng.", p:"ming tik chuh-ee teh tao, nyut laa daa bong", e:"I like playing sports, especially soccer."},
+      {v:"Nghe hay đó! Khi nào rảnh mình đi chơi cùng nhé.", p:"ngeh hay daw! khee now zaan ming dee chuh-ee coong nyeh", e:"That sounds fun! Let's hang out together sometime when we're free."},
+    ],
+  },
+  { id:'t22', level:'A1', title:"Weather", emoji:'🌦️',
+    desc:"Discuss the weather and seasons.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Hôm nay thời tiết thế nào?", p:'', e:"How is the weather today?"},
+      {speaker:'B', v:"Trời nắng nhưng hơi nóng. Chiều nay có thể mưa.", p:'', e:"It's sunny but a bit hot. It might rain this afternoon."},
+      {speaker:'A', v:"Mùa này ở đây mưa nhiều lắm phải không?", p:'', e:"It rains a lot here this season, doesn't it?"},
+      {speaker:'B', v:"Đúng rồi, mùa mưa thường kéo dài đến tháng mười.", p:'', e:"That's right, the rainy season usually lasts until October."},
+    ],
+    vocab:[
+      {v:"thời tiết", e:"weather"}, {v:"trời nắng", e:"sunny"},
+      {v:"nóng", e:"hot"}, {v:"mưa", e:"rain"},
+      {v:"mùa", e:"season"}, {v:"lạnh", e:"cold"},
+      {v:"gió", e:"wind"}, {v:"mùa mưa", e:"rainy season"},
+    ],
+    grammar:[
+      {title:"Thế nào? (asking how something is)", body:"\"Thế nào?\" is used to ask how something is or how it turns out, as in \"Thời tiết thế nào?\" (How is the weather?). It attaches to the end of a topic to ask for a description."},
+      {title:"Có thể + verb (possibility)", body:"\"Có thể\" before a verb expresses possibility, like \"có thể mưa\" (it might rain). It works the same way as \"maybe\" or \"might\" in English and can be used with almost any verb."},
+    ],
+    cards:[
+      {v:"Hôm nay thời tiết thế nào?", p:"hom nai tuh-ee tee-et teh now", e:"How is the weather today?"},
+      {v:"Trời nắng nhưng hơi nóng. Chiều nay có thể mưa.", p:"truh-ee nang nyuhng huh-ee nawng. chee-ew nai gaw teh muh-uh", e:"It's sunny but a bit hot. It might rain this afternoon."},
+      {v:"Mùa này ở đây mưa nhiều lắm phải không?", p:"moo-uh nay uh day muh-uh nyee-ew lam fai khom", e:"It rains a lot here this season, doesn't it?"},
+      {v:"Đúng rồi, mùa mưa thường kéo dài đến tháng mười.", p:"doong roy, moo-uh muh-uh tuh-uhng keo zai den tang muh-ee", e:"That's right, the rainy season usually lasts until October."},
+    ],
+  },
+  { id:'t23', level:'A1', title:"Asking for Help", emoji:'🆘',
+    desc:"Learn how to ask for assistance.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Xin lỗi, bạn có thể giúp mình một chút được không?", p:'', e:"Excuse me, could you help me for a moment?"},
+      {speaker:'B', v:"Được chứ, bạn cần gì?", p:'', e:"Sure, what do you need?"},
+      {speaker:'A', v:"Mình bị lạc đường, bạn biết bưu điện ở đâu không?", p:'', e:"I'm lost, do you know where the post office is?"},
+      {speaker:'B', v:"Biết chứ, đi thẳng rồi rẽ trái là tới.", p:'', e:"Sure, go straight then turn left and you'll get there."},
+    ],
+    vocab:[
+      {v:"xin lỗi", e:"excuse me / sorry"}, {v:"giúp", e:"to help"},
+      {v:"một chút", e:"a little / a moment"}, {v:"cần", e:"to need"},
+      {v:"bị lạc đường", e:"to be lost"}, {v:"bưu điện", e:"post office"},
+      {v:"đi thẳng", e:"go straight"}, {v:"rẽ trái", e:"turn left"},
+    ],
+    grammar:[
+      {title:"Có thể ... được không? (polite request)", body:"This pattern wraps a verb between \"có thể\" and \"được không?\" to make a polite request, as in \"bạn có thể giúp mình... được không?\" (could you help me...?). It's softer than a plain command."},
+      {title:"Bị + verb (unwanted situation)", body:"\"Bị\" placed before a verb or adjective marks something unfortunate happening to the subject, like \"bị lạc đường\" (to be/get lost). It works like a passive marker used specifically for bad or unwanted events."},
+    ],
+    cards:[
+      {v:"Xin lỗi, bạn có thể giúp mình một chút được không?", p:"sin loy, ban gaw teh zoop ming mot choot duh-uhk khom", e:"Excuse me, could you help me for a moment?"},
+      {v:"Được chứ, bạn cần gì?", p:"duh-uhk chuh, ban gan zee", e:"Sure, what do you need?"},
+      {v:"Mình bị lạc đường, bạn biết bưu điện ở đâu không?", p:"ming bee lak duh-uhng, ban bee-et buh-ew dee-en uh doh khom", e:"I'm lost, do you know where the post office is?"},
+      {v:"Biết chứ, đi thẳng rồi rẽ trái là tới.", p:"bee-et chuh, dee tang roy zeh chai laa tuh-ee", e:"Sure, go straight then turn left and you'll get there."},
+    ],
+  },
+  { id:'t24', level:'A1', title:"Clothes Shopping", emoji:'👕',
+    desc:"Buy clothes and discuss preferences.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chị ơi, cái áo này có size lớn hơn không?", p:'', e:"Excuse me, does this shirt come in a bigger size?"},
+      {speaker:'B', v:"Dạ có, anh muốn màu gì ạ?", p:'', e:"Yes, what color would you like?"},
+      {speaker:'A', v:"Cho mình màu xanh, mình cũng muốn thử luôn.", p:'', e:"Give me the blue one, I'd also like to try it on."},
+      {speaker:'B', v:"Dạ được, phòng thử đồ ở phía sau ạ.", p:'', e:"Sure, the fitting room is in the back."},
+    ],
+    vocab:[
+      {v:"áo", e:"shirt / top"}, {v:"size", e:"size"},
+      {v:"lớn hơn", e:"bigger"}, {v:"màu", e:"color"},
+      {v:"xanh", e:"blue / green"}, {v:"thử", e:"to try on"},
+      {v:"phòng thử đồ", e:"fitting room"}, {v:"quần", e:"pants"},
+    ],
+    grammar:[
+      {title:"Có ... không? (yes/no question)", body:"Wrapping a phrase between \"có\" and \"không?\" turns it into a yes/no question, as in \"có size lớn hơn không?\" (is there a bigger size?). Answer with \"có\" (yes) or \"không\" (no)."},
+      {title:"Comparative with hơn", body:"Adding \"hơn\" after an adjective makes a comparison, like \"lớn hơn\" (bigger). Simply place \"hơn\" right after the adjective you want to compare, such as size, price, or color preference."},
+    ],
+    cards:[
+      {v:"Chị ơi, cái áo này có size lớn hơn không?", p:"chi uh-ee, gai ao nay gaw sai luhn huhn khom", e:"Excuse me, does this shirt come in a bigger size?"},
+      {v:"Dạ có, anh muốn màu gì ạ?", p:"zaa gaw, aan moo-uhn mow zee aa", e:"Yes, what color would you like?"},
+      {v:"Cho mình màu xanh, mình cũng muốn thử luôn.", p:"cho ming mow sahn, ming coong moo-uhn tuh loo-uhn", e:"Give me the blue one, I'd also like to try it on."},
+      {v:"Dạ được, phòng thử đồ ở phía sau ạ.", p:"zaa duh-uhk, fong tuh daw uh fee-a sau aa", e:"Sure, the fitting room is in the back."},
+    ],
+  },
+  { id:'t25', level:'A1', title:"Appointments", emoji:'📆',
+    desc:"Schedule meetings and appointments.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Alo, mình muốn đặt lịch hẹn khám bệnh vào thứ Sáu được không?", p:'', e:"Hello, I'd like to schedule a doctor's appointment for Friday, is that possible?"},
+      {speaker:'B', v:"Dạ được, anh muốn hẹn lúc mấy giờ ạ?", p:'', e:"Yes, what time would you like the appointment?"},
+      {speaker:'A', v:"Khoảng chín giờ sáng được không?", p:'', e:"Would around 9am work?"},
+      {speaker:'B', v:"Dạ được, hẹn gặp anh vào chín giờ sáng thứ Sáu nhé.", p:'', e:"Sure, see you at 9am on Friday."},
+    ],
+    vocab:[
+      {v:"đặt lịch hẹn", e:"to make an appointment"}, {v:"khám bệnh", e:"medical checkup"},
+      {v:"thứ Sáu", e:"Friday"}, {v:"lúc mấy giờ", e:"at what time"},
+      {v:"giờ", e:"hour / o'clock"}, {v:"sáng", e:"morning"},
+      {v:"hẹn gặp", e:"to meet up / appointment"}, {v:"lịch", e:"schedule"},
+    ],
+    grammar:[
+      {title:"Vào + time", body:"\"Vào\" is placed before a point in time to mean \"on\" or \"at\", as in \"vào thứ Sáu\" (on Friday) and \"vào chín giờ sáng\" (at 9am). It marks when an event will happen."},
+      {title:"Lúc mấy giờ? (asking for a time)", body:"\"Mấy\" asks about a small, guessable number, so combined with \"giờ\" (hour) it becomes \"lúc mấy giờ?\" (at what time?). Reply with the number plus \"giờ\", like \"chín giờ sáng\" (9am)."},
+    ],
+    cards:[
+      {v:"Alo, mình muốn đặt lịch hẹn khám bệnh vào thứ Sáu được không?", p:"a-lo, ming moo-uhn dat lik hen kham beng vow tuh sau duh-uhk khom", e:"Hello, I'd like to schedule a doctor's appointment for Friday, is that possible?"},
+      {v:"Dạ được, anh muốn hẹn lúc mấy giờ ạ?", p:"zaa duh-uhk, aan moo-uhn hen look may zuh aa", e:"Yes, what time would you like the appointment?"},
+      {v:"Khoảng chín giờ sáng được không?", p:"khwang chin zuh sang duh-uhk khom", e:"Would around 9am work?"},
+      {v:"Dạ được, hẹn gặp anh vào chín giờ sáng thứ Sáu nhé.", p:"zaa duh-uhk, hen gap aan vow chin zuh sang tuh sau nyeh", e:"Sure, see you at 9am on Friday."},
+    ],
+  },
+  { id:'t26', level:'A1', title:"Home Description", emoji:'🏠',
+    desc:"Describe your home and living situation.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Nhà bạn ở đâu vậy?", p:'', e:"Where is your house?"},
+      {speaker:'B', v:"Nhà mình ở gần trung tâm thành phố.", p:'', e:"My house is near the city center."},
+      {speaker:'A', v:"Nhà bạn có mấy phòng ngủ?", p:'', e:"How many bedrooms does your house have?"},
+      {speaker:'B', v:"Nhà mình có ba phòng ngủ và một phòng khách rộng.", p:'', e:"My house has three bedrooms and a spacious living room."},
+    ],
+    vocab:[
+      {v:"nhà", e:"house / home"}, {v:"phòng ngủ", e:"bedroom"},
+      {v:"phòng khách", e:"living room"}, {v:"gần", e:"near"},
+      {v:"trung tâm thành phố", e:"city center"}, {v:"rộng", e:"spacious"},
+      {v:"ở", e:"to live / be located"}, {v:"mấy", e:"how many (small number)"},
+    ],
+    grammar:[
+      {title:"Ở đâu for location", body:"To ask where something is, place \"ở đâu\" after the subject, as in \"Nhà bạn ở đâu vậy?\" (Where is your house?). \"Ở\" means \"to be located at\" and \"đâu\" means \"where\"."},
+      {title:"Mấy for small quantities", body:"\"Mấy\" is used to ask about small, easily countable amounts, as in \"có mấy phòng ngủ?\" (how many bedrooms). The answer is simply a small number plus the noun, like \"ba phòng ngủ\" (three bedrooms)."},
+    ],
+    cards:[
+      {v:"Nhà bạn ở đâu vậy?", p:"nyaa ban uh dow vay", e:"Where is your house?"},
+      {v:"Nhà mình ở gần trung tâm thành phố.", p:"nyaa ming uh gan trung tam taan fo", e:"My house is near the city center."},
+      {v:"Nhà bạn có mấy phòng ngủ?", p:"nyaa ban co may fong ngoo", e:"How many bedrooms does your house have?"},
+      {v:"Nhà mình có ba phòng ngủ và một phòng khách rộng.", p:"nyaa ming co baa fong ngoo vaa mot fong khaak rong", e:"My house has three bedrooms and a spacious living room."},
+    ],
+  },
+  { id:'t27', level:'A1', title:"Work Discussion", emoji:'💼',
+    desc:"Talk about your job and workplace.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn làm nghề gì vậy?", p:'', e:"What do you do for work?"},
+      {speaker:'B', v:"Mình là kỹ sư, làm việc ở một công ty phần mềm.", p:'', e:"I'm an engineer, I work at a software company."},
+      {speaker:'A', v:"Công việc của bạn có bận không?", p:'', e:"Is your job busy?"},
+      {speaker:'B', v:"Bận lắm, mình thường làm việc đến bảy giờ tối.", p:'', e:"Very busy, I usually work until seven in the evening."},
+    ],
+    vocab:[
+      {v:"nghề", e:"job / profession"}, {v:"kỹ sư", e:"engineer"},
+      {v:"công ty", e:"company"}, {v:"phần mềm", e:"software"},
+      {v:"công việc", e:"work / job"}, {v:"bận", e:"busy"},
+      {v:"làm việc", e:"to work"}, {v:"đồng nghiệp", e:"colleague"},
+    ],
+    grammar:[
+      {title:"Làm nghề gì for profession", body:"\"Gì\" is a question word meaning \"what\" that attaches after a noun to ask for details, as in \"làm nghề gì\" (what job do you do). You answer with \"là\" plus your profession, like \"Mình là kỹ sư\" (I am an engineer)."},
+      {title:"Có ... không yes/no questions", body:"Wrapping an adjective between \"có\" and \"không\" forms a yes/no question, as in \"Công việc của bạn có bận không?\" (Is your job busy?). Answer with just the adjective for yes, like \"Bận lắm\" (Very busy)."},
+    ],
+    cards:[
+      {v:"Bạn làm nghề gì vậy?", p:"ban laam ngeh zee vay", e:"What do you do for work?"},
+      {v:"Mình là kỹ sư, làm việc ở một công ty phần mềm.", p:"ming laa kee suh, laam vee-ek uh mot cong tee fan mem", e:"I'm an engineer, I work at a software company."},
+      {v:"Công việc của bạn có bận không?", p:"cong vee-ek koo-a ban co ban khom", e:"Is your job busy?"},
+      {v:"Bận lắm, mình thường làm việc đến bảy giờ tối.", p:"ban lam, ming tuh-uhng laam vee-ek den bay zuh toy", e:"Very busy, I usually work until seven in the evening."},
+    ],
+  },
+  { id:'t28', level:'A1', title:"Public Transport", emoji:'🚌',
+    desc:"Navigate public transportation systems.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Xin lỗi, xe buýt số mười đi đâu vậy?", p:'', e:"Excuse me, where does bus number ten go?"},
+      {speaker:'B', v:"Xe này đi đến trung tâm thành phố.", p:'', e:"This bus goes to the city center."},
+      {speaker:'A', v:"Vé xe buýt giá bao nhiêu vậy?", p:'', e:"How much is a bus ticket?"},
+      {speaker:'B', v:"Dạ, bảy ngàn đồng một vé thôi ạ.", p:'', e:"It's just seven thousand dong per ticket."},
+    ],
+    vocab:[
+      {v:"xe buýt", e:"bus"}, {v:"vé", e:"ticket"},
+      {v:"trạm xe buýt", e:"bus stop"}, {v:"ga tàu", e:"train station"},
+      {v:"giá", e:"price"}, {v:"xuống xe", e:"to get off (a vehicle)"},
+      {v:"lên xe", e:"to get on (a vehicle)"}, {v:"số", e:"number"},
+    ],
+    grammar:[
+      {title:"Đi đâu for destination", body:"To ask where something or someone is going, place \"đâu\" after the verb \"đi\" (to go), as in \"xe buýt số mười đi đâu vậy?\" (where does bus number ten go?). The reply uses \"đi đến\" plus the destination."},
+      {title:"Giá bao nhiêu for price", body:"\"Bao nhiêu\" asks about larger or unknown quantities, unlike \"mấy\" which is for small guessable numbers. \"Vé xe buýt giá bao nhiêu vậy?\" (How much is a bus ticket?) pairs \"giá\" (price) with \"bao nhiêu\" to ask cost."},
+    ],
+    cards:[
+      {v:"Xin lỗi, xe buýt số mười đi đâu vậy?", p:"sin loy, seh bweet so muh-uh-ee di dow vay", e:"Excuse me, where does bus number ten go?"},
+      {v:"Xe này đi đến trung tâm thành phố.", p:"seh nay di den trung tam taan fo", e:"This bus goes to the city center."},
+      {v:"Vé xe buýt giá bao nhiêu vậy?", p:"veh seh bweet zaa bow nyew vay", e:"How much is a bus ticket?"},
+      {v:"Dạ, bảy ngàn đồng một vé thôi ạ.", p:"zaa, bay ngaan dong mot veh toy aa", e:"It's just seven thousand dong per ticket."},
+    ],
+  },
+  { id:'t29', level:'A1', title:"Doctor Visit", emoji:'🩺',
+    desc:"Explain symptoms and understand medical advice.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bác sĩ, tôi bị đau đầu và ho mấy ngày nay.", p:'', e:"Hello doctor, I've had a headache and cough for a few days."},
+      {speaker:'B', v:"Chị có bị sốt không?", p:'', e:"Do you have a fever?"},
+      {speaker:'A', v:"Dạ có, tôi bị sốt nhẹ từ hôm qua.", p:'', e:"Yes, I've had a mild fever since yesterday."},
+      {speaker:'B', v:"Chị nên uống nhiều nước và nghỉ ngơi, tôi sẽ kê thuốc cho chị.", p:'', e:"You should drink lots of water and rest, I'll prescribe you some medicine."},
+    ],
+    vocab:[
+      {v:"bác sĩ", e:"doctor"}, {v:"đau đầu", e:"headache"},
+      {v:"ho", e:"cough"}, {v:"sốt", e:"fever"},
+      {v:"thuốc", e:"medicine"}, {v:"nghỉ ngơi", e:"to rest"},
+      {v:"khám bệnh", e:"to see a doctor / examine"}, {v:"triệu chứng", e:"symptom"},
+    ],
+    grammar:[
+      {title:"Bị for affliction", body:"\"Bị\" goes before an undesirable state or illness to express that something bad is happening to you, as in \"tôi bị đau đầu\" (I have a headache) and \"bị sốt\" (have a fever). It works like a passive marker for misfortune."},
+      {title:"Nên for advice", body:"\"Nên\" placed before a verb gives a recommendation, as in \"Chị nên uống nhiều nước\" (You should drink a lot of water). It softens advice, making it a suggestion rather than a command."},
+    ],
+    cards:[
+      {v:"Chào bác sĩ, tôi bị đau đầu và ho mấy ngày nay.", p:"chow baak see, toy bee dow dow vaa ho may ngay nay", e:"Hello doctor, I've had a headache and cough for a few days."},
+      {v:"Chị có bị sốt không?", p:"chi co bee sot khom", e:"Do you have a fever?"},
+      {v:"Dạ có, tôi bị sốt nhẹ từ hôm qua.", p:"zaa co, toy bee sot nyeh tuh hom kwaa", e:"Yes, I've had a mild fever since yesterday."},
+      {v:"Chị nên uống nhiều nước và nghỉ ngơi, tôi sẽ kê thuốc cho chị.", p:"chi nen oo-ong nyew nuh-uhk vaa ngee nguh-ee, toy seh keh too-uhk cho chi", e:"You should drink lots of water and rest, I'll prescribe you some medicine."},
+    ],
+  },
+  { id:'t30', level:'A1', title:"Sympathy & Support", emoji:'🤗',
+    desc:"Express concern and offer help to others.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn có vẻ buồn quá, có chuyện gì vậy?", p:'', e:"You seem really sad, what's going on?"},
+      {speaker:'B', v:"Mình vừa mất việc làm tuần trước.", p:'', e:"I just lost my job last week."},
+      {speaker:'A', v:"Ồ, mình rất tiếc khi nghe vậy. Bạn ổn không?", p:'', e:"Oh, I'm really sorry to hear that. Are you okay?"},
+      {speaker:'B', v:"Cảm ơn bạn đã quan tâm, mình sẽ ổn thôi.", p:'', e:"Thanks for caring, I'll be okay."},
+    ],
+    vocab:[
+      {v:"buồn", e:"sad"}, {v:"tiếc", e:"regret / sorry to hear"},
+      {v:"quan tâm", e:"to care / be concerned"}, {v:"mất việc", e:"to lose a job"},
+      {v:"an ủi", e:"to comfort"}, {v:"giúp đỡ", e:"to help"},
+      {v:"ổn", e:"okay / fine"}, {v:"chuyện", e:"matter / issue"},
+    ],
+    grammar:[
+      {title:"Có vẻ for appearance", body:"\"Có vẻ\" placed before an adjective expresses how someone appears based on observation, as in \"Bạn có vẻ buồn quá\" (You seem really sad). It's a gentle way to comment on someone's mood without asserting it as fact."},
+      {title:"Rất tiếc khi... to express sympathy", body:"Combining \"rất tiếc\" (very sorry/regretful) with \"khi\" (when) plus a clause expresses sympathy about a situation, as in \"mình rất tiếc khi nghe vậy\" (I'm really sorry to hear that). It's a common phrase for offering condolences or comfort."},
+    ],
+    cards:[
+      {v:"Bạn có vẻ buồn quá, có chuyện gì vậy?", p:"ban co veh boo-uhn kwaa, co choo-i-en zee vay", e:"You seem really sad, what's going on?"},
+      {v:"Mình vừa mất việc làm tuần trước.", p:"ming vuh-a mat vee-ek laam twan truh-uhk", e:"I just lost my job last week."},
+      {v:"Ồ, mình rất tiếc khi nghe vậy. Bạn ổn không?", p:"oh, ming rat tee-ek khi ngeh vay. ban on khom", e:"Oh, I'm really sorry to hear that. Are you okay?"},
+      {v:"Cảm ơn bạn đã quan tâm, mình sẽ ổn thôi.", p:"gam uhn ban daa kwaan tam, ming seh on toy", e:"Thanks for caring, I'll be okay."},
+    ],
+  },
+  { id:'t31', level:'A1', title:"Renting Accommodation", emoji:'🔑',
+    desc:"Inquire about and book an apartment or hotel room.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, em muốn hỏi thuê phòng còn trống không ạ?", p:'', e:"Hello, I'd like to ask if you have a room available to rent."},
+      {speaker:'B', v:"Dạ còn, em muốn thuê phòng một người hay hai người?", p:'', e:"Yes, we do. Do you want a room for one person or two people?"},
+      {speaker:'A', v:"Dạ một người thôi, giá bao nhiêu một tháng ạ?", p:'', e:"Just one person. How much is it per month?"},
+      {speaker:'B', v:"Năm triệu một tháng, đã có nước và điện rồi ạ.", p:'', e:"Five million per month, water and electricity are already included."},
+    ],
+    vocab:[
+      {v:"thuê", e:"to rent"}, {v:"phòng", e:"room"},
+      {v:"còn trống", e:"available / vacant"}, {v:"giá", e:"price"},
+      {v:"tháng", e:"month"}, {v:"nước", e:"water"},
+      {v:"điện", e:"electricity"}, {v:"đặt phòng", e:"to book a room"},
+    ],
+    grammar:[
+      {title:"Còn ... không? for availability", body:"\"Còn trống không\" asks whether something is still available, using \"còn\" (still) plus the item plus \"không\" to form a yes/no question. This pattern works for rooms, seats, or any limited item — \"Còn phòng không?\" means \"Is there still a room?\""},
+      {title:"Asking price with bao nhiêu", body:"\"Giá bao nhiêu một tháng?\" uses \"bao nhiêu\" (how much) to ask for a price, with \"một tháng\" (per month) specifying the unit. You can swap \"một tháng\" for \"một đêm\" (per night) or \"một tuần\" (per week) depending on the rental period."},
+    ],
+    cards:[
+      {v:"Chào chị, em muốn hỏi thuê phòng còn trống không ạ?", p:"chow chi, em moo-uhn hoy tway fom kon chom khom aa", e:"Hello, I'd like to ask if you have a room available to rent."},
+      {v:"Dạ còn, em muốn thuê phòng một người hay hai người?", p:"zaa kon, em moo-uhn tway fom mot nguh-uh-ee hai hai nguh-uh-ee", e:"Yes, we do. Do you want a room for one person or two people?"},
+      {v:"Dạ một người thôi, giá bao nhiêu một tháng ạ?", p:"zaa mot nguh-uh-ee toy, zaa bow nyew mot taang aa", e:"Just one person. How much is it per month?"},
+      {v:"Năm triệu một tháng, đã có nước và điện rồi ạ.", p:"nam chee-oo mot taang, daa co nuh-uhk vaa dee-en roy aa", e:"Five million per month, water and electricity are already included."},
+    ],
+  },
+  { id:'t32', level:'A1', title:"At the Post Office", emoji:'📮',
+    desc:"Send a letter or package.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, em muốn gửi bưu kiện này đi Hà Nội ạ.", p:'', e:"Hello, I'd like to send this package to Hanoi."},
+      {speaker:'B', v:"Dạ, chị muốn gửi nhanh hay gửi thường?", p:'', e:"Would you like express or regular shipping?"},
+      {speaker:'A', v:"Cho em gửi nhanh, mất mấy ngày ạ?", p:'', e:"Express shipping please, how many days will it take?"},
+      {speaker:'B', v:"Dạ khoảng hai ngày, tổng cộng năm mươi nghìn đồng ạ.", p:'', e:"About two days, the total is fifty thousand dong."},
+    ],
+    vocab:[
+      {v:"gửi", e:"to send"}, {v:"bưu kiện", e:"package / parcel"},
+      {v:"thư", e:"letter"}, {v:"tem", e:"stamp"},
+      {v:"nhanh", e:"fast / express"}, {v:"thường", e:"regular / normal"},
+      {v:"địa chỉ", e:"address"}, {v:"tổng cộng", e:"in total"},
+    ],
+    grammar:[
+      {title:"Hay for either/or choices", body:"\"Gửi nhanh hay gửi thường?\" uses \"hay\" (or) to offer two options in a question, joining two verb phrases directly. The listener answers by simply repeating the chosen option, as in \"Cho em gửi nhanh\" (I'll take express shipping)."},
+      {title:"Mất + time expression", body:"\"Mất mấy ngày\" uses \"mất\" (to take/cost, literally \"to lose\") before a time expression to ask or state how long something takes. This same structure works for cost too, e.g. \"Mất bao nhiêu tiền?\" (How much does it cost?)."},
+    ],
+    cards:[
+      {v:"Chào chị, em muốn gửi bưu kiện này đi Hà Nội ạ.", p:"chow chi, em moo-uhn guh-ee buh-oo kee-en nay dee haa noy aa", e:"Hello, I'd like to send this package to Hanoi."},
+      {v:"Dạ, chị muốn gửi nhanh hay gửi thường?", p:"zaa, chi moo-uhn guh-ee nyaan hai guh-ee tuh-uhng", e:"Would you like express or regular shipping?"},
+      {v:"Cho em gửi nhanh, mất mấy ngày ạ?", p:"cho em guh-ee nyaan, mut may ngai aa", e:"Express shipping please, how many days will it take?"},
+      {v:"Dạ khoảng hai ngày, tổng cộng năm mươi nghìn đồng ạ.", p:"zaa khwaang hai ngai, tong kong nam muh-uh-ee ngeen dong aa", e:"About two days, the total is fifty thousand dong."},
+    ],
+  },
+  { id:'t33', level:'A1', title:"Banking Services", emoji:'🏦',
+    desc:"Open a bank account or make a transaction.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh, em muốn mở tài khoản ngân hàng ạ.", p:'', e:"Hello, I'd like to open a bank account."},
+      {speaker:'B', v:"Dạ được, anh chị cho em xem chứng minh thư nhé.", p:'', e:"Sure, could you show me your ID please."},
+      {speaker:'A', v:"Dạ đây, em cũng muốn gửi tiền vào tài khoản luôn.", p:'', e:"Here you go. I'd also like to deposit money into the account right away."},
+      {speaker:'B', v:"Dạ, anh muốn gửi bao nhiêu tiền ạ?", p:'', e:"Sure, how much money would you like to deposit?"},
+    ],
+    vocab:[
+      {v:"ngân hàng", e:"bank"}, {v:"tài khoản", e:"account"},
+      {v:"mở tài khoản", e:"to open an account"}, {v:"gửi tiền", e:"to deposit money"},
+      {v:"rút tiền", e:"to withdraw money"}, {v:"chứng minh thư", e:"ID card"},
+      {v:"tiền mặt", e:"cash"}, {v:"chuyển khoản", e:"to transfer money"},
+    ],
+    grammar:[
+      {title:"Cho + person + verb as a polite request", body:"\"Cho em xem chứng minh thư\" uses \"cho\" (let/give) plus \"em\" (the speaker) plus a verb to politely ask someone to let you do something, here \"xem\" (see/look at). This pattern is common in service settings, similar to \"cho tôi hỏi\" (let me ask)."},
+      {title:"Luôn for immediacy", body:"\"Gửi tiền vào tài khoản luôn\" places \"luôn\" (right away / immediately) after the verb phrase to show the action should happen at once, without delay. It adds a sense of \"while I'm at it\" or \"go ahead and do it now\" to the request."},
+    ],
+    cards:[
+      {v:"Chào anh, em muốn mở tài khoản ngân hàng ạ.", p:"chow aan, em moo-uhn muh tai khwaan ngan haang aa", e:"Hello, I'd like to open a bank account."},
+      {v:"Dạ được, anh chị cho em xem chứng minh thư nhé.", p:"zaa duh-uhk, aan chi cho em sem chuhng ming tuh nyeh", e:"Sure, could you show me your ID please."},
+      {v:"Dạ đây, em cũng muốn gửi tiền vào tài khoản luôn.", p:"zaa day, em koong moo-uhn guh-ee tee-en vow tai khwaan loo-on", e:"Here you go. I'd also like to deposit money into the account right away."},
+      {v:"Dạ, anh muốn gửi bao nhiêu tiền ạ?", p:"zaa, aan moo-uhn guh-ee bow nyew tee-en aa", e:"Sure, how much money would you like to deposit?"},
+    ],
+  },
+  { id:'t34', level:'A1', title:"Getting a Haircut", emoji:'💇',
+    desc:"Describe how you want your hair cut at a salon.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh, hôm nay anh muốn cắt tóc kiểu gì ạ?", p:'', e:"Hello, what style would you like your hair cut today?"},
+      {speaker:'B', v:"Cắt ngắn giúp em, hai bên với sau gáy nhé.", p:'', e:"Cut it short please, the sides and the back of the neck."},
+      {speaker:'A', v:"Dạ, anh có muốn gội đầu trước không?", p:'', e:"Sure, would you like to wash your hair first?"},
+      {speaker:'B', v:"Dạ có, cảm ơn chị nhiều.", p:'', e:"Yes please, thank you very much."},
+    ],
+    vocab:[
+      {v:"cắt tóc", e:"to cut hair / haircut"}, {v:"tóc", e:"hair"},
+      {v:"ngắn", e:"short"}, {v:"dài", e:"long"},
+      {v:"gội đầu", e:"to wash hair"}, {v:"hai bên", e:"the two sides"},
+      {v:"sau gáy", e:"back of the neck"}, {v:"tiệm cắt tóc", e:"hair salon"},
+    ],
+    grammar:[
+      {title:"Kiểu gì for asking about style/type", body:"\"Cắt tóc kiểu gì?\" uses \"kiểu\" (style/type) plus \"gì\" (what) to ask what kind of something someone wants. The same pattern appears elsewhere, like \"ăn món gì\" (what dish to eat) or \"mặc áo kiểu gì\" (what style of shirt to wear)."},
+      {title:"Verb + giúp em as a polite request", body:"\"Cắt ngắn giúp em\" adds \"giúp em\" (help me) after the verb to soften a request, making it feel like asking for a favor rather than giving an order. This is a very common polite pattern used with service staff, like \"giúp em\" after any action verb."},
+    ],
+    cards:[
+      {v:"Chào anh, hôm nay anh muốn cắt tóc kiểu gì ạ?", p:"chow aan, hom nay aan moo-uhn cat tok kee-oo zee aa", e:"Hello, what style would you like your hair cut today?"},
+      {v:"Cắt ngắn giúp em, hai bên với sau gáy nhé.", p:"cat ngan zoop em, hai ben vuh-ee sao gai nyeh", e:"Cut it short please, the sides and the back of the neck."},
+      {v:"Dạ, anh có muốn gội đầu trước không?", p:"zaa, aan co moo-uhn goy dow chuh-uhk khom", e:"Sure, would you like to wash your hair first?"},
+      {v:"Dạ có, cảm ơn chị nhiều.", p:"zaa co, gam uhn chi nyew", e:"Yes please, thank you very much."},
+    ],
+  },
+  { id:'t35', level:'A1', title:"Supermarket Shopping", emoji:'🛒',
+    desc:"Ask for items and pay at a supermarket.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Cho em hỏi, sữa tươi ở khu nào ạ?", p:'', e:"Excuse me, which aisle is the fresh milk in?"},
+      {speaker:'B', v:"Dạ, sữa tươi ở khu bên kia, gần quầy rau.", p:'', e:"The fresh milk is over there, near the vegetable section."},
+      {speaker:'A', v:"Cảm ơn chị, cho em thanh toán luôn nhé.", p:'', e:"Thank you, I'd like to check out now please."},
+      {speaker:'B', v:"Dạ, tất cả là một trăm hai mươi nghìn đồng ạ.", p:'', e:"Sure, that's a total of one hundred twenty thousand dong."},
+    ],
+    vocab:[
+      {v:"siêu thị", e:"supermarket"}, {v:"sữa tươi", e:"fresh milk"},
+      {v:"khu", e:"section / area"}, {v:"quầy", e:"counter / stall"},
+      {v:"rau", e:"vegetables"}, {v:"thanh toán", e:"to pay / check out"},
+      {v:"giỏ hàng", e:"shopping basket"}, {v:"tiền lẻ", e:"change (small money)"},
+    ],
+    grammar:[
+      {title:"Cho em hỏi to open a polite question", body:"\"Cho em hỏi\" (literally \"let me ask\") is a fixed polite opener used before asking a stranger or staff a question, seen here before \"sữa tươi ở khu nào\". It softens the request and is one of the most common conversation starters in service settings."},
+      {title:"Ở đâu / ở khu nào for locating things", body:"\"Ở khu nào\" uses \"ở\" (at/in) plus \"nào\" (which) after the noun \"khu\" (section) to ask where something is located. You can swap \"khu nào\" for \"đâu\" (where) for a more general \"Sữa tươi ở đâu?\" (Where is the fresh milk?)."},
+    ],
+    cards:[
+      {v:"Cho em hỏi, sữa tươi ở khu nào ạ?", p:"cho em hoy, suh-a tuh-uh-ee uh khoo now aa", e:"Excuse me, which aisle is the fresh milk in?"},
+      {v:"Dạ, sữa tươi ở khu bên kia, gần quầy rau.", p:"zaa, suh-a tuh-uh-ee uh khoo ben kee-a, gan kway rao", e:"The fresh milk is over there, near the vegetable section."},
+      {v:"Cảm ơn chị, cho em thanh toán luôn nhé.", p:"gam uhn chi, cho em taan twaan loo-on nyeh", e:"Thank you, I'd like to check out now please."},
+      {v:"Dạ, tất cả là một trăm hai mươi nghìn đồng ạ.", p:"zaa, tut caa laa mot cham hai muh-uh-ee ngeen dong aa", e:"Sure, that's a total of one hundred twenty thousand dong."},
+    ],
+  },
+  { id:'t36', level:'A1', title:"Farmer's Market", emoji:'🥕',
+    desc:"Buy fresh produce and interact with vendors.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chị ơi, rau muống này bao nhiêu một bó?", p:'', e:"Ma'am, how much is this water spinach per bunch?"},
+      {speaker:'B', v:"Mười lăm nghìn một bó em ơi, rau mới hái sáng nay đó.", p:'', e:"Fifteen thousand a bunch, it was just picked this morning."},
+      {speaker:'A', v:"Dạ, cho em hai bó với một ký cà chua nha.", p:'', e:"Okay, give me two bunches and one kilo of tomatoes please."},
+      {speaker:'B', v:"Được rồi, tất cả là năm mươi nghìn, em gửi tiền giúp chị nhé.", p:'', e:"Alright, that's fifty thousand total, please hand me the money."},
+    ],
+    vocab:[
+      {v:"rau muống", e:"water spinach"}, {v:"bó", e:"bunch (classifier)"},
+      {v:"cà chua", e:"tomato"}, {v:"ký", e:"kilogram"},
+      {v:"tươi", e:"fresh"}, {v:"chợ", e:"market"},
+      {v:"người bán", e:"vendor / seller"}, {v:"trả giá", e:"to bargain / haggle"},
+    ],
+    grammar:[
+      {title:"Asking price with bao nhiêu", body:"\"Bao nhiêu\" means \"how much/how many\" and goes where the unknown number would be, as in \"Rau muống này bao nhiêu một bó?\" (How much is this water spinach per bunch?). The seller answers by simply stating the price, often adding \"một [unit]\" to show the rate per bunch, kilo, etc."},
+      {title:"Classifiers for quantity", body:"Vietnamese uses classifier words like \"bó\" (bunch) and \"ký\" (kilogram) between the number and the noun, as in \"hai bó\" (two bunches) and \"một ký cà chua\" (one kilo of tomatoes). The classifier must match the type of item being counted."},
+    ],
+    cards:[
+      {v:"Chị ơi, rau muống này bao nhiêu một bó?", p:"chi uh-ee, rao moo-ong nay bow nyew mot bo", e:"Ma'am, how much is this water spinach per bunch?"},
+      {v:"Mười lăm nghìn một bó em ơi, rau mới hái sáng nay đó.", p:"muh-uh-ee lam ngeen mot bo em uh-ee, rao muh-ee hai saang nay do", e:"Fifteen thousand a bunch, it was just picked this morning."},
+      {v:"Dạ, cho em hai bó với một ký cà chua nha.", p:"zaa, cho em hai bo vuh-ee mot ky gaa choo-a nyaa", e:"Okay, give me two bunches and one kilo of tomatoes please."},
+      {v:"Được rồi, tất cả là năm mươi nghìn, em gửi tiền giúp chị nhé.", p:"duh-uhk roy, tat kaa laa nam muh-uh-ee ngeen, em guh-ee tee-en zoop chi nyeh", e:"Alright, that's fifty thousand total, please hand me the money."},
+    ],
+  },
+  { id:'t37', level:'A1', title:"Customer Service", emoji:'🎧',
+    desc:"Return an item or resolve an issue with a purchase.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, em muốn đổi cái áo này vì nó bị rách.", p:'', e:"Hello, I'd like to exchange this shirt because it's torn."},
+      {speaker:'B', v:"Dạ, anh có giữ hóa đơn không ạ?", p:'', e:"Do you still have the receipt?"},
+      {speaker:'A', v:"Dạ có, đây ạ. Em mua hôm qua.", p:'', e:"Yes, here it is. I bought it yesterday."},
+      {speaker:'B', v:"Được rồi ạ, để em đổi cho anh cái mới ngay.", p:'', e:"Alright, let me exchange it for a new one right away."},
+    ],
+    vocab:[
+      {v:"đổi", e:"to exchange"}, {v:"trả lại", e:"to return"},
+      {v:"hóa đơn", e:"receipt"}, {v:"bị rách", e:"to be torn"},
+      {v:"lỗi", e:"defect / fault"}, {v:"hoàn tiền", e:"to refund"},
+      {v:"bảo hành", e:"warranty"}, {v:"mua", e:"to buy"},
+    ],
+    grammar:[
+      {title:"Expressing reason with vì", body:"\"Vì\" means \"because\" and introduces the reason for an action, as in \"em muốn đổi cái áo này vì nó bị rách\" (I want to exchange this shirt because it's torn). It links the request to its cause and usually comes right before the explanation."},
+      {title:"Passive-like bị for problems", body:"\"Bị\" comes before a verb or adjective to show something bad happened, as in \"nó bị rách\" (it is torn/it got torn). This pattern is common for describing defects or misfortunes with items, unlike \"được\" which is used for good outcomes."},
+    ],
+    cards:[
+      {v:"Chào chị, em muốn đổi cái áo này vì nó bị rách.", p:"chow chi, em moo-uhn doy kai ao nay vee no bi raak", e:"Hello, I'd like to exchange this shirt because it's torn."},
+      {v:"Dạ, anh có giữ hóa đơn không ạ?", p:"zaa, aan co zuh hwaa duhn khom aa", e:"Do you still have the receipt?"},
+      {v:"Dạ có, đây ạ. Em mua hôm qua.", p:"zaa co, day aa. em moo-a hom kwaa", e:"Yes, here it is. I bought it yesterday."},
+      {v:"Được rồi ạ, để em đổi cho anh cái mới ngay.", p:"duh-uhk roy aa, day em doy cho aan kai muh-ee ngay", e:"Alright, let me exchange it for a new one right away."},
+    ],
+  },
+  { id:'t38', level:'A1', title:"Chatting with Neighbors", emoji:'🏘️',
+    desc:"Engage in casual conversation with a neighbor.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, dạo này chị khỏe không?", p:'', e:"Hi, how have you been lately?"},
+      {speaker:'B', v:"Khỏe, cảm ơn em. Còn em, đi làm về sớm vậy?", p:'', e:"I'm well, thanks. And you, home from work early?"},
+      {speaker:'A', v:"Dạ, hôm nay công ty cho về sớm. Chị đang nấu gì mà thơm quá vậy?", p:'', e:"Yeah, work let us go home early today. What are you cooking, it smells so good?"},
+      {speaker:'B', v:"Chị đang nấu canh chua, lát nữa qua ăn cùng cho vui nhé.", p:'', e:"I'm making sour soup, come over and eat with us later, it'll be fun."},
+    ],
+    vocab:[
+      {v:"dạo này", e:"lately / these days"}, {v:"khỏe", e:"healthy / well"},
+      {v:"hàng xóm", e:"neighbor"}, {v:"nấu ăn", e:"to cook"},
+      {v:"thơm", e:"fragrant"}, {v:"canh chua", e:"sour soup"},
+      {v:"đi làm về", e:"to come home from work"}, {v:"lát nữa", e:"in a little while"},
+    ],
+    grammar:[
+      {title:"Greeting with dạo này", body:"\"Dạo này\" means \"lately/these days\" and is placed before the question to ask how someone has been recently, as in \"dạo này chị khỏe không?\" (How have you been lately?). It signals you're asking about a recent period rather than right this moment."},
+      {title:"Intensifier quá after adjectives", body:"\"Quá\" placed after an adjective intensifies it, meaning \"so/very,\" as in \"thơm quá vậy\" (smells so good). Adding \"vậy\" at the end softens the exclamation and gives it a casual, conversational tone typical of neighborly chat."},
+    ],
+    cards:[
+      {v:"Chào chị, dạo này chị khỏe không?", p:"chow chi, zao nay chi khweh khom", e:"Hi, how have you been lately?"},
+      {v:"Khỏe, cảm ơn em. Còn em, đi làm về sớm vậy?", p:"khweh, gam uhn em. gon em, dee laam veh suhm vay", e:"I'm well, thanks. And you, home from work early?"},
+      {v:"Dạ, hôm nay công ty cho về sớm. Chị đang nấu gì mà thơm quá vậy?", p:"zaa, hom nay gong ty cho veh suhm. chi daang nao zee maa tuhm kwaa vay", e:"Yeah, work let us go home early today. What are you cooking, it smells so good?"},
+      {v:"Chị đang nấu canh chua, lát nữa qua ăn cùng cho vui nhé.", p:"chi daang nao gaan choo-a, laat nuh-a kwaa an gung cho voo-ee nyeh", e:"I'm making sour soup, come over and eat with us later, it'll be fun."},
+    ],
+  },
+  { id:'t39', level:'A1', title:"Social Gatherings", emoji:'🎉',
+    desc:"Navigate conversations at a party.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bạn, mình là Lan, bạn là bạn của ai vậy?", p:'', e:"Hi, I'm Lan, who's friend are you here with?"},
+      {speaker:'B', v:"Mình là Minh, bạn cùng lớp với Hùng. Ở đây vui quá ha.", p:'', e:"I'm Minh, Hung's classmate. It's so fun here, huh."},
+      {speaker:'A', v:"Ừ, đồ ăn cũng ngon nữa. Bạn muốn uống gì không?", p:'', e:"Yeah, and the food is delicious too. Do you want something to drink?"},
+      {speaker:'B', v:"Cho mình một ly nước cam, cảm ơn bạn nha.", p:'', e:"Give me a glass of orange juice, thanks."},
+    ],
+    vocab:[
+      {v:"tiệc", e:"party"}, {v:"bạn cùng lớp", e:"classmate"},
+      {v:"làm quen", e:"to get acquainted"}, {v:"vui", e:"fun / happy"},
+      {v:"đồ ăn", e:"food"}, {v:"ly", e:"glass / cup (classifier)"},
+      {v:"nước cam", e:"orange juice"}, {v:"khách", e:"guest"},
+    ],
+    grammar:[
+      {title:"Asking relation with là bạn của ai", body:"\"Là bạn của ai\" literally \"is friend of who\" is a natural way to ask how someone is connected to the host or another guest, as in \"bạn là bạn của ai vậy?\" (whose friend are you?). \"Vậy\" at the end keeps the question friendly and casual, common at social gatherings."},
+      {title:"Offering with muốn + verb + không", body:"\"Muốn\" (want) plus a verb plus the yes/no question tag \"không\" forms a polite offer, as in \"Bạn muốn uống gì không?\" (Do you want something to drink?). The reply pattern \"Cho mình + item\" is the standard way to request what you'd like."},
+    ],
+    cards:[
+      {v:"Chào bạn, mình là Lan, bạn là bạn của ai vậy?", p:"chow ban, ming laa Lan, ban laa ban goo-a ai vay", e:"Hi, I'm Lan, who's friend are you here with?"},
+      {v:"Mình là Minh, bạn cùng lớp với Hùng. Ở đây vui quá ha.", p:"ming laa Minh, ban gung luhp vuh-ee Hoong. uh day voo-ee kwaa haa", e:"I'm Minh, Hung's classmate. It's so fun here, huh."},
+      {v:"Ừ, đồ ăn cũng ngon nữa. Bạn muốn uống gì không?", p:"uh, do an gung ngon nuh-a. ban moo-uhn oo-ong zee khom", e:"Yeah, and the food is delicious too. Do you want something to drink?"},
+      {v:"Cho mình một ly nước cam, cảm ơn bạn nha.", p:"cho ming mot ly nuh-uhk gaam, gam uhn ban nyaa", e:"Give me a glass of orange juice, thanks."},
+    ],
+  },
+  { id:'t40', level:'A1', title:"Compliments", emoji:'🌟',
+    desc:"Offer and respond to compliments politely.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Áo dài của chị đẹp quá!", p:'', e:"Your áo dài is so beautiful!"},
+      {speaker:'B', v:"Cảm ơn em, chị mới mua tuần trước đó.", p:'', e:"Thank you, I just bought it last week."},
+      {speaker:'A', v:"Màu này hợp với chị lắm luôn.", p:'', e:"This color really suits you."},
+      {speaker:'B', v:"Em quá khen rồi, cảm ơn em nhiều nha.", p:'', e:"You're too kind, thank you so much."},
+    ],
+    vocab:[
+      {v:"đẹp", e:"beautiful / nice"}, {v:"khen", e:"to compliment / praise"},
+      {v:"hợp", e:"to suit / match"}, {v:"màu", e:"color"},
+      {v:"áo dài", e:"traditional Vietnamese dress"}, {v:"giỏi", e:"skilled / good at"},
+      {v:"dễ thương", e:"cute / lovely"}, {v:"quá khen", e:"to over-praise / be too kind"},
+    ],
+    grammar:[
+      {title:"Intensifying compliments with quá and lắm luôn", body:"\"Quá\" after an adjective, as in \"đẹp quá\" (so beautiful), and \"lắm luôn\" at the end, as in \"hợp với chị lắm luôn\" (really suits you), both intensify praise. Combining them or using either shows genuine enthusiasm in casual compliments."},
+      {title:"Modest response with quá khen", body:"\"Quá khen\" literally means \"over-praise\" and is a humble way to deflect a compliment, as in \"Em quá khen rồi\" (You're too kind / You're praising me too much). This modest reply pattern, often followed by \"cảm ơn,\" reflects the cultural norm of downplaying compliments politely."},
+    ],
+    cards:[
+      {v:"Áo dài của chị đẹp quá!", p:"ao zai goo-a chi dep kwaa", e:"Your áo dài is so beautiful!"},
+      {v:"Cảm ơn em, chị mới mua tuần trước đó.", p:"gam uhn em, chi muh-ee moo-a twan chuh-uhk do", e:"Thank you, I just bought it last week."},
+      {v:"Màu này hợp với chị lắm luôn.", p:"mao nay huhp vuh-ee chi lam loo-on", e:"This color really suits you."},
+      {v:"Em quá khen rồi, cảm ơn em nhiều nha.", p:"em kwaa khen roy, gam uhn em nyew nyaa", e:"You're too kind, thank you so much."},
+    ],
+  },
+  { id:'t41', level:'A1', title:"Apologies", emoji:'🙏',
+    desc:"Learn how to apologize and make up for mistakes.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Xin lỗi, mình đến trễ quá.", p:'', e:"Sorry, I'm really late."},
+      {speaker:'B', v:"Không sao đâu, mình mới tới thôi.", p:'', e:"It's totally fine, I just got here myself."},
+      {speaker:'A', v:"Mình xin lỗi vì đã làm bạn phải chờ lâu.", p:'', e:"I'm sorry for making you wait so long."},
+      {speaker:'B', v:"Đừng lo, lần sau nhớ đi sớm hơn nhé.", p:'', e:"Don't worry, just remember to leave earlier next time."},
+    ],
+    vocab:[
+      {v:"xin lỗi", e:"sorry / to apologize"}, {v:"trễ", e:"late"},
+      {v:"không sao", e:"it's okay"}, {v:"chờ", e:"to wait"},
+      {v:"lần sau", e:"next time"}, {v:"sớm", e:"early"},
+      {v:"lỗi", e:"mistake / fault"}, {v:"làm phiền", e:"to bother / trouble"},
+    ],
+    grammar:[
+      {title:"Xin lỗi vì...", body:"\"Xin lỗi\" means \"sorry,\" and adding \"vì\" (because) lets you state the reason, as in \"Mình xin lỗi vì đã làm bạn phải chờ lâu\" (I'm sorry for making you wait so long). This \"vì + reason\" pattern is the standard way to explain what you did wrong."},
+      {title:"Không sao đâu", body:"\"Không sao\" already means \"it's fine / no problem,\" and adding \"đâu\" at the end strengthens the reassurance, softening the tone as if to say \"really, it's totally fine.\" It's commonly used when accepting someone's apology."},
+    ],
+    cards:[
+      {v:"Xin lỗi, mình đến trễ quá.", p:"sin loy, ming den chay kwaa", e:"Sorry, I'm really late."},
+      {v:"Không sao đâu, mình mới tới thôi.", p:"khom sao doh, ming muh-ee tuh-ee thoy", e:"It's totally fine, I just got here myself."},
+      {v:"Mình xin lỗi vì đã làm bạn phải chờ lâu.", p:"ming sin loy vee daa laam ban fai chuh loh", e:"I'm sorry for making you wait so long."},
+      {v:"Đừng lo, lần sau nhớ đi sớm hơn nhé.", p:"duhng lo, lun sao nyuh dee suhm huhn nyeh", e:"Don't worry, just remember to leave earlier next time."},
+    ],
+  },
+  { id:'t42', level:'A1', title:"Making Invitations", emoji:'💌',
+    desc:"Invite someone to an event or activity.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Cuối tuần này bạn có rảnh không?", p:'', e:"Are you free this weekend?"},
+      {speaker:'B', v:"Có, mình rảnh. Có chuyện gì vậy?", p:'', e:"Yes, I'm free. What's up?"},
+      {speaker:'A', v:"Mình muốn mời bạn đi xem phim với mình.", p:'', e:"I want to invite you to watch a movie with me."},
+      {speaker:'B', v:"Nghe hay đó! Mấy giờ mình gặp nhau?", p:'', e:"That sounds great! What time should we meet?"},
+    ],
+    vocab:[
+      {v:"rảnh", e:"free / available"}, {v:"mời", e:"to invite"},
+      {v:"xem phim", e:"to watch a movie"}, {v:"cuối tuần", e:"weekend"},
+      {v:"gặp nhau", e:"to meet each other"}, {v:"đi chơi", e:"to go out / hang out"},
+      {v:"tham gia", e:"to join / participate"}, {v:"hẹn", e:"to make an appointment / date"},
+    ],
+    grammar:[
+      {title:"Có ... không? question pattern", body:"To ask a yes/no question, sandwich what you're asking about between \"có\" and \"không,\" as in \"bạn có rảnh không?\" (are you free?). Answer simply with \"Có\" (yes) or \"Không\" (no)."},
+      {title:"Mời + người + đi + hoạt động", body:"\"Mời\" means \"to invite,\" and it's followed by the person, then \"đi\" (to go) plus the activity, as in \"mời bạn đi xem phim\" (invite you to go watch a movie). This is the standard structure for extending an invitation."},
+    ],
+    cards:[
+      {v:"Cuối tuần này bạn có rảnh không?", p:"koo-ee twun nay ban kaw raanh khom", e:"Are you free this weekend?"},
+      {v:"Có, mình rảnh. Có chuyện gì vậy?", p:"kaw, ming raanh. kaw choo-yen zee vay", e:"Yes, I'm free. What's up?"},
+      {v:"Mình muốn mời bạn đi xem phim với mình.", p:"ming moo-uhn muh-uh-ee ban dee sem feem vuh-ee ming", e:"I want to invite you to watch a movie with me."},
+      {v:"Nghe hay đó! Mấy giờ mình gặp nhau?", p:"ngeh hai daw! may zuh ming gap nyow", e:"That sounds great! What time should we meet?"},
+    ],
+  },
+  { id:'t43', level:'A1', title:"Writing a Postcard", emoji:'✉️',
+    desc:"Compose a short message on a postcard to a friend.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn đang viết gì vậy?", p:'', e:"What are you writing?"},
+      {speaker:'B', v:"Mình đang viết bưu thiếp gửi cho gia đình ở Việt Nam.", p:'', e:"I'm writing a postcard to send to my family in Vietnam."},
+      {speaker:'A', v:"Bạn viết gì trong đó?", p:'', e:"What did you write in it?"},
+      {speaker:'B', v:"Mình viết \"Con nhớ mọi người nhiều lắm, mong sớm được về thăm nhà.\"", p:'', e:"I wrote, \"I miss everyone so much, I hope to come home and visit soon.\""},
+    ],
+    vocab:[
+      {v:"bưu thiếp", e:"postcard"}, {v:"viết", e:"to write"},
+      {v:"gửi", e:"to send"}, {v:"nhớ", e:"to miss"},
+      {v:"gia đình", e:"family"}, {v:"thăm", e:"to visit"},
+      {v:"tem", e:"stamp"}, {v:"địa chỉ", e:"address"},
+    ],
+    grammar:[
+      {title:"Đang for present progressive", body:"\"Đang\" is placed before the verb to show an action in progress, as in \"đang viết\" (is writing). It's the natural answer to the question \"đang làm gì?\" (what are you doing right now?)."},
+      {title:"Mong + clause", body:"\"Mong\" means \"to hope,\" and it's followed directly by what you hope for, as in \"mong sớm được về thăm nhà\" (I hope to get to come home and visit soon). \"được\" here adds the sense of \"get to / be able to.\""},
+    ],
+    cards:[
+      {v:"Bạn đang viết gì vậy?", p:"ban daang vee-et zee vay", e:"What are you writing?"},
+      {v:"Mình đang viết bưu thiếp gửi cho gia đình ở Việt Nam.", p:"ming daang vee-et buh-ew tee-ep guh-ee cho zaa dinh uh vee-et naam", e:"I'm writing a postcard to send to my family in Vietnam."},
+      {v:"Bạn viết gì trong đó?", p:"ban vee-et zee chawng daw", e:"What did you write in it?"},
+      {v:"Mình viết \"Con nhớ mọi người nhiều lắm, mong sớm được về thăm nhà.\"", p:"ming vee-et kawn nyuh moy nguh-uh-ee nyew lam, mawng suhm duh-uhk veh tam nyaa", e:"I wrote, \"I miss everyone so much, I hope to come home and visit soon.\""},
+    ],
+  },
+  { id:'t44', level:'A1', title:"Movies & TV", emoji:'🎬',
+    desc:"Talk about recently watched movies or TV shows.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Dạo này bạn có xem phim gì hay không?", p:'', e:"Have you watched any good movies lately?"},
+      {speaker:'B', v:"Có, mình mới xem một bộ phim Hàn rất cảm động.", p:'', e:"Yes, I just watched a really touching Korean movie."},
+      {speaker:'A', v:"Phim đó tên gì vậy?", p:'', e:"What's that movie called?"},
+      {speaker:'B', v:"Mình quên tên rồi, nhưng diễn viên đóng rất hay.", p:'', e:"I forgot the name, but the actors performed really well."},
+    ],
+    vocab:[
+      {v:"phim", e:"movie / film"}, {v:"xem", e:"to watch"},
+      {v:"bộ phim", e:"a movie (with classifier)"}, {v:"diễn viên", e:"actor / actress"},
+      {v:"cảm động", e:"touching / moving"}, {v:"hài hước", e:"funny / humorous"},
+      {v:"tập phim", e:"episode"}, {v:"chương trình", e:"program / show"},
+    ],
+    grammar:[
+      {title:"Dạo này for recent time", body:"\"Dạo này\" means \"lately / recently\" and is placed at the start of a sentence to ask or talk about what someone's been doing in the recent period, as in \"Dạo này bạn có xem phim gì hay không?\" (Have you watched any good movies lately?)."},
+      {title:"Classifier bộ for films", body:"\"Bộ\" is the classifier used before \"phim\" when referring to a movie or series as a complete work, as in \"một bộ phim Hàn\" (a Korean movie). Classifiers like this sit between the number and the noun."},
+    ],
+    cards:[
+      {v:"Dạo này bạn có xem phim gì hay không?", p:"zow nay ban kaw sem feem zee hai khom", e:"Have you watched any good movies lately?"},
+      {v:"Có, mình mới xem một bộ phim Hàn rất cảm động.", p:"kaw, ming muh-ee sem mot bo feem haan rut gaam dawng", e:"Yes, I just watched a really touching Korean movie."},
+      {v:"Phim đó tên gì vậy?", p:"feem daw ten zee vay", e:"What's that movie called?"},
+      {v:"Mình quên tên rồi, nhưng diễn viên đóng rất hay.", p:"ming kwen ten roy, nyuhng zee-en vee-en dawng rut hai", e:"I forgot the name, but the actors performed really well."},
+    ],
+  },
+  { id:'t45', level:'A1', title:"Books & Reading", emoji:'📚',
+    desc:"Discuss books or interesting articles.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn đang đọc cuốn sách gì vậy?", p:'', e:"What book are you reading?"},
+      {speaker:'B', v:"Mình đang đọc một cuốn tiểu thuyết rất thú vị.", p:'', e:"I'm reading a really interesting novel."},
+      {speaker:'A', v:"Sách đó nói về chuyện gì?", p:'', e:"What's that book about?"},
+      {speaker:'B', v:"Nó kể về cuộc sống của một cô gái trẻ ở Hà Nội.", p:'', e:"It's about the life of a young woman in Hanoi."},
+    ],
+    vocab:[
+      {v:"sách", e:"book"}, {v:"đọc", e:"to read"},
+      {v:"cuốn", e:"classifier for books"}, {v:"tiểu thuyết", e:"novel"},
+      {v:"thú vị", e:"interesting"}, {v:"tác giả", e:"author"},
+      {v:"truyện", e:"story"}, {v:"bài báo", e:"article"},
+    ],
+    grammar:[
+      {title:"Classifier cuốn for books", body:"\"Cuốn\" is the classifier for book-like objects, used between a number/determiner and \"sách\" or \"tiểu thuyết,\" as in \"một cuốn tiểu thuyết\" (a novel). It must appear whenever you count or specify a book."},
+      {title:"Nói về / kể về for topics", body:"Both \"nói về\" (to talk about) and \"kể về\" (to tell about) are followed by the topic being discussed, as in \"kể về cuộc sống của một cô gái trẻ\" (tells about the life of a young woman). Use these to ask or explain what something is about."},
+    ],
+    cards:[
+      {v:"Bạn đang đọc cuốn sách gì vậy?", p:"ban daang dawk koo-uhn saik zee vay", e:"What book are you reading?"},
+      {v:"Mình đang đọc một cuốn tiểu thuyết rất thú vị.", p:"ming daang dawk mot koo-uhn tee-ew twee-et rut too vee", e:"I'm reading a really interesting novel."},
+      {v:"Sách đó nói về chuyện gì?", p:"saik daw noy veh choo-yen zee", e:"What's that book about?"},
+      {v:"Nó kể về cuộc sống của một cô gái trẻ ở Hà Nội.", p:"naw keh veh koo-uhk shawng koo-uh mot co gai chay uh haa noy", e:"It's about the life of a young woman in Hanoi."},
+    ],
+  },
+  { id:'t46', level:'A1', title:"Fitness & Sports", emoji:'🏋️',
+    desc:"Plan a workout or talk about sports.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bạn, tối nay bạn có muốn đi tập gym không?", p:'', e:"Hey, do you want to go to the gym tonight?"},
+      {speaker:'B', v:"Có chứ! Mình muốn tập chạy bộ trước, rồi tập tạ.", p:'', e:"Of course! I want to jog first, then lift weights."},
+      {speaker:'A', v:"Bạn thích chơi thể thao gì nhất?", p:'', e:"What sport do you like to play the most?"},
+      {speaker:'B', v:"Mình thích đá bóng, nhưng dạo này mình tập yoga nhiều hơn.", p:'', e:"I like soccer, but lately I've been doing more yoga."},
+    ],
+    vocab:[
+      {v:"tập gym", e:"to work out at the gym"}, {v:"chạy bộ", e:"to jog / run"},
+      {v:"tập tạ", e:"to lift weights"}, {v:"thể thao", e:"sports"},
+      {v:"đá bóng", e:"to play soccer"}, {v:"yoga", e:"yoga"},
+      {v:"khỏe", e:"healthy / strong"}, {v:"tập thể dục", e:"to exercise"},
+    ],
+    grammar:[
+      {title:"Có ... không? and Có chứ!", body:"Yes/no questions use \"có ... không?\" as in \"bạn có muốn đi tập gym không?\" (do you want to go to the gym?). An enthusiastic yes is answered with \"Có chứ!\", literally \"have of course\", meaning \"Definitely!\""},
+      {title:"Thích ... nhất (favorite)", body:"To ask or state a favorite, use \"thích\" (like) plus the noun plus \"nhất\" (most), as in \"Bạn thích chơi thể thao gì nhất?\" (What sport do you like most?). The word order keeps \"nhất\" at the end of the phrase."},
+    ],
+    cards:[
+      {v:"Chào bạn, tối nay bạn có muốn đi tập gym không?", p:"chow ban, toy nai ban co moo-uhn dee tap jim khom", e:"Hey, do you want to go to the gym tonight?"},
+      {v:"Có chứ! Mình muốn tập chạy bộ trước, rồi tập tạ.", p:"co chuh! ming moo-uhn tap chai bo chuh-uhk, roy tap taa", e:"Of course! I want to jog first, then lift weights."},
+      {v:"Bạn thích chơi thể thao gì nhất?", p:"ban tik chuh-ee tay tow zee nyat", e:"What sport do you like to play the most?"},
+      {v:"Mình thích đá bóng, nhưng dạo này mình tập yoga nhiều hơn.", p:"ming tik daa bong, nyuhng zow nai ming tap yo-ga nyew huhn", e:"I like soccer, but lately I've been doing more yoga."},
+    ],
+  },
+  { id:'t47', level:'A1', title:"Dreams & Aspirations", emoji:'🌈',
+    desc:"Share your future dreams and goals.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Ước mơ của bạn trong tương lai là gì?", p:'', e:"What is your dream for the future?"},
+      {speaker:'B', v:"Mình muốn trở thành một bác sĩ giỏi.", p:'', e:"I want to become a good doctor."},
+      {speaker:'A', v:"Bạn sẽ làm gì để đạt được ước mơ đó?", p:'', e:"What will you do to achieve that dream?"},
+      {speaker:'B', v:"Mình sẽ học chăm chỉ và không bao giờ bỏ cuộc.", p:'', e:"I will study hard and never give up."},
+    ],
+    vocab:[
+      {v:"ước mơ", e:"dream"}, {v:"tương lai", e:"future"},
+      {v:"trở thành", e:"to become"}, {v:"bác sĩ", e:"doctor"},
+      {v:"đạt được", e:"to achieve"}, {v:"mục tiêu", e:"goal"},
+      {v:"chăm chỉ", e:"hardworking / diligent"}, {v:"bỏ cuộc", e:"to give up"},
+    ],
+    grammar:[
+      {title:"Muốn trở thành (want to become)", body:"\"Muốn\" (want) plus a verb expresses a wish, and \"trở thành\" means \"to become\". Together in \"Mình muốn trở thành một bác sĩ giỏi\", they form the pattern muốn + trở thành + noun, used to state a career or identity goal."},
+      {title:"Sẽ as future marker", body:"\"Sẽ\" is placed before the verb to mark future action, as in \"Bạn sẽ làm gì\" (What will you do) and \"Mình sẽ học chăm chỉ\" (I will study hard). It works the same for questions and statements about plans."},
+    ],
+    cards:[
+      {v:"Ước mơ của bạn trong tương lai là gì?", p:"uh-uhk muh coo-a ban chong tuh-uhng lai laa zee", e:"What is your dream for the future?"},
+      {v:"Mình muốn trở thành một bác sĩ giỏi.", p:"ming moo-uhn chuh taan mot baak see zoy", e:"I want to become a good doctor."},
+      {v:"Bạn sẽ làm gì để đạt được ước mơ đó?", p:"ban seh laam zee day daat duh-uhk uh-uhk muh do", e:"What will you do to achieve that dream?"},
+      {v:"Mình sẽ học chăm chỉ và không bao giờ bỏ cuộc.", p:"ming seh hop cham chee vaa khom bow zuh bo koo-uhk", e:"I will study hard and never give up."},
+    ],
+  },
+  { id:'t48', level:'A1', title:"Daily Journal", emoji:'📔',
+    desc:"Write a journal entry about your day's events and feelings.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Hôm nay của bạn thế nào?", p:'', e:"How was your day today?"},
+      {speaker:'B', v:"Hôm nay mình khá bận, nhưng mình cảm thấy vui vì hoàn thành được nhiều việc.", p:'', e:"Today I was quite busy, but I feel happy because I finished a lot of things."},
+      {speaker:'A', v:"Bạn đã làm những gì vậy?", p:'', e:"What did you do exactly?"},
+      {speaker:'B', v:"Mình đi làm, tập thể dục, rồi viết nhật ký trước khi đi ngủ.", p:'', e:"I went to work, exercised, then wrote in my journal before going to sleep."},
+    ],
+    vocab:[
+      {v:"hôm nay", e:"today"}, {v:"bận", e:"busy"},
+      {v:"cảm thấy", e:"to feel"}, {v:"hoàn thành", e:"to complete / finish"},
+      {v:"nhật ký", e:"diary / journal"}, {v:"viết", e:"to write"},
+      {v:"vui", e:"happy"}, {v:"mệt", e:"tired"},
+    ],
+    grammar:[
+      {title:"Cảm thấy + adjective", body:"\"Cảm thấy\" means \"to feel\" and is followed directly by an adjective to describe an emotion, as in \"mình cảm thấy vui\" (I feel happy). This is the standard way to talk about feelings in a journal entry."},
+      {title:"Trước khi + clause", body:"\"Trước khi\" means \"before\" and introduces the later event in time, placed after the main action, as in \"viết nhật ký trước khi đi ngủ\" (wrote in my journal before going to sleep). The clause after \"trước khi\" states what happens afterward chronologically."},
+    ],
+    cards:[
+      {v:"Hôm nay của bạn thế nào?", p:"hom nai coo-a ban tay now", e:"How was your day today?"},
+      {v:"Hôm nay mình khá bận, nhưng mình cảm thấy vui vì hoàn thành được nhiều việc.", p:"hom nai ming khaa ban, nyuhng ming gam tay voo-ee vee hwaan taan duh-uhk nyew vee-ek", e:"Today I was quite busy, but I feel happy because I finished a lot of things."},
+      {v:"Bạn đã làm những gì vậy?", p:"ban daa laam nyuhng zee vay", e:"What did you do exactly?"},
+      {v:"Mình đi làm, tập thể dục, rồi viết nhật ký trước khi đi ngủ.", p:"ming dee laam, tap tay zup, roy vee-et nyat kee chuh-uhk khee dee ngoo", e:"I went to work, exercised, then wrote in my journal before going to sleep."},
+    ],
+  },
+  { id:'t49', level:'A1', title:"Letter to Family", emoji:'📝',
+    desc:"Compose a letter to update your family.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn đang viết thư cho gia đình à?", p:'', e:"Are you writing a letter to your family?"},
+      {speaker:'B', v:"Ừ, mình muốn báo tin mình vừa tìm được việc làm mới.", p:'', e:"Yeah, I want to share the news that I just found a new job."},
+      {speaker:'A', v:"Vậy bạn nên hỏi thăm sức khỏe của bố mẹ nữa.", p:'', e:"Then you should also ask about your parents' health."},
+      {speaker:'B', v:"Đúng rồi, mình sẽ hỏi thăm và gửi lời chúc sức khỏe cho cả nhà.", p:'', e:"Right, I'll ask about them and send health wishes to the whole family."},
+    ],
+    vocab:[
+      {v:"viết thư", e:"to write a letter"}, {v:"gia đình", e:"family"},
+      {v:"báo tin", e:"to give news"}, {v:"việc làm", e:"job"},
+      {v:"hỏi thăm", e:"to ask after / check on"}, {v:"sức khỏe", e:"health"},
+      {v:"bố mẹ", e:"parents"}, {v:"gửi lời chúc", e:"to send wishes"},
+    ],
+    grammar:[
+      {title:"À? as a soft confirming question", body:"Adding \"à\" to the end of a statement turns it into a gentle confirming question, as in \"Bạn đang viết thư cho gia đình à?\" (You're writing a letter to your family, huh?). It's softer and more casual than \"phải không\"."},
+      {title:"Đang for actions in progress", body:"\"Đang\" is placed before the verb to show an action is currently happening, as in \"đang viết thư\" (is writing a letter). It works like the English \"-ing\" form to describe what someone is doing right now."},
+    ],
+    cards:[
+      {v:"Bạn đang viết thư cho gia đình à?", p:"ban dang vee-et tuh cho zaa ding aa", e:"Are you writing a letter to your family?"},
+      {v:"Ừ, mình muốn báo tin mình vừa tìm được việc làm mới.", p:"uh, ming moo-uhn bow tin ming vuh-a tim duh-uhk vee-ek laam muh-ee", e:"Yeah, I want to share the news that I just found a new job."},
+      {v:"Vậy bạn nên hỏi thăm sức khỏe của bố mẹ nữa.", p:"vay ban nen hoy tam suhk khweh coo-a bo meh nuh-a", e:"Then you should also ask about your parents' health."},
+      {v:"Đúng rồi, mình sẽ hỏi thăm và gửi lời chúc sức khỏe cho cả nhà.", p:"doong roy, ming seh hoy tam vaa guh-ee luh-ee chook suhk khweh cho gaa nyaa", e:"Right, I'll ask about them and send health wishes to the whole family."},
+    ],
+  },
+  { id:'t50', level:'A1', title:"Personal Achievements", emoji:'🏆',
+    desc:"Talk about a significant personal accomplishment.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Nghe nói bạn vừa đạt được một thành tích lớn phải không?", p:'', e:"I heard you just achieved a big accomplishment, right?"},
+      {speaker:'B', v:"Đúng vậy, mình vừa hoàn thành cuộc thi marathon đầu tiên của mình.", p:'', e:"That's right, I just finished my first marathon race."},
+      {speaker:'A', v:"Chúc mừng bạn! Bạn cảm thấy thế nào?", p:'', e:"Congratulations! How do you feel?"},
+      {speaker:'B', v:"Mình rất tự hào vì đã cố gắng hết mình.", p:'', e:"I'm very proud because I gave it my all."},
+    ],
+    vocab:[
+      {v:"thành tích", e:"achievement"}, {v:"đạt được", e:"to achieve / attain"},
+      {v:"cuộc thi", e:"competition / race"}, {v:"hoàn thành", e:"to complete"},
+      {v:"tự hào", e:"proud"}, {v:"cố gắng", e:"to try hard"},
+      {v:"chúc mừng", e:"congratulations"}, {v:"thành công", e:"success"},
+    ],
+    grammar:[
+      {title:"Phải không? tag question", body:"Adding \"phải không?\" to the end of a statement turns it into a tag question meaning \"right?\" or \"isn't that so?\", as in \"...một thành tích lớn phải không?\" (a big accomplishment, right?). It invites the listener to confirm what was just said."},
+      {title:"Vừa for recent past", body:"\"Vừa\" is placed before the verb to show an action happened just recently, as in \"vừa đạt được\" (just achieved) and \"vừa hoàn thành\" (just finished). It emphasizes that the event is fresh, close to the present moment."},
+    ],
+    cards:[
+      {v:"Nghe nói bạn vừa đạt được một thành tích lớn phải không?", p:"nge noy ban vuh-a daat duh-uhk mot taan tik luhn fai khom", e:"I heard you just achieved a big accomplishment, right?"},
+      {v:"Đúng vậy, mình vừa hoàn thành cuộc thi marathon đầu tiên của mình.", p:"doong vay, ming vuh-a hwaan taan koo-uhk tee ma-ra-ton dow tee-en coo-a ming", e:"That's right, I just finished my first marathon race."},
+      {v:"Chúc mừng bạn! Bạn cảm thấy thế nào?", p:"chook muhng ban! ban gam tay tay now", e:"Congratulations! How do you feel?"},
+      {v:"Mình rất tự hào vì đã cố gắng hết mình.", p:"ming rut too how vee daa co gang het ming", e:"I'm very proud because I gave it my all."},
+    ],
+  },
+  { id:'t51', level:'A1', title:"Local Customs", emoji:'🎎',
+    desc:"Ask about and understand local customs and etiquette.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Ở Việt Nam, khi vào nhà người khác mình phải làm gì trước?", p:'', e:"In Vietnam, what do you have to do first when entering someone else's house?"},
+      {speaker:'B', v:"Mình phải cởi giày trước khi vào nhà.", p:'', e:"You have to take off your shoes before entering the house."},
+      {speaker:'A', v:"Còn khi ăn cơm với người lớn tuổi thì sao?", p:'', e:"What about when eating with older people?"},
+      {speaker:'B', v:"Mình nên mời người lớn tuổi ăn cơm trước để tỏ sự tôn trọng.", p:'', e:"You should invite the elders to eat first to show respect."},
+    ],
+    vocab:[
+      {v:"phong tục", e:"custom"}, {v:"cởi giày", e:"to take off shoes"},
+      {v:"người lớn tuổi", e:"elderly person"}, {v:"tôn trọng", e:"to respect"},
+      {v:"mời", e:"to invite"}, {v:"trước", e:"before"},
+      {v:"văn hóa", e:"culture"}, {v:"lịch sự", e:"polite"},
+    ],
+    grammar:[
+      {title:"Phải for obligation", body:"\"Phải\" before a verb expresses obligation or necessity, as in \"phải làm gì\" (must do what) and \"phải cởi giày\" (must take off shoes). It works like the English \"have to / must\" and always comes right before the main verb."},
+      {title:"Trước khi + clause", body:"\"Trước khi\" means \"before\" and introduces the action that happens first, as in \"trước khi vào nhà\" (before entering the house). The main action follows in the first part of the sentence, e.g. \"cởi giày trước khi vào nhà\"."},
+    ],
+    cards:[
+      {v:"Ở Việt Nam, khi vào nhà người khác mình phải làm gì trước?", p:"uh vee-et naam, khee vow nyaa nguh-uh-ee khaak ming fai laam zee truh-uhk", e:"In Vietnam, what do you have to do first when entering someone else's house?"},
+      {v:"Mình phải cởi giày trước khi vào nhà.", p:"ming fai guh-ee zai truh-uhk khee vow nyaa", e:"You have to take off your shoes before entering the house."},
+      {v:"Còn khi ăn cơm với người lớn tuổi thì sao?", p:"kon khee an kuhm vuh-ee nguh-uh-ee luhn too-ee tee sao", e:"What about when eating with older people?"},
+      {v:"Mình nên mời người lớn tuổi ăn cơm trước để tỏ sự tôn trọng.", p:"ming nen muh-ee nguh-uh-ee luhn too-ee an kuhm truh-uhk deh to suh ton chong", e:"You should invite the elders to eat first to show respect."},
+    ],
+  },
+  { id:'t52', level:'A1', title:"Environment Talk", emoji:'🌱',
+    desc:"Discuss local or global environmental concerns.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Dạo này không khí ở thành phố ô nhiễm quá.", p:'', e:"The air in the city has been so polluted lately."},
+      {speaker:'B', v:"Ừ, mình nghĩ nên đi xe đạp thay vì đi xe máy.", p:'', e:"Yeah, I think we should ride bikes instead of motorbikes."},
+      {speaker:'A', v:"Bạn có phân loại rác không?", p:'', e:"Do you sort your trash?"},
+      {speaker:'B', v:"Có chứ, mình luôn tái chế nhựa và giấy.", p:'', e:"Of course, I always recycle plastic and paper."},
+    ],
+    vocab:[
+      {v:"ô nhiễm", e:"pollution / polluted"}, {v:"không khí", e:"air"},
+      {v:"môi trường", e:"environment"}, {v:"tái chế", e:"to recycle"},
+      {v:"rác", e:"trash"}, {v:"phân loại", e:"to sort / classify"},
+      {v:"nhựa", e:"plastic"}, {v:"xe đạp", e:"bicycle"},
+    ],
+    grammar:[
+      {title:"Quá for intensity", body:"\"Quá\" placed after an adjective intensifies it, as in \"ô nhiễm quá\" (so polluted). This is a very common spoken pattern for expressing strong reactions to a situation."},
+      {title:"Thay vì + verb", body:"\"Thay vì\" means \"instead of\" and introduces the alternative being rejected, as in \"đi xe đạp thay vì đi xe máy\" (ride a bike instead of a motorbike). The preferred action comes before \"thay vì\", and the rejected one comes after."},
+    ],
+    cards:[
+      {v:"Dạo này không khí ở thành phố ô nhiễm quá.", p:"zow nai khom khee uh taan fo oh nyee-em kwaa", e:"The air in the city has been so polluted lately."},
+      {v:"Ừ, mình nghĩ nên đi xe đạp thay vì đi xe máy.", p:"uh, ming ngee nen dee se dap tai vee dee se mai", e:"Yeah, I think we should ride bikes instead of motorbikes."},
+      {v:"Bạn có phân loại rác không?", p:"ban co fan lwai rak khom", e:"Do you sort your trash?"},
+      {v:"Có chứ, mình luôn tái chế nhựa và giấy.", p:"co chuh, ming loo-uhn tai cheh nyuh-a vaa zay", e:"Of course, I always recycle plastic and paper."},
+    ],
+  },
+  { id:'t53', level:'A1', title:"Lost & Found", emoji:'🔍',
+    desc:"Report a lost item and ask if it has been found.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Xin lỗi, tôi bị mất cái ví ở đây sáng nay.", p:'', e:"Excuse me, I lost my wallet here this morning."},
+      {speaker:'B', v:"Anh có nhớ để nó ở đâu không?", p:'', e:"Do you remember where you left it?"},
+      {speaker:'A', v:"Hình như tôi để quên trên bàn ăn.", p:'', e:"I think I left it on the dining table."},
+      {speaker:'B', v:"Để tôi kiểm tra, có người vừa nộp lại một cái ví giống vậy.", p:'', e:"Let me check, someone just turned in a wallet like that."},
+    ],
+    vocab:[
+      {v:"mất", e:"to lose"}, {v:"tìm thấy", e:"to find"},
+      {v:"ví", e:"wallet"}, {v:"để quên", e:"to leave behind / forget"},
+      {v:"nộp lại", e:"to turn in / hand over"}, {v:"kiểm tra", e:"to check"},
+      {v:"đồ thất lạc", e:"lost item"}, {v:"giống", e:"similar / alike"},
+    ],
+    grammar:[
+      {title:"Bị for unfortunate events", body:"\"Bị\" before a verb marks something unwanted or unfortunate happening to the subject, as in \"tôi bị mất cái ví\" (I lost my wallet / had my wallet lost on me). It functions like a passive marker used specifically for bad experiences."},
+      {title:"Có...không? questions", body:"The frame \"Có + verb + không?\" forms a yes/no question, as in \"Anh có nhớ...không?\" (Do you remember...?). Answer \"có\" (yes) or \"không\" (no), optionally repeating the verb."},
+    ],
+    cards:[
+      {v:"Xin lỗi, tôi bị mất cái ví ở đây sáng nay.", p:"sin loy, toy bee mut kai vee uh day saang nai", e:"Excuse me, I lost my wallet here this morning."},
+      {v:"Anh có nhớ để nó ở đâu không?", p:"aan co nyuh deh no uh doh khom", e:"Do you remember where you left it?"},
+      {v:"Hình như tôi để quên trên bàn ăn.", p:"hing nyuh toy deh kwen chen baan an", e:"I think I left it on the dining table."},
+      {v:"Để tôi kiểm tra, có người vừa nộp lại một cái ví giống vậy.", p:"deh toy kee-em chaa, co nguh-uh-ee vuh-a nop lai mot kai vee zong vay", e:"Let me check, someone just turned in a wallet like that."},
+    ],
+  },
+  { id:'t54', level:'A1', title:"Explaining a Recipe", emoji:'🍳',
+    desc:"Describe the steps to prepare a dish.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bạn nấu phở như thế nào vậy?", p:'', e:"How do you cook phở?"},
+      {speaker:'B', v:"Đầu tiên, mình hầm xương bò trong vài giờ để lấy nước dùng.", p:'', e:"First, I simmer beef bones for several hours to get the broth."},
+      {speaker:'A', v:"Sau đó thì sao?", p:'', e:"What comes after that?"},
+      {speaker:'B', v:"Sau đó mình cho bánh phở, thịt bò và rau thơm vào tô rồi chan nước dùng lên.", p:'', e:"After that I put rice noodles, beef, and herbs into the bowl, then pour the broth over."},
+    ],
+    vocab:[
+      {v:"nấu", e:"to cook"}, {v:"nước dùng", e:"broth"},
+      {v:"hầm", e:"to simmer / stew"}, {v:"gia vị", e:"spices / seasoning"},
+      {v:"bánh phở", e:"rice noodles"}, {v:"rau thơm", e:"herbs"},
+      {v:"công thức", e:"recipe"}, {v:"cho vào", e:"to add / put in"},
+    ],
+    grammar:[
+      {title:"Đầu tiên...sau đó sequencing", body:"\"Đầu tiên\" (first) and \"sau đó\" (after that) mark the order of steps in a process, as seen in \"Đầu tiên, mình hầm xương bò...\" followed by \"Sau đó mình cho bánh phở...\". This pattern is essential for explaining any multi-step process."},
+      {title:"Để for purpose", body:"\"Để\" before a verb phrase expresses purpose, meaning \"in order to\", as in \"để lấy nước dùng\" (in order to get the broth). It links an action to the goal it is meant to achieve."},
+    ],
+    cards:[
+      {v:"Bạn nấu phở như thế nào vậy?", p:"ban now fuh nyuh teh now vay", e:"How do you cook phở?"},
+      {v:"Đầu tiên, mình hầm xương bò trong vài giờ để lấy nước dùng.", p:"doh tee-en, ming hum suh-uhng bo chong vai zuh deh lay nuh-uhk zoong", e:"First, I simmer beef bones for several hours to get the broth."},
+      {v:"Sau đó thì sao?", p:"sao doh tee sao", e:"What comes after that?"},
+      {v:"Sau đó mình cho bánh phở, thịt bò và rau thơm vào tô rồi chan nước dùng lên.", p:"sao doh ming cho baan fuh, tit bo vaa rao tuhm vow toh roy chaan nuh-uhk zoong len", e:"After that I put rice noodles, beef, and herbs into the bowl, then pour the broth over."},
+    ],
+  },
+  { id:'t55', level:'A1', title:"Childhood Story", emoji:'🧸',
+    desc:"Recount a memorable story from your childhood.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Hồi nhỏ bạn thích chơi gì nhất?", p:'', e:"What did you like to play most when you were little?"},
+      {speaker:'B', v:"Mình hay trèo cây và bắt cá với mấy đứa bạn hàng xóm.", p:'', e:"I often climbed trees and caught fish with my neighborhood friends."},
+      {speaker:'A', v:"Nghe vui quá! Bạn có kỷ niệm nào đáng nhớ không?", p:'', e:"Sounds fun! Do you have any memorable memory?"},
+      {speaker:'B', v:"Có, một lần mình bị té xuống ao và ướt hết cả người, ai cũng cười.", p:'', e:"Yes, once I fell into a pond and got completely soaked, everyone laughed."},
+    ],
+    vocab:[
+      {v:"hồi nhỏ", e:"when young / in childhood"}, {v:"kỷ niệm", e:"memory"},
+      {v:"trèo cây", e:"to climb a tree"}, {v:"bạn hàng xóm", e:"neighborhood friend"},
+      {v:"té", e:"to fall"}, {v:"ao", e:"pond"},
+      {v:"đáng nhớ", e:"memorable"}, {v:"tuổi thơ", e:"childhood"},
+    ],
+    grammar:[
+      {title:"Hồi nhỏ as a time marker", body:"\"Hồi nhỏ\" means \"when I was young\" and sets the timeframe for a story, typically placed at the start of the sentence, as in \"Hồi nhỏ bạn thích chơi gì nhất?\" (What did you like to play most as a kid?). It's a common way to open a childhood story."},
+      {title:"Bị + verb for misfortune", body:"As with other unfortunate events, \"bị\" before a verb signals something bad happening to the subject, as in \"bị té xuống ao\" (fell into the pond). This reinforces the passive-like \"bị\" pattern used for accidents or mishaps."},
+    ],
+    cards:[
+      {v:"Hồi nhỏ bạn thích chơi gì nhất?", p:"hoy nyo ban tik chuh-ee zee nyut", e:"What did you like to play most when you were little?"},
+      {v:"Mình hay trèo cây và bắt cá với mấy đứa bạn hàng xóm.", p:"ming hai cheh-oh kay vaa but kaa vuh-ee may duh-a ban haang som", e:"I often climbed trees and caught fish with my neighborhood friends."},
+      {v:"Nghe vui quá! Bạn có kỷ niệm nào đáng nhớ không?", p:"ngeh voo-ee kwaa! ban co kee nee-em now daang nyuh khom", e:"Sounds fun! Do you have any memorable memory?"},
+      {v:"Có, một lần mình bị té xuống ao và ướt hết cả người, ai cũng cười.", p:"co, mot lun ming bee teh soo-ong ao vaa uh-uht het kaa nguh-uh-ee, ai kung kuh-uh-ee", e:"Yes, once I fell into a pond and got completely soaked, everyone laughed."},
+    ],
+  },
+  { id:'t56', level:'A1', title:"Tech Support", emoji:'💻',
+    desc:"Report phone or internet problems and get help.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Dạ, tổng đài kỹ thuật xin nghe. Anh gặp vấn đề gì ạ?", p:'', e:"Hello, technical support speaking. What problem are you having?"},
+      {speaker:'B', v:"Wifi nhà tôi bị mất mạng từ sáng nay rồi.", p:'', e:"My home wifi has been down since this morning."},
+      {speaker:'A', v:"Anh đã thử tắt rồi mở lại modem chưa ạ?", p:'', e:"Have you tried turning the modem off and back on?"},
+      {speaker:'B', v:"Rồi, nhưng vẫn không được. Chừng nào mới sửa xong?", p:'', e:"Yes, but it still doesn't work. When will it be fixed?"},
+    ],
+    vocab:[
+      {v:"mạng", e:"network / internet"}, {v:"wifi", e:"wifi"},
+      {v:"modem", e:"modem / router"}, {v:"vấn đề", e:"problem"},
+      {v:"sửa", e:"to fix / repair"}, {v:"tắt", e:"to turn off"},
+      {v:"mở", e:"to turn on"}, {v:"tổng đài", e:"call center / hotline"},
+    ],
+    grammar:[
+      {title:"Đã ... chưa? (completed action question)", body:"\"Anh đã thử tắt rồi mở lại modem chưa ạ?\" uses \"đã ... chưa\" to ask whether an action has already happened. \"Đã\" marks the past/completed aspect while \"chưa\" (yet) at the end turns the sentence into a yes/no question expecting \"rồi\" (already done) or \"chưa\" (not yet) as the reply."},
+      {title:"Bị + problem word", body:"\"Wifi nhà tôi bị mất mạng\" uses \"bị\" before a negative event to show something unwanted happened to the subject, similar to a passive voice for misfortunes. Compare \"bị mất mạng\" (lost connection, unfortunate) with a neutral statement lacking \"bị\"."},
+    ],
+    cards:[
+      {v:"Dạ, tổng đài kỹ thuật xin nghe. Anh gặp vấn đề gì ạ?", p:"zaa, tong dai ky twat sin nge. aan gap van de zee aa", e:"Hello, technical support speaking. What problem are you having?"},
+      {v:"Wifi nhà tôi bị mất mạng từ sáng nay rồi.", p:"wifi nyaa toy bee mut mang tuh saang nai roy", e:"My home wifi has been down since this morning."},
+      {v:"Anh đã thử tắt rồi mở lại modem chưa ạ?", p:"aan daa tuh tat roy muh lai modem chuh-uh aa", e:"Have you tried turning the modem off and back on?"},
+      {v:"Rồi, nhưng vẫn không được. Chừng nào mới sửa xong?", p:"roy, nyung van khom duh-uhk. chung now muh-ee suh-uh song", e:"Yes, but it still doesn't work. When will it be fixed?"},
+    ],
+  },
+  { id:'t57', level:'A1', title:"Pet Adoption", emoji:'🐾',
+    desc:"Ask about adopting a pet from an animal shelter.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, chị muốn nhận nuôi con vật nào ạ?", p:'', e:"Hello, which animal would you like to adopt?"},
+      {speaker:'B', v:"Tôi thích con mèo nhỏ màu trắng kia.", p:'', e:"I like that small white cat over there."},
+      {speaker:'A', v:"Con đó rất hiền, đã tiêm phòng đầy đủ rồi ạ.", p:'', e:"That one is very gentle, and has already been fully vaccinated."},
+      {speaker:'B', v:"Vậy tôi cần làm thủ tục gì để nhận nuôi nó?", p:'', e:"So what procedure do I need to complete to adopt it?"},
+    ],
+    vocab:[
+      {v:"nhận nuôi", e:"to adopt (a pet)"}, {v:"con vật", e:"animal"},
+      {v:"mèo", e:"cat"}, {v:"chó", e:"dog"},
+      {v:"tiêm phòng", e:"to vaccinate"}, {v:"hiền", e:"gentle / tame"},
+      {v:"thủ tục", e:"procedure / paperwork"}, {v:"trại cứu hộ", e:"animal shelter"},
+    ],
+    grammar:[
+      {title:"Classifier con", body:"\"Con mèo\" and \"con vật\" both use the classifier \"con,\" which is placed before animals (and a few other living/moving things) similar to how \"cái\" classifies objects. You cannot drop \"con\" before an animal noun in natural Vietnamese, as in \"con mèo nhỏ màu trắng kia\" (that small white cat)."},
+      {title:"Kia as a distal demonstrative", body:"\"Kia\" at the end of \"con mèo nhỏ màu trắng kia\" means \"that (over there),\" marking something farther away than \"đó\" (that, nearby) or \"này\" (this). Demonstratives in Vietnamese always follow the noun and its descriptors instead of coming before them."},
+    ],
+    cards:[
+      {v:"Chào chị, chị muốn nhận nuôi con vật nào ạ?", p:"chow chi, chi moo-uhn nyan noo-ee con vat now aa", e:"Hello, which animal would you like to adopt?"},
+      {v:"Tôi thích con mèo nhỏ màu trắng kia.", p:"toy tik con meo nyoh mau chang kee-a", e:"I like that small white cat over there."},
+      {v:"Con đó rất hiền, đã tiêm phòng đầy đủ rồi ạ.", p:"con doh zut hee-en, daa tee-em fong day doo roy aa", e:"That one is very gentle, and has already been fully vaccinated."},
+      {v:"Vậy tôi cần làm thủ tục gì để nhận nuôi nó?", p:"vay toy kun laam too took zee de nyan noo-ee no", e:"So what procedure do I need to complete to adopt it?"},
+    ],
+  },
+  { id:'t58', level:'A1', title:"Job Interview", emoji:'🤝',
+    desc:"Answer questions and present yourself in a job interview.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bạn, bạn hãy giới thiệu một chút về bản thân.", p:'', e:"Hello, please introduce yourself a little."},
+      {speaker:'B', v:"Dạ, tôi tên Lan, tôi có ba năm kinh nghiệm làm marketing.", p:'', e:"Yes, my name is Lan, I have three years of experience in marketing."},
+      {speaker:'A', v:"Tại sao bạn muốn làm việc ở công ty chúng tôi?", p:'', e:"Why do you want to work at our company?"},
+      {speaker:'B', v:"Vì tôi thấy công ty rất năng động và có nhiều cơ hội học hỏi.", p:'', e:"Because I find the company very dynamic and full of learning opportunities."},
+    ],
+    vocab:[
+      {v:"kinh nghiệm", e:"experience"}, {v:"giới thiệu", e:"to introduce"},
+      {v:"công ty", e:"company"}, {v:"cơ hội", e:"opportunity"},
+      {v:"phỏng vấn", e:"interview"}, {v:"năng động", e:"dynamic / energetic"},
+      {v:"bản thân", e:"oneself"}, {v:"kỹ năng", e:"skill"},
+    ],
+    grammar:[
+      {title:"Vì to give a reason", body:"\"Vì tôi thấy công ty rất năng động...\" uses \"vì\" (because) to introduce a reason, directly answering a \"tại sao\" (why) question. This mirrors the common cause-effect pair \"vì ... nên...\" though \"nên\" (so) can be dropped when the reason stands alone as an answer."},
+      {title:"Hãy for polite requests/suggestions", body:"\"Bạn hãy giới thiệu một chút về bản thân\" places \"hãy\" before the verb to softly request or instruct someone to do something, common in formal or interview settings. It is gentler than a bare command and often paired with polite pronouns like \"bạn\" or \"anh/chị.\""},
+    ],
+    cards:[
+      {v:"Chào bạn, bạn hãy giới thiệu một chút về bản thân.", p:"chow ban, ban hai zuh-ee tee-eu mot choot ve baan tan", e:"Hello, please introduce yourself a little."},
+      {v:"Dạ, tôi tên Lan, tôi có ba năm kinh nghiệm làm marketing.", p:"zaa, toy ten Laan, toy co baa nam king ngee-em laam marketing", e:"Yes, my name is Lan, I have three years of experience in marketing."},
+      {v:"Tại sao bạn muốn làm việc ở công ty chúng tôi?", p:"tai sao ban moo-uhn laam vee-ek uh cong ty choong toy", e:"Why do you want to work at our company?"},
+      {v:"Vì tôi thấy công ty rất năng động và có nhiều cơ hội học hỏi.", p:"vee toy tay cong ty zut nang dong vaa co nyee-oo kuh hoy hop hoy", e:"Because I find the company very dynamic and full of learning opportunities."},
+    ],
+  },
+  { id:'t59', level:'A1', title:"Car Troubles", emoji:'🚗',
+    desc:"Explain car problems to a mechanic.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh, xe của anh bị làm sao vậy?", p:'', e:"Hello, what's wrong with your car?"},
+      {speaker:'B', v:"Xe tôi bị kêu lạ ở bánh trước và phanh không ăn.", p:'', e:"My car is making a strange noise at the front wheel and the brakes aren't working well."},
+      {speaker:'A', v:"Để tôi kiểm tra dầu phanh và lốp xe trước nhé.", p:'', e:"Let me check the brake fluid and the tires first."},
+      {speaker:'B', v:"Dạ được, sửa xong thì tốn khoảng bao nhiêu tiền ạ?", p:'', e:"Okay, how much will it cost once it's fixed?"},
+    ],
+    vocab:[
+      {v:"xe", e:"car / vehicle"}, {v:"phanh", e:"brake"},
+      {v:"lốp xe", e:"tire"}, {v:"bánh xe", e:"wheel"},
+      {v:"kiểm tra", e:"to check / inspect"}, {v:"dầu", e:"oil / fluid"},
+      {v:"sửa xe", e:"to repair a car"}, {v:"kêu lạ", e:"to make a strange noise"},
+    ],
+    grammar:[
+      {title:"Bị + adjective/verb for problems", body:"\"Xe tôi bị kêu lạ\" and \"phanh không ăn\" both describe car trouble; \"bị\" before \"kêu lạ\" marks an unwanted state happening to the car, just like \"bị bệnh\" (to be sick). This pattern is very common when reporting malfunctions or complaints."},
+      {title:"Để + subject + verb (let me...)", body:"\"Để tôi kiểm tra dầu phanh và lốp xe trước nhé\" uses \"để\" at the start to mean \"let\" or \"allow me to,\" offering to do something next. The sentence-final \"nhé\" softens it into a friendly suggestion rather than a blunt statement."},
+    ],
+    cards:[
+      {v:"Chào anh, xe của anh bị làm sao vậy?", p:"chow aan, se koo-a aan bee laam sao vay", e:"Hello, what's wrong with your car?"},
+      {v:"Xe tôi bị kêu lạ ở bánh trước và phanh không ăn.", p:"se toy bee kee-oo laa uh baan chuh-uk vaa faan khom an", e:"My car is making a strange noise at the front wheel and the brakes aren't working well."},
+      {v:"Để tôi kiểm tra dầu phanh và lốp xe trước nhé.", p:"de toy kee-em chaa zow faan vaa lop se chuh-uk nyeh", e:"Let me check the brake fluid and the tires first."},
+      {v:"Dạ được, sửa xong thì tốn khoảng bao nhiêu tiền ạ?", p:"zaa duh-uhk, suh-uh song tee ton khwaang bow nyew tee-en aa", e:"Okay, how much will it cost once it's fixed?"},
+    ],
+  },
+  { id:'t60', level:'A1', title:"Cooking Class", emoji:'👩‍🍳',
+    desc:"Follow instructions and ask questions in a cooking class.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Bây giờ mọi người thái hành và tỏi cho thật nhỏ nhé.", p:'', e:"Now everyone chop the onion and garlic very finely."},
+      {speaker:'B', v:"Dạ, mình cho bao nhiêu muối vào là vừa ạ?", p:'', e:"How much salt should we add to make it just right?"},
+      {speaker:'A', v:"Chỉ cần một muỗng nhỏ thôi, rồi nêm nếm lại sau.", p:'', e:"Just one small spoon is enough, then taste and adjust it later."},
+      {speaker:'B', v:"Dạ hiểu rồi, sau đó mình xào trong bao lâu ạ?", p:'', e:"Got it, and after that how long should we stir-fry it?"},
+    ],
+    vocab:[
+      {v:"thái", e:"to chop / slice"}, {v:"hành", e:"onion / scallion"},
+      {v:"tỏi", e:"garlic"}, {v:"muối", e:"salt"},
+      {v:"xào", e:"to stir-fry"}, {v:"nêm nếm", e:"to season / taste-adjust"},
+      {v:"muỗng", e:"spoon"}, {v:"công thức", e:"recipe"},
+    ],
+    grammar:[
+      {title:"Cho + amount + vào (adding an ingredient)", body:"\"Mình cho bao nhiêu muối vào là vừa ạ?\" uses \"cho ... vào\" meaning \"put/add ... in,\" a common cooking pattern where the ingredient sits between \"cho\" and \"vào.\" \"Là vừa\" at the end means \"is just right,\" a handy phrase for asking about the correct amount."},
+      {title:"Trong bao lâu for asking duration", body:"\"Xào trong bao lâu ạ?\" asks \"for how long,\" with \"trong\" (during/for) plus \"bao lâu\" (how long) placed after the verb to ask about duration of an action. This differs from \"bao nhiêu,\" which asks about quantity rather than time."},
+    ],
+    cards:[
+      {v:"Bây giờ mọi người thái hành và tỏi cho thật nhỏ nhé.", p:"bay zuh moy nguh-uh-ee tai haan vaa toy cho tut nyoh nyeh", e:"Now everyone chop the onion and garlic very finely."},
+      {v:"Dạ, mình cho bao nhiêu muối vào là vừa ạ?", p:"zaa, ming cho bow nyew moo-ee vow laa vuh-a aa", e:"How much salt should we add to make it just right?"},
+      {v:"Chỉ cần một muỗng nhỏ thôi, rồi nêm nếm lại sau.", p:"chee kun mot moo-ong nyoh toy, roy nem nem lai sau", e:"Just one small spoon is enough, then taste and adjust it later."},
+      {v:"Dạ hiểu rồi, sau đó mình xào trong bao lâu ạ?", p:"zaa hee-oo roy, sau do ming sao chong bow lau aa", e:"Got it, and after that how long should we stir-fry it?"},
+    ],
+  },
+  { id:'t61', level:'A1', title:"Museum Visit", emoji:'🖼️',
+    desc:"Ask about exhibits and discuss art at a museum.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, vé vào cửa bao nhiêu tiền ạ?", p:'', e:"Hello, how much is the entrance ticket?"},
+      {speaker:'B', v:"Dạ, hai mươi nghìn một vé ạ.", p:'', e:"Twenty thousand dong per ticket."},
+      {speaker:'A', v:"Bức tranh này của họa sĩ nào vậy chị?", p:'', e:"Which artist is this painting by?"},
+      {speaker:'B', v:"Đây là tranh của một họa sĩ nổi tiếng Việt Nam đó anh.", p:'', e:"This is a painting by a famous Vietnamese artist."},
+    ],
+    vocab:[
+      {v:"bảo tàng", e:"museum"}, {v:"vé", e:"ticket"},
+      {v:"tranh", e:"painting"}, {v:"họa sĩ", e:"artist / painter"},
+      {v:"triển lãm", e:"exhibition"}, {v:"tác phẩm", e:"work of art"},
+      {v:"nghệ thuật", e:"art"}, {v:"vào cửa", e:"entrance / admission"},
+    ],
+    grammar:[
+      {title:"Asking price with Bao nhiêu tiền", body:"\"Bao nhiêu tiền\" literally means \"how much money\" and is used to ask the cost of something, as in \"vé vào cửa bao nhiêu tiền ạ?\" The answer states the number plus the currency unit, like \"hai mươi nghìn\" (twenty thousand)."},
+      {title:"Possession with Của + question word Nào", body:"\"Của\" marks possession or origin, so \"tranh này của họa sĩ nào\" asks \"whose/which artist's painting is this.\" \"Nào\" attaches after a noun to ask \"which one,\" and the reply simply restates \"của\" plus the answer, as in \"tranh của một họa sĩ nổi tiếng\" (a painting by a famous artist)."},
+    ],
+    cards:[
+      {v:"Chào chị, vé vào cửa bao nhiêu tiền ạ?", p:"chow chi, veh vow kuh-uh bow nyew tee-en aa", e:"Hello, how much is the entrance ticket?"},
+      {v:"Dạ, hai mươi nghìn một vé ạ.", p:"zaa, hai muh-uh-ee ngin mot veh aa", e:"Twenty thousand dong per ticket."},
+      {v:"Bức tranh này của họa sĩ nào vậy chị?", p:"buk chaan nay kuh-uh hwaa see now vay chi", e:"Which artist is this painting by?"},
+      {v:"Đây là tranh của một họa sĩ nổi tiếng Việt Nam đó anh.", p:"day laa chaan kuh-uh mot hwaa see noy tee-eng vee-et naam do aan", e:"This is a painting by a famous Vietnamese artist."},
+    ],
+  },
+  { id:'t62', level:'A1', title:"Price Negotiation", emoji:'💰',
+    desc:"Negotiate prices when shopping at a market.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Cái áo này giá bao nhiêu vậy chị?", p:'', e:"How much is this shirt?"},
+      {speaker:'B', v:"Dạ, ba trăm nghìn một cái anh ơi.", p:'', e:"Three hundred thousand dong each."},
+      {speaker:'A', v:"Đắt quá, chị bớt chút được không?", p:'', e:"That's too expensive, can you lower it a bit?"},
+      {speaker:'B', v:"Thôi được, hai trăm năm mươi nghìn cho anh nha.", p:'', e:"Alright, two hundred fifty thousand for you."},
+    ],
+    vocab:[
+      {v:"giá", e:"price"}, {v:"đắt", e:"expensive"},
+      {v:"rẻ", e:"cheap"}, {v:"bớt", e:"to reduce / discount"},
+      {v:"mặc cả", e:"to bargain"}, {v:"tiền", e:"money"},
+      {v:"cái", e:"classifier / item"}, {v:"được không", e:"is that okay? / possible?"},
+    ],
+    grammar:[
+      {title:"Requesting with Được không?", body:"Adding \"được không?\" after a request softens it into a yes/no question meaning \"is that possible/okay?\" as in \"chị bớt chút được không?\" (can you discount it a bit?). The listener replies with \"được\" (okay) or \"không được\" (not possible)."},
+      {title:"Intensifying with Quá", body:"\"Quá\" placed after an adjective means \"too/very,\" so \"đắt quá\" expresses \"too expensive\" and signals dissatisfaction with the price. This pattern is common in bargaining to prompt the seller to offer a discount."},
+    ],
+    cards:[
+      {v:"Cái áo này giá bao nhiêu vậy chị?", p:"kai ow nay zaa bow nyew vay chi", e:"How much is this shirt?"},
+      {v:"Dạ, ba trăm nghìn một cái anh ơi.", p:"zaa, baa cham ngin mot kai aan uh-ee", e:"Three hundred thousand dong each."},
+      {v:"Đắt quá, chị bớt chút được không?", p:"dat kwaa, chi buht choot duh-uhk khom", e:"That's too expensive, can you lower it a bit?"},
+      {v:"Thôi được, hai trăm năm mươi nghìn cho anh nha.", p:"toy duh-uhk, hai cham nam muh-uh-ee ngin cho aan nyaa", e:"Alright, two hundred fifty thousand for you."},
+    ],
+  },
+  { id:'t63', level:'A1', title:"Party Planning", emoji:'🎈',
+    desc:"Plan and organize a birthday celebration.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Sinh nhật bạn mình tuần sau, mình phải chuẩn bị gì đây?", p:'', e:"Our friend's birthday is next week, what should we prepare?"},
+      {speaker:'B', v:"Mình nghĩ nên đặt bánh kem và mua ít bóng bay trang trí.", p:'', e:"I think we should order a cake and buy some balloons to decorate."},
+      {speaker:'A', v:"Ừ hay đó, còn khách mời thì sao?", p:'', e:"Yeah, good idea, what about the guests?"},
+      {speaker:'B', v:"Để mình gửi thiệp mời cho mọi người ngay bây giờ.", p:'', e:"Let me send invitations to everyone right now."},
+    ],
+    vocab:[
+      {v:"sinh nhật", e:"birthday"}, {v:"bánh kem", e:"cake"},
+      {v:"bóng bay", e:"balloon"}, {v:"trang trí", e:"to decorate"},
+      {v:"khách mời", e:"guest"}, {v:"thiệp mời", e:"invitation card"},
+      {v:"chuẩn bị", e:"to prepare"}, {v:"tổ chức", e:"to organize"},
+    ],
+    grammar:[
+      {title:"Suggesting with Nên", body:"\"Nên\" means \"should\" and is placed before a verb to give a suggestion, as in \"mình nghĩ nên đặt bánh kem\" (I think we should order a cake). It's a soft, common way to propose an action without sounding demanding."},
+      {title:"Volunteering with Để + subject + verb", body:"\"Để\" at the start of a sentence followed by a subject and verb means \"let (someone) do something,\" used here as \"để mình gửi thiệp mời\" (let me send the invitations). It signals the speaker is offering to take on a task."},
+    ],
+    cards:[
+      {v:"Sinh nhật bạn mình tuần sau, mình phải chuẩn bị gì đây?", p:"sing nyat ban ming twun sow, ming fai chwun bi zee day", e:"Our friend's birthday is next week, what should we prepare?"},
+      {v:"Mình nghĩ nên đặt bánh kem và mua ít bóng bay trang trí.", p:"ming ngyee nen dat baan kem vaa moo-uh it bong bai chaang chee", e:"I think we should order a cake and buy some balloons to decorate."},
+      {v:"Ừ hay đó, còn khách mời thì sao?", p:"uh hai do, gon kaak muh-uh-ee tee sow", e:"Yeah, good idea, what about the guests?"},
+      {v:"Để mình gửi thiệp mời cho mọi người ngay bây giờ.", p:"deh ming guh-ee tee-ep muh-uh-ee cho moy nguh-uh-ee ngai bay zuh", e:"Let me send invitations to everyone right now."},
+    ],
+  },
+  { id:'t64', level:'A1', title:"Neighbor Issues", emoji:'🔇',
+    desc:"Address complaints about noise with neighbors.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh, tối qua nhà anh ồn quá, em không ngủ được.", p:'', e:"Hi, your place was too noisy last night, I couldn't sleep."},
+      {speaker:'B', v:"Ôi, xin lỗi em nha, tối qua nhà anh có tiệc nhỏ.", p:'', e:"Oh, sorry about that, we had a small party last night."},
+      {speaker:'A', v:"Anh có thể vặn nhạc nhỏ lại vào buổi tối được không?", p:'', e:"Could you turn the music down in the evenings?"},
+      {speaker:'B', v:"Được chứ, anh sẽ chú ý hơn từ giờ.", p:'', e:"Of course, I'll be more careful from now on."},
+    ],
+    vocab:[
+      {v:"ồn", e:"noisy"}, {v:"yên tĩnh", e:"quiet"},
+      {v:"hàng xóm", e:"neighbor"}, {v:"tiếng ồn", e:"noise"},
+      {v:"xin lỗi", e:"sorry"}, {v:"chú ý", e:"to pay attention"},
+      {v:"nhạc", e:"music"}, {v:"phàn nàn", e:"to complain"},
+    ],
+    grammar:[
+      {title:"Ability/result with Không ... được", body:"Placing \"không\" before the verb and \"được\" after it expresses inability to complete an action, as in \"em không ngủ được\" (I couldn't sleep). This result-complement pattern shows the outcome of an action, not just the action itself."},
+      {title:"Polite requests with Có thể ... được không?", body:"\"Có thể\" (can/be able to) plus a verb, closed with \"được không?\", forms a polite request, as in \"anh có thể vặn nhạc nhỏ lại ... được không?\" (could you turn the music down?). This softer structure is preferred over a direct command when addressing a neighbor."},
+    ],
+    cards:[
+      {v:"Chào anh, tối qua nhà anh ồn quá, em không ngủ được.", p:"chow aan, toy kwaa nyaa aan on kwaa, em khom ngoo duh-uhk", e:"Hi, your place was too noisy last night, I couldn't sleep."},
+      {v:"Ôi, xin lỗi em nha, tối qua nhà anh có tiệc nhỏ.", p:"oy, sin loy em nyaa, toy kwaa nyaa aan go tee-ek nyo", e:"Oh, sorry about that, we had a small party last night."},
+      {v:"Anh có thể vặn nhạc nhỏ lại vào buổi tối được không?", p:"aan go teh van nyaak nyo lai vow boo-ee toy duh-uhk khom", e:"Could you turn the music down in the evenings?"},
+      {v:"Được chứ, anh sẽ chú ý hơn từ giờ.", p:"duh-uhk chuh, aan seh choo ee huhn tuh zuh", e:"Of course, I'll be more careful from now on."},
+    ],
+  },
+  { id:'t65', level:'A1', title:"Spa Booking", emoji:'💆',
+    desc:"Book a spa treatment or massage appointment.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, em muốn đặt lịch massage vào chiều mai ạ.", p:'', e:"Hello, I'd like to book a massage for tomorrow afternoon."},
+      {speaker:'B', v:"Dạ được, chị thích giờ nào, hai giờ hay bốn giờ chiều ạ?", p:'', e:"Sure, which time do you prefer, 2pm or 4pm?"},
+      {speaker:'A', v:"Cho em hai giờ chiều nha, khoảng bao lâu vậy chị?", p:'', e:"Two pm please, about how long does it take?"},
+      {speaker:'B', v:"Dạ, liệu trình một tiếng rưỡi, chị nhớ đến sớm mười phút nhé.", p:'', e:"The treatment is an hour and a half, please arrive ten minutes early."},
+    ],
+    vocab:[
+      {v:"đặt lịch", e:"to book an appointment"}, {v:"massage", e:"massage"},
+      {v:"giờ", e:"hour / time"}, {v:"liệu trình", e:"treatment / session"},
+      {v:"thư giãn", e:"to relax"}, {v:"spa", e:"spa"},
+      {v:"nhân viên", e:"staff"}, {v:"sớm", e:"early"},
+    ],
+    grammar:[
+      {title:"Time marker Vào", body:"\"Vào\" placed before a time expression introduces when something happens, as in \"đặt lịch massage vào chiều mai\" (book a massage for tomorrow afternoon). It functions like the English preposition \"at/on/for\" when attached to a time."},
+      {title:"Offering alternatives with Hay", body:"\"Hay\" means \"or\" and links two choices in a question, as in \"hai giờ hay bốn giờ chiều\" (2pm or 4pm). The listener answers by picking one of the two options rather than giving a yes/no response."},
+    ],
+    cards:[
+      {v:"Chào chị, em muốn đặt lịch massage vào chiều mai ạ.", p:"chow chi, em moo-uhn dat lik ma-saazh vow chee-ew mai aa", e:"Hello, I'd like to book a massage for tomorrow afternoon."},
+      {v:"Dạ được, chị thích giờ nào, hai giờ hay bốn giờ chiều ạ?", p:"zaa duh-uhk, chi tik zuh now, hai zuh hai bon zuh chee-ew aa", e:"Sure, which time do you prefer, 2pm or 4pm?"},
+      {v:"Cho em hai giờ chiều nha, khoảng bao lâu vậy chị?", p:"cho em hai zuh chee-ew nyaa, khwaang bow loh vay chi", e:"Two pm please, about how long does it take?"},
+      {v:"Dạ, liệu trình một tiếng rưỡi, chị nhớ đến sớm mười phút nhé.", p:"zaa, lee-ew ching mot tee-eng ruh-ee, chi nyuh den suhm muh-uh-ee foot nyeh", e:"The treatment is an hour and a half, please arrive ten minutes early."},
+    ],
+  },
+  { id:'t66', level:'A1', title:"Language Exchange", emoji:'🗣️',
+    desc:"Practice languages with a conversation partner.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào bạn, mình muốn luyện tập tiếng Việt, được không?", p:'', e:"Hi, I want to practice Vietnamese, is that okay?"},
+      {speaker:'B', v:"Được chứ! Mình cũng muốn học tiếng Anh với bạn.", p:'', e:"Of course! I also want to learn English with you."},
+      {speaker:'A', v:"Vậy mình nói tiếng Việt trước, bạn sửa lỗi cho mình nhé.", p:'', e:"Then I'll speak Vietnamese first, please correct my mistakes."},
+      {speaker:'B', v:"Ừ, nghe được lắm rồi, chỉ sai một chút thôi.", p:'', e:"Sure, that sounded quite good, just a small mistake."},
+    ],
+    vocab:[
+      {v:"luyện tập", e:"to practice"}, {v:"tiếng Việt", e:"Vietnamese language"},
+      {v:"tiếng Anh", e:"English language"}, {v:"sửa lỗi", e:"to correct mistakes"},
+      {v:"học", e:"to learn / study"}, {v:"nói", e:"to speak"},
+      {v:"nghe", e:"to listen / hear"}, {v:"sai", e:"wrong / mistake"},
+    ],
+    grammar:[
+      {title:"Được không? for permission", body:"Adding \"được không?\" to the end of a sentence turns it into a request for permission or agreement, like \"...được không?\" (is that okay?). It's a very common way to soften a suggestion, as in \"mình muốn luyện tập tiếng Việt, được không?\""},
+      {title:"Được chứ! as confident agreement", body:"\"Chứ\" added after \"được\" makes an affirmative reply feel confident and natural, like \"Được chứ!\" (Of course!/Sure thing!). It shows the speaker is happy to agree, not just neutrally accepting."},
+    ],
+    cards:[
+      {v:"Chào bạn, mình muốn luyện tập tiếng Việt, được không?", p:"chow ban, ming moo-uhn lwee-en tap tee-eng vee-et, duh-uhk khom", e:"Hi, I want to practice Vietnamese, is that okay?"},
+      {v:"Được chứ! Mình cũng muốn học tiếng Anh với bạn.", p:"duh-uhk chuh! ming kung moo-uhn hok tee-eng aan vuh-ee ban", e:"Of course! I also want to learn English with you."},
+      {v:"Vậy mình nói tiếng Việt trước, bạn sửa lỗi cho mình nhé.", p:"vay ming noy tee-eng vee-et chuh-uhk, ban suh-a loy cho ming nyeh", e:"Then I'll speak Vietnamese first, please correct my mistakes."},
+      {v:"Ừ, nghe được lắm rồi, chỉ sai một chút thôi.", p:"uh, ngeh duh-uhk lam roy, chee sai mot choot toy", e:"Sure, that sounded quite good, just a small mistake."},
+    ],
+  },
+  { id:'t67', level:'A1', title:"Flight Delays", emoji:'🛬',
+    desc:"Handle flight delays and rebooking at the airport.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Xin lỗi, chuyến bay của tôi có bị hoãn không?", p:'', e:"Excuse me, is my flight delayed?"},
+      {speaker:'B', v:"Dạ đúng rồi, chuyến bay bị hoãn hai tiếng ạ.", p:'', e:"Yes, that's right, the flight is delayed two hours."},
+      {speaker:'A', v:"Vậy tôi có thể đổi sang chuyến bay khác được không?", p:'', e:"Then can I change to a different flight?"},
+      {speaker:'B', v:"Dạ được, anh cho tôi xem vé rồi em sắp xếp cho.", p:'', e:"Yes, please show me your ticket and I'll arrange it for you."},
+    ],
+    vocab:[
+      {v:"chuyến bay", e:"flight"}, {v:"hoãn", e:"delayed"},
+      {v:"vé", e:"ticket"}, {v:"đổi", e:"to change / exchange"},
+      {v:"sân bay", e:"airport"}, {v:"cổng", e:"gate"},
+      {v:"sắp xếp", e:"to arrange"}, {v:"trễ", e:"late"},
+    ],
+    grammar:[
+      {title:"Có ... không? yes/no questions", body:"The frame \"có + verb/adjective + không?\" wraps around a word to form a yes/no question, as in \"có bị hoãn không?\" (is it delayed?). The answer typically starts with \"có\" (yes) or \"không\" (no)."},
+      {title:"Bị for unwanted events", body:"\"Bị\" is placed before a verb to mark something bad or undesirable happening to the subject, like \"bị hoãn\" (to be delayed). It works like a passive marker specifically for unfortunate situations."},
+    ],
+    cards:[
+      {v:"Xin lỗi, chuyến bay của tôi có bị hoãn không?", p:"sin loy, chwee-en bai koo-a toy koh bee hwahn khom", e:"Excuse me, is my flight delayed?"},
+      {v:"Dạ đúng rồi, chuyến bay bị hoãn hai tiếng ạ.", p:"zaa dung roy, chwee-en bai bee hwahn hai tee-eng aa", e:"Yes, that's right, the flight is delayed two hours."},
+      {v:"Vậy tôi có thể đổi sang chuyến bay khác được không?", p:"vay toy koh tay doy saang chwee-en bai khaak duh-uhk khom", e:"Then can I change to a different flight?"},
+      {v:"Dạ được, anh cho tôi xem vé rồi em sắp xếp cho.", p:"zaa duh-uhk, aan cho toy sem veh roy em sap sep cho", e:"Yes, please show me your ticket and I'll arrange it for you."},
+    ],
+  },
+  { id:'t68', level:'A1', title:"Gym Membership", emoji:'💪',
+    desc:"Sign up for a gym membership and ask about facilities.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chị, tôi muốn đăng ký thẻ tập gym.", p:'', e:"Hello, I'd like to sign up for a gym membership."},
+      {speaker:'B', v:"Dạ được, anh muốn đăng ký gói một tháng hay một năm ạ?", p:'', e:"Sure, would you like a one-month or one-year package?"},
+      {speaker:'A', v:"Cho tôi gói một tháng trước. Ở đây có hồ bơi không?", p:'', e:"Give me the one-month package first. Is there a pool here?"},
+      {speaker:'B', v:"Dạ có, ngoài hồ bơi còn có phòng tắm hơi và lớp yoga nữa ạ.", p:'', e:"Yes, besides the pool there's also a sauna and yoga classes."},
+    ],
+    vocab:[
+      {v:"đăng ký", e:"to register / sign up"}, {v:"thẻ tập", e:"gym membership card"},
+      {v:"gói", e:"package"}, {v:"hồ bơi", e:"swimming pool"},
+      {v:"phòng tắm hơi", e:"sauna"}, {v:"lớp", e:"class"},
+      {v:"tháng", e:"month"}, {v:"năm", e:"year"},
+    ],
+    grammar:[
+      {title:"Muốn + verb", body:"\"Muốn\" means \"to want\" and is placed directly before a verb to express desire, as in \"muốn đăng ký\" (want to register). This simple pattern works for almost any goal or wish."},
+      {title:"Ở đây có ... không?", body:"To ask whether a place offers something, use \"Ở đây có [noun] không?\", like \"Ở đây có hồ bơi không?\" (Is there a pool here?). The reply \"có\" confirms it exists, followed by more details."},
+    ],
+    cards:[
+      {v:"Chào chị, tôi muốn đăng ký thẻ tập gym.", p:"chow chi, toy moo-uhn dang kee teh tap jim", e:"Hello, I'd like to sign up for a gym membership."},
+      {v:"Dạ được, anh muốn đăng ký gói một tháng hay một năm ạ?", p:"zaa duh-uhk, aan moo-uhn dang kee goy mot thaang hai mot nam aa", e:"Sure, would you like a one-month or one-year package?"},
+      {v:"Cho tôi gói một tháng trước. Ở đây có hồ bơi không?", p:"cho toy goy mot thaang chuh-uhk. uh day koh ho boy khom", e:"Give me the one-month package first. Is there a pool here?"},
+      {v:"Dạ có, ngoài hồ bơi còn có phòng tắm hơi và lớp yoga nữa ạ.", p:"zaa koh, ngwai ho boy kon koh fong tam huh-ee vaa luhp yoga nuh-a aa", e:"Yes, besides the pool there's also a sauna and yoga classes."},
+    ],
+  },
+  { id:'t69', level:'A1', title:"Library Visit", emoji:'📖',
+    desc:"Get a library card and borrow books.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh, tôi muốn làm thẻ thư viện.", p:'', e:"Hello, I'd like to make a library card."},
+      {speaker:'B', v:"Dạ, anh cho tôi xem chứng minh thư nhé.", p:'', e:"Sure, please show me your ID card."},
+      {speaker:'A', v:"Đây ạ. Tôi có thể mượn bao nhiêu cuốn sách một lần?", p:'', e:"Here it is. How many books can I borrow at once?"},
+      {speaker:'B', v:"Dạ, mỗi lần anh được mượn năm cuốn trong hai tuần ạ.", p:'', e:"Each time you can borrow five books for two weeks."},
+    ],
+    vocab:[
+      {v:"thẻ thư viện", e:"library card"}, {v:"mượn", e:"to borrow"},
+      {v:"sách", e:"book"}, {v:"chứng minh thư", e:"ID card"},
+      {v:"trả", e:"to return"}, {v:"tuần", e:"week"},
+      {v:"cuốn", e:"classifier for books"}, {v:"thư viện", e:"library"},
+    ],
+    grammar:[
+      {title:"Classifier cuốn for books", body:"Vietnamese nouns need a classifier before a number, and \"cuốn\" is used for books, as in \"năm cuốn\" (five books). You can't just say the number and the noun together without it."},
+      {title:"Được + verb for permission", body:"\"Được\" placed before a verb shows that someone is allowed or able to do something, like \"được mượn năm cuốn\" (allowed to borrow five books). It highlights a granted permission rather than just ability."},
+    ],
+    cards:[
+      {v:"Chào anh, tôi muốn làm thẻ thư viện.", p:"chow aan, toy moo-uhn laam teh thuh vee-en", e:"Hello, I'd like to make a library card."},
+      {v:"Dạ, anh cho tôi xem chứng minh thư nhé.", p:"zaa, aan cho toy sem chuhng ming thuh nyeh", e:"Sure, please show me your ID card."},
+      {v:"Đây ạ. Tôi có thể mượn bao nhiêu cuốn sách một lần?", p:"day aa. toy koh tay muh-uhn bow nyew koo-uhn saak mot lan", e:"Here it is. How many books can I borrow at once?"},
+      {v:"Dạ, mỗi lần anh được mượn năm cuốn trong hai tuần ạ.", p:"zaa, moy lan aan duh-uhk muh-uhn nam koo-uhn chong hai twun aa", e:"Each time you can borrow five books for two weeks."},
+    ],
+  },
+  { id:'t70', level:'A1', title:"Medical Emergency", emoji:'🚑',
+    desc:"Communicate during a medical emergency situation.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Cứu tôi với! Bạn tôi bị ngất rồi!", p:'', e:"Help me! My friend has fainted!"},
+      {speaker:'B', v:"Bình tĩnh, tôi gọi xe cấp cứu ngay đây.", p:'', e:"Stay calm, I'll call an ambulance right now."},
+      {speaker:'A', v:"Xin nhanh lên, anh ấy khó thở lắm.", p:'', e:"Please hurry, he's having a lot of trouble breathing."},
+      {speaker:'B', v:"Dạ, xe cấp cứu sẽ đến trong năm phút nữa, chị đừng lo.", p:'', e:"Okay, the ambulance will arrive in five more minutes, don't worry."},
+    ],
+    vocab:[
+      {v:"cứu", e:"to save / help"}, {v:"ngất", e:"to faint"},
+      {v:"xe cấp cứu", e:"ambulance"}, {v:"khó thở", e:"difficulty breathing"},
+      {v:"bình tĩnh", e:"calm down"}, {v:"bệnh viện", e:"hospital"},
+      {v:"nhanh", e:"fast / quick"}, {v:"lo", e:"to worry"},
+    ],
+    grammar:[
+      {title:"Với as an urgent plea particle", body:"Added to the end of an imperative, \"với\" turns a plain command into an urgent plea, as in \"Cứu tôi với!\" (Help me!). It signals that the speaker really needs the listener's help right away."},
+      {title:"Sẽ for future actions", body:"\"Sẽ\" goes right before a verb to mark something that will happen in the future, like \"xe cấp cứu sẽ đến\" (the ambulance will arrive). It's the standard way to talk about upcoming events in Vietnamese."},
+    ],
+    cards:[
+      {v:"Cứu tôi với! Bạn tôi bị ngất rồi!", p:"kuh-oo toy vuh-ee! ban toy bee ngat roy!", e:"Help me! My friend has fainted!"},
+      {v:"Bình tĩnh, tôi gọi xe cấp cứu ngay đây.", p:"bing ting, toy goy seh kap kuh-oo ngai day", e:"Stay calm, I'll call an ambulance right now."},
+      {v:"Xin nhanh lên, anh ấy khó thở lắm.", p:"sin nyaan len, aan ay khoh thuh lam", e:"Please hurry, he's having a lot of trouble breathing."},
+      {v:"Dạ, xe cấp cứu sẽ đến trong năm phút nữa, chị đừng lo.", p:"zaa, seh kap kuh-oo seh den chong nam foot nuh-a, chi dung lo", e:"Okay, the ambulance will arrive in five more minutes, don't worry."},
+    ],
+  },
+  { id:'t71', level:'A1', title:"Wedding Planning", emoji:'💍',
+    desc:"Discuss wedding plans and arrangements.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Đám cưới của em tổ chức vào ngày nào vậy?", p:'', e:"When is your wedding going to be held?"},
+      {speaker:'B', v:"Dạ, tụi em định tổ chức vào tháng mười hai.", p:'', e:"We're planning to hold it in December."},
+      {speaker:'A', v:"Em đã đặt nhà hàng chưa?", p:'', e:"Have you booked the restaurant yet?"},
+      {speaker:'B', v:"Rồi ạ, em đặt nhà hàng tuần trước, còn thiệp mời thì tuần sau mới in.", p:'', e:"Yes, I booked the restaurant last week, and the invitation cards will be printed next week."},
+    ],
+    vocab:[
+      {v:"đám cưới", e:"wedding"}, {v:"tổ chức", e:"to organize / to hold"},
+      {v:"nhà hàng", e:"restaurant"}, {v:"thiệp mời", e:"invitation card"},
+      {v:"cô dâu", e:"bride"}, {v:"chú rể", e:"groom"},
+      {v:"tiệc", e:"party / banquet"}, {v:"đặt", e:"to book / to reserve"},
+    ],
+    grammar:[
+      {title:"Đã ... chưa? (completed action question)", body:"\"Đã ... chưa?\" asks whether something has been done yet, as in \"Em đã đặt nhà hàng chưa?\" (Have you booked the restaurant yet?). The reply \"Rồi\" confirms it's done, while \"Chưa\" would mean not yet."},
+      {title:"Định + verb (stating a plan)", body:"\"Định\" placed before a verb expresses an intention or plan, as in \"tụi em định tổ chức vào tháng mười hai\" (we're planning to hold it in December). It signals something decided but not yet finished."},
+    ],
+    cards:[
+      {v:"Đám cưới của em tổ chức vào ngày nào vậy?", p:"dam kuh-uh-ee koo-uh em to chuk vow ngaay now vay", e:"When is your wedding going to be held?"},
+      {v:"Dạ, tụi em định tổ chức vào tháng mười hai.", p:"zaa, too-ee em ding to chuk vow taang muh-uh-ee hai", e:"We're planning to hold it in December."},
+      {v:"Em đã đặt nhà hàng chưa?", p:"em daa dat nyaa haang chuh-uh", e:"Have you booked the restaurant yet?"},
+      {v:"Rồi ạ, em đặt nhà hàng tuần trước, còn thiệp mời thì tuần sau mới in.", p:"roy aa, em dat nyaa haang twan chuh-uk, kon tee-ep muh-ee tee twan sow muh-ee in", e:"Yes, I booked the restaurant last week, and the invitation cards will be printed next week."},
+    ],
+  },
+  { id:'t72', level:'A1', title:"Home Repairs", emoji:'🔧',
+    desc:"Explain problems to a repair technician.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào anh, nhà em bị hư máy lạnh, anh sửa được không?", p:'', e:"Hello, my air conditioner is broken, can you fix it?"},
+      {speaker:'B', v:"Được chị, máy lạnh bị hư gì vậy?", p:'', e:"Sure, what's wrong with the air conditioner?"},
+      {speaker:'A', v:"Nó không mát và có tiếng kêu lạ.", p:'', e:"It's not cold and it makes a strange noise."},
+      {speaker:'B', v:"Để em kiểm tra rồi báo giá cho chị nhé.", p:'', e:"Let me check it and then give you a price quote."},
+    ],
+    vocab:[
+      {v:"sửa", e:"to repair / fix"}, {v:"hư", e:"broken"},
+      {v:"máy lạnh", e:"air conditioner"}, {v:"kiểm tra", e:"to check / inspect"},
+      {v:"báo giá", e:"to quote a price"}, {v:"tiếng kêu", e:"noise / sound"},
+      {v:"ống nước", e:"pipe"}, {v:"thợ sửa", e:"repair technician"},
+    ],
+    grammar:[
+      {title:"Bị + problem (something bad happens)", body:"\"Bị\" comes before a verb or noun to mark something negative happening to the subject, as in \"nhà em bị hư máy lạnh\" (my air conditioner is broken). It shows the situation is unwanted, unlike \"được\" which marks something favorable."},
+      {title:"Được không? (asking if possible)", body:"Adding \"được không?\" to the end of a request asks whether something can be done, as in \"anh sửa được không?\" (can you fix it?). A simple \"Được\" in reply means yes, it's possible."},
+    ],
+    cards:[
+      {v:"Chào anh, nhà em bị hư máy lạnh, anh sửa được không?", p:"chow aan, nyaa em bee huh my laang, aan suh-uh duh-uhk khom", e:"Hello, my air conditioner is broken, can you fix it?"},
+      {v:"Được chị, máy lạnh bị hư gì vậy?", p:"duh-uhk chi, my laang bee huh zee vay", e:"Sure, what's wrong with the air conditioner?"},
+      {v:"Nó không mát và có tiếng kêu lạ.", p:"no khom mat vaa go tee-eng kew laa", e:"It's not cold and it makes a strange noise."},
+      {v:"Để em kiểm tra rồi báo giá cho chị nhé.", p:"day em kee-em chaa roy bow zaa cho chi nyeh", e:"Let me check it and then give you a price quote."},
+    ],
+  },
+  { id:'t73', level:'A1', title:"Community Events", emoji:'👥',
+    desc:"Join local community activities and volunteer work.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Cuối tuần này có sự kiện cộng đồng ở công viên đó.", p:'', e:"This weekend there's a community event at the park."},
+      {speaker:'B', v:"Vậy à? Có hoạt động gì vậy?", p:'', e:"Really? What activities are there?"},
+      {speaker:'A', v:"Có dọn dẹp công viên và trồng cây, mọi người đều được mời tham gia.", p:'', e:"There's park cleanup and tree planting, everyone is invited to join."},
+      {speaker:'B', v:"Hay quá, mình muốn đăng ký làm tình nguyện viên.", p:'', e:"That's great, I want to sign up to be a volunteer."},
+    ],
+    vocab:[
+      {v:"sự kiện", e:"event"}, {v:"cộng đồng", e:"community"},
+      {v:"công viên", e:"park"}, {v:"tình nguyện viên", e:"volunteer"},
+      {v:"tham gia", e:"to participate / join"}, {v:"dọn dẹp", e:"to clean up"},
+      {v:"trồng cây", e:"to plant trees"}, {v:"đăng ký", e:"to register / sign up"},
+    ],
+    grammar:[
+      {title:"Đều (all / each alike)", body:"\"Đều\" is placed before the verb to show that every member of a group shares the same action or state, as in \"mọi người đều được mời tham gia\" (everyone is invited to participate). It emphasizes that no one is left out."},
+      {title:"Muốn + verb (wanting to do something)", body:"\"Muốn\" before a verb expresses a desire to do that action, as in \"mình muốn đăng ký làm tình nguyện viên\" (I want to sign up to be a volunteer). It's one of the most common ways to state what you'd like to do."},
+    ],
+    cards:[
+      {v:"Cuối tuần này có sự kiện cộng đồng ở công viên đó.", p:"koo-oy twan nay go suh kee-en gong dong uh gong vee-en do", e:"This weekend there's a community event at the park."},
+      {v:"Vậy à? Có hoạt động gì vậy?", p:"vay aa? go hwaat dong zee vay", e:"Really? What activities are there?"},
+      {v:"Có dọn dẹp công viên và trồng cây, mọi người đều được mời tham gia.", p:"go zon zep gong vee-en vaa chong kay, moy nguh-uh-ee deh-oo duh-uhk muh-ee taam zaa", e:"There's park cleanup and tree planting, everyone is invited to join."},
+      {v:"Hay quá, mình muốn đăng ký làm tình nguyện viên.", p:"hai kwaa, ming moo-uhn dang ky laam ting nwee-en vee-en", e:"That's great, I want to sign up to be a volunteer."},
+    ],
+  },
+  { id:'t74', level:'A1', title:"Landlord Issues", emoji:'🏚️',
+    desc:"Discuss apartment problems with your landlord.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Chào chú, nhà em bị dột khi trời mưa.", p:'', e:"Hello, my place leaks when it rains."},
+      {speaker:'B', v:"Vậy hả? Để chú lên xem thử.", p:'', e:"Really? Let me come up and take a look."},
+      {speaker:'A', v:"Dạ, với lại vòi nước trong bếp cũng bị rò rỉ nữa ạ.", p:'', e:"Also, the faucet in the kitchen is leaking too."},
+      {speaker:'B', v:"Được, chú sẽ kêu thợ sửa tuần này.", p:'', e:"Okay, I'll call a repair technician this week."},
+    ],
+    vocab:[
+      {v:"dột", e:"leaking (roof)"}, {v:"chủ nhà", e:"landlord"},
+      {v:"rò rỉ", e:"to leak"}, {v:"vòi nước", e:"faucet"},
+      {v:"sửa chữa", e:"repair"}, {v:"tiền thuê nhà", e:"rent"},
+      {v:"hợp đồng", e:"contract / lease"}, {v:"báo", e:"to inform / report"},
+    ],
+    grammar:[
+      {title:"Khi (time clause 'when')", body:"\"Khi\" introduces a time clause meaning \"when,\" as in \"nhà em bị dột khi trời mưa\" (my place leaks when it rains). The clause with \"khi\" can come before or after the main clause."},
+      {title:"Để + person + verb (offering to do something)", body:"\"Để\" followed by a person and a verb offers to do an action, as in \"Để chú lên xem thử\" (Let me come up and take a look). It's a polite way of volunteering to help."},
+    ],
+    cards:[
+      {v:"Chào chú, nhà em bị dột khi trời mưa.", p:"chow choo, nyaa em bee zot khee chuh-uh-ee muh-uh", e:"Hello, my place leaks when it rains."},
+      {v:"Vậy hả? Để chú lên xem thử.", p:"vay haa? day choo len sem tuh-oo", e:"Really? Let me come up and take a look."},
+      {v:"Dạ, với lại vòi nước trong bếp cũng bị rò rỉ nữa ạ.", p:"zaa, vuh-ee lai voy nuh-uhk chong bep goong bee zo zee nuh-uh aa", e:"Also, the faucet in the kitchen is leaking too."},
+      {v:"Được, chú sẽ kêu thợ sửa tuần này.", p:"duh-uhk, choo seh kew tuh suh-uh twan nay", e:"Okay, I'll call a repair technician this week."},
+    ],
+  },
+  { id:'t75', level:'A1', title:"Driving Lessons", emoji:'🚘',
+    desc:"Follow instructions during a driving lesson.",
+    duration:'3 min',
+    exercises:["Lesson","Roleplay","Discussion"],
+    dialogue:[
+      {speaker:'A', v:"Hôm nay mình học lái xe số sàn nhé.", p:'', e:"Today let's practice driving a manual car."},
+      {speaker:'B', v:"Dạ, em hơi lo, em chưa lái xe số sàn bao giờ.", p:'', e:"Okay, I'm a bit nervous, I've never driven a manual car before."},
+      {speaker:'A', v:"Không sao, em đạp côn từ từ rồi vào số một.", p:'', e:"It's okay, press the clutch slowly and then shift into first gear."},
+      {speaker:'B', v:"Dạ, em hiểu rồi, em thử nha.", p:'', e:"Okay, I understand, I'll give it a try."},
+    ],
+    vocab:[
+      {v:"lái xe", e:"to drive"}, {v:"số sàn", e:"manual transmission"},
+      {v:"đạp côn", e:"to press the clutch"}, {v:"vào số", e:"to shift gears"},
+      {v:"thắng", e:"brake"}, {v:"ga", e:"gas pedal"},
+      {v:"bằng lái", e:"driver's license"}, {v:"an toàn", e:"safe"},
+    ],
+    grammar:[
+      {title:"Chưa ... bao giờ (never yet)", body:"\"Chưa ... bao giờ\" expresses that someone has never done something up to now, as in \"em chưa lái xe số sàn bao giờ\" (I've never driven a manual car before). It combines \"chưa\" (not yet) with \"bao giờ\" (ever) for emphasis."},
+      {title:"Rồi (sequencing two actions)", body:"\"Rồi\" links two actions in order, meaning \"and then,\" as in \"đạp côn từ từ rồi vào số một\" (press the clutch slowly, then shift into first gear). It shows the second action follows the first."},
+    ],
+    cards:[
+      {v:"Hôm nay mình học lái xe số sàn nhé.", p:"hom nay ming hop lai se so saan nyeh", e:"Today let's practice driving a manual car."},
+      {v:"Dạ, em hơi lo, em chưa lái xe số sàn bao giờ.", p:"zaa, em huh-ee lo, em chuh-uh lai se so saan bow zuh", e:"Okay, I'm a bit nervous, I've never driven a manual car before."},
+      {v:"Không sao, em đạp côn từ từ rồi vào số một.", p:"khom sow, em daap gon tuh tuh roy vow so mot", e:"It's okay, press the clutch slowly and then shift into first gear."},
+      {v:"Dạ, em hiểu rồi, em thử nha.", p:"zaa, em hee-oo roy, em tuh-oo nyaa", e:"Okay, I understand, I'll give it a try."},
+    ],
+  },
 ];
 
 const PACKS = [
@@ -6917,14 +8968,20 @@ function buildSteps(type, source){
 // pending content show an honest "coming soon" note instead of empty space.
 let lessonDetailId = null;
 function openLessonDetail(id){
-  const l = LESSONS.find(x=>x.id===id);
+  const l = LESSONS.find(x=>x.id===id) || TOPIC_LESSONS.find(x=>x.id===id);
   if(!l) return;
   lessonDetailId = id;
 
   document.getElementById('ldTitle').textContent = l.title;
+  const heroWrap = document.getElementById('ldHero');
   const heroImg = document.getElementById('ldHeroImg');
-  heroImg.style.display = '';
-  heroImg.src = l.img || '';
+  if(l.img){
+    heroWrap.style.display = '';
+    heroImg.src = l.img;
+  } else {
+    heroWrap.style.display = 'none';
+    heroImg.src = '';
+  }
   document.getElementById('ldDesc').textContent = l.desc || 'Content for this lesson is still being written.';
   document.getElementById('ldDuration').textContent = l.duration || '';
 
@@ -6982,7 +9039,7 @@ function startLessonFromDetail(){
 const PRACTICE_SPEEDS = [1, 0.7, 0.5];
 let practiceState = null;
 function openPractice(lessonId){
-  const l = LESSONS.find(x=>x.id===lessonId);
+  const l = LESSONS.find(x=>x.id===lessonId) || TOPIC_LESSONS.find(x=>x.id===lessonId);
   if(!l || !(l.dialogue||[]).length){
     alert("This lesson doesn't have practice dialogue written yet.");
     return;
@@ -7948,58 +10005,49 @@ function renderLessonsTab(){
   totalEl.textContent = wordStudyPool().length;
   document.getElementById('lsnDialogueTotal').textContent = LESSONS.length;
   document.getElementById('lsnPhraseTotal').textContent = phraseStudyPool().length;
-  document.getElementById('lsnExampleTotal').textContent = Object.keys(WORD_EXAMPLES).length;
+  // Real count of grammar notes actually authored across the 62 lessons —
+  // this used to show Object.keys(WORD_EXAMPLES).length instead, a leftover
+  // legacy corpus unrelated to lesson content, mislabeled "example sentences".
+  document.getElementById('lsnGrammarTotal').textContent = LESSONS.reduce((sum,l)=>sum+(l.grammar||[]).length, 0);
 
-  // Grouping — either by section/day (default) or by topic tag — drives the
-  // illustrated card list (lsnLessonList) below. In topic mode every
-  // distinct l.tag becomes its own group (all 9: Survival, Intro, Shopping,
-  // Food, Health, Set Up, Housing, Work, Transport), and the day/section
-  // grouping is not shown anywhere on the page. There is intentionally no
-  // separate text-row accordion anymore — the illustrated card groups are
-  // the only dropdowns on this tab, to avoid showing the same lessons twice
-  // in two different list styles.
-  let groups;
-  if(lsnGroupMode === 'topic'){
-    const tags = [];
-    LESSONS.forEach(l=>{ if(!tags.includes(l.tag)) tags.push(l.tag); });
-    groups = tags.map(tag=>{
-      const lessons = LESSONS.filter(l=>l.tag===tag);
-      const sec = LESSON_SECTIONS.find(s=>s.id===lessons[0].section);
-      return { key:'topic_'+tag, roman: sec ? sec.roman : '', label: tag, lessons };
-    });
-  } else {
-    groups = LESSON_SECTIONS.map(sec=>({
-      key: 'day_'+sec.id,
-      roman: sec.roman,
-      label: sec.title,
-      lessons: LESSONS.filter(l=>l.section===sec.id),
-    })).filter(g=>g.lessons.length);
-  }
-
-  // Full sequential lesson list — big illustrated cards, grouped by the same
-  // `groups` computed above. Each group is wrapped in a collapsible
-  // container (same open/close mechanics as the accordion above) so tapping
-  // a group header hides or shows the cards inside it. Each lesson has its
-  // own images/lesson_NN.jpg path reserved — drop a matching image in and
-  // it'll appear automatically; until then the card just shows a plain
-  // background.
+  // Day mode groups the 62 curriculum lessons under their LESSON_SECTIONS
+  // header, collapsible per section, using the big illustrated cards —
+  // unchanged from before. Topic mode is a different content source
+  // entirely: TOPIC_LESSONS, all 75 topics as a flat, numbered, SLIM list
+  // (emoji + title + one-line desc, no hero image or day/section grouping —
+  // just emojis and a slim card, per the current content stage). There is
+  // intentionally no separate text-row accordion — the card list is the
+  // only dropdown on this tab.
   const listEl = document.getElementById('lsnLessonList');
   if(listEl){
-    let firstIncompleteFound = false;
-    const lessonCardHtml = (l)=>{
-      const done = state.completedLessons.includes(l.id);
-      const isCurrent = !done && !firstIncompleteFound;
-      if(isCurrent) firstIncompleteFound = true;
-      const badge = done ? `<div class="check">✓</div>` : `<div class="play">▶</div>`;
-      let html = `<button class="lsn-lesson-card ${isCurrent?'current':''}" onclick="openLessonDetail('${l.id}')">
-        <img src="${l.img}" alt="" onerror="this.style.display='none';">
-        <div class="shade"></div>
-        ${badge}
-        <div class="tag">${l.tag}</div>
-        <div class="day">DAY ${l.day}</div>
-        <div class="title">${l.title}</div>
-      </button>`;
-      if(lsnGroupMode === 'day'){
+    if(lsnGroupMode === 'topic'){
+      listEl.innerHTML = TOPIC_LESSONS.map((t,i)=>{
+        const num = i+1;
+        const done = state.completedLessons.includes(t.id);
+        return `<button class="lsn-topic-card ${done?'done':''}" onclick="openLessonDetail('${t.id}')">
+          <div class="emoji">${t.emoji}</div>
+          <div class="info">
+            <p class="title">${num}. ${t.title}</p>
+            <p class="desc">${t.desc}</p>
+          </div>
+          <div class="status">${done ? '✓' : '▶'}</div>
+        </button>`;
+      }).join('');
+    } else {
+      let firstIncompleteFound = false;
+      const lessonCardHtml = (l)=>{
+        const done = state.completedLessons.includes(l.id);
+        const isCurrent = !done && !firstIncompleteFound;
+        if(isCurrent) firstIncompleteFound = true;
+        const badge = done ? `<div class="check">✓</div>` : `<div class="play">▶</div>`;
+        let html = `<button class="lsn-lesson-card ${isCurrent?'current':''}" onclick="openLessonDetail('${l.id}')">
+          <img src="${l.img}" alt="" onerror="this.style.display='none';">
+          <div class="shade"></div>
+          ${badge}
+          <div class="tag">${l.tag}</div>
+          <div class="day">DAY ${l.day}</div>
+          <div class="title">${l.title}</div>
+        </button>`;
         // Concept interstitials are anchored to a day number, so they only
         // make sense interleaved in the by-day view.
         CONCEPT_LESSONS.filter(c=>c.afterDay===l.day).forEach(c=>{
@@ -8010,23 +10058,28 @@ function renderLessonsTab(){
             <div class="title">${c.title}</div>
           </button>`;
         });
-      }
-      return html;
-    };
+        return html;
+      };
 
-    listEl.innerHTML = groups.map(g=>{
-      const isOpen = isLsnGroupOpen(g.key);
-      const doneCount = g.lessons.filter(l=>state.completedLessons.includes(l.id)).length;
-      const cardsHtml = g.lessons.map(lessonCardHtml).join('');
-      return `<div class="lsn-group ${isOpen?'open':''}" id="lsnGroup_${g.key}">
-        <button class="lsn-group-head" onclick="toggleLsnGroup('${g.key}')">
-          <span class="lsn-group-label">${g.label}</span>
-          <span class="lsn-group-count">${doneCount}/${g.lessons.length}</span>
-          <span class="lsn-group-chevron">▾</span>
-        </button>
-        <div class="lsn-group-body"><div class="lsn-group-cards">${cardsHtml}</div></div>
-      </div>`;
-    }).join('');
+      const groups = LESSON_SECTIONS.map(sec=>({
+        key: 'day_'+sec.id,
+        label: sec.title,
+        lessons: LESSONS.filter(l=>l.section===sec.id),
+      })).filter(g=>g.lessons.length);
+      listEl.innerHTML = groups.map(g=>{
+        const isOpen = isLsnGroupOpen(g.key);
+        const doneCount = g.lessons.filter(l=>state.completedLessons.includes(l.id)).length;
+        const cardsHtml = g.lessons.map(lessonCardHtml).join('');
+        return `<div class="lsn-group ${isOpen?'open':''}" id="lsnGroup_${g.key}">
+          <button class="lsn-group-head" onclick="toggleLsnGroup('${g.key}')">
+            <span class="lsn-group-label">${g.label}</span>
+            <span class="lsn-group-count">${doneCount}/${g.lessons.length}</span>
+            <span class="lsn-group-chevron">▾</span>
+          </button>
+          <div class="lsn-group-body"><div class="lsn-group-cards">${cardsHtml}</div></div>
+        </div>`;
+      }).join('');
+    }
   }
 }
 function setLsnGroupMode(mode){
