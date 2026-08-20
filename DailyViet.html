@@ -7399,14 +7399,21 @@ if('serviceWorker' in navigator){
 }
 // Every real audio ID the app knows about, grouped by content type — mirrors
 // the exact ID scheme used everywhere else (lesson_/pack_/chat_/sos_/core_/
-// cphrase_/word_/wordex_), so this always matches reality rather than
-// needing to be hand-maintained separately. Grouped (not flat) so the
-// download UI can show per-section progress, not just one overall number.
+// cphrase_/word_/nvocab_/nphrase_/wordex_), so this always matches reality
+// rather than needing to be hand-maintained separately. Grouped (not flat) so
+// the download UI can show per-section progress, not just one overall number.
+// Both word/phrase content modes (classic curated list vs. the newer
+// lesson-derived nvocab_/nphrase_ pools) are included regardless of which
+// mode is currently active, so switching modes later doesn't leave audio
+// uncached.
 function getAudioIdsByCategory(){
-  const cats = { 'Lessons':[], 'Survival Packs':[], 'Chat Boss':[], 'SOS Phrasebook':[], 'Core Phrases':[], 'Common Phrases':[], 'Words':[], 'Word Examples':[], 'New Lesson Vocab':[], 'New Lesson Dialogue':[] };
+  const cats = { 'Lessons':[], 'Survival Packs':[], 'Chat Boss':[], 'SOS Phrasebook':[], 'Core Phrases':[], 'Common Phrases':[], 'Classic Words':[], 'Word Examples':[], 'New Lesson Vocab':[], 'New Lesson Dialogue':[], 'Topics':[], 'Topic Vocab':[], 'Topic Dialogue':[], 'New Lesson Words':[], 'New Lesson Phrases':[] };
   LESSONS.forEach(l=>l.cards.forEach((c,i)=>cats['Lessons'].push(`lesson_${l.id}_${i}`)));
   LESSONS.forEach(l=>(l.vocab||[]).forEach((v,i)=>cats['New Lesson Vocab'].push(`lesson_${l.id}_v${i}`)));
   LESSONS.forEach(l=>(l.dialogue||[]).forEach((d,i)=>cats['New Lesson Dialogue'].push(`lesson_${l.id}_d${i}`)));
+  TOPIC_LESSONS.forEach(t=>(t.cards||[]).forEach((c,i)=>cats['Topics'].push(`lesson_${t.id}_${i}`)));
+  TOPIC_LESSONS.forEach(t=>(t.vocab||[]).forEach((v,i)=>cats['Topic Vocab'].push(`lesson_${t.id}_v${i}`)));
+  TOPIC_LESSONS.forEach(t=>(t.dialogue||[]).forEach((d,i)=>cats['Topic Dialogue'].push(`lesson_${t.id}_d${i}`)));
   PACKS.forEach(p=>p.cards.forEach((c,i)=>cats['Survival Packs'].push(`pack_${p.id}_${i}`)));
   Object.entries(CHAT_PERSONAS).forEach(([worldId,arr])=>arr.forEach((p,pIdx)=>{
     cats['Chat Boss'].push(`chat_${worldId}_${pIdx}_opener`);
@@ -7418,7 +7425,12 @@ function getAudioIdsByCategory(){
   Object.entries(SOS_PHRASES).forEach(([worldId,arr])=>arr.forEach((c,i)=>cats['SOS Phrasebook'].push(`sos_${worldId}_${i}`)));
   CORE_PHRASES.forEach(c=>cats['Core Phrases'].push(`core_${c.rank}`));
   COMMON_PHRASES.forEach(c=>cats['Common Phrases'].push(`cphrase_${c.rank}`));
-  wordStudyPool().forEach(w=>cats['Words'].push(w.srsId));
+  // Words/phrases are tracked for BOTH content modes (not just whichever mode
+  // is currently active in `state`), since a user can switch modes any time
+  // and the offline cache should already have both covered.
+  buildWordFrequencyList().forEach(w=>cats['Classic Words'].push(`word_${w.word}`));
+  newVocabPool().forEach(w=>cats['New Lesson Words'].push(w.srsId));
+  newPhrasePool().forEach(p=>cats['New Lesson Phrases'].push(p.srsId));
   Object.keys(WORD_EXAMPLES).forEach(w=>cats['Word Examples'].push(`wordex_${w}`));
   return cats;
 }
